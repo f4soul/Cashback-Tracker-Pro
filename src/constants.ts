@@ -1,5 +1,8 @@
 import { Bank } from './types';
 
+// ====================== ЛОГОТИПЫ БАНКОВ ======================
+// Пути через public/logos/ — самый стабильный вариант для Vercel + PWA
+
 export const bankLogos: Record<string, string> = {
   tbank: '/logos/tbank.png',
   tinkoff: '/logos/tbank.png',
@@ -201,7 +204,7 @@ export const COMMON_CATEGORIES = [
   'Коммунальные услуги',
 ];
 
-// ====================== ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ======================
+// ====================== ПОЛУЧЕНИЕ ДАННЫХ БАНКА ======================
 export const getBankDetails = (
   bankId: string,
   customName?: string,
@@ -215,6 +218,5 @@ export const getBankDetails = (
       logoUrl: bankLogos.default,
     };
   }
-
   return BANKS.find((b) => b.id === bankId);
 };
