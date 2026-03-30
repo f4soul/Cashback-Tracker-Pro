@@ -348,7 +348,7 @@ export const BankForm: React.FC<BankFormProps> = memo(
                             logoShape={globalLogoShape}
                             size="md"
                           />
-                          <div className="min-h-[2.4em] flex items-center justify-center w-full px-0.5">
+                          <div className="flex items-center justify-center w-full px-0.5">
                             <span
                               className="text-[9px] sm:text-[10px] font-bold text-center text-gray-600 dark:text-gray-400 uppercase tracking-tight group-hover:text-gray-900 dark:group-hover:text-white transition-colors break-words leading-tight line-clamp-2"
                               title={bank.name}
