@@ -188,12 +188,15 @@ const SortableBankCard: React.FC<SortableBankCardProps> = memo(
       isDragging,
     } = useSortable({
       id: entry.id,
-      animateLayoutChanges: () => true,
     });
 
     const style = {
-      transform: CSS.Translate.toString(transform),
-      transition,
+      transform: CSS.Transform.toString(transform),
+      transition:
+        transition ||
+        (isDragging
+          ? undefined
+          : 'transform 250ms cubic-bezier(0.32, 0.72, 0, 1)'),
       zIndex: isDragging ? 50 : undefined,
     };
 
@@ -663,7 +666,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                     strategy={verticalListSortingStrategy}
                   >
                     <div className="grid grid-cols-1 gap-1">
-                      <AnimatePresence mode="popLayout">
+                      <AnimatePresence>
                         {data.entries.map((entry) => {
                           const bank =
                             getBankDetails(
@@ -696,9 +699,13 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                     </div>
                   </SortableContext>
                   <DragOverlay
-                    dropAnimation={defaultDropAnimationSideEffects({
-                      sideEffects: ['styles'],
-                    })}
+                    dropAnimation={{
+                      sideEffects: defaultDropAnimationSideEffects({
+                        styles: { active: { opacity: '0.4' } },
+                      }),
+                      duration: 250,
+                      easing: 'cubic-bezier(0.32, 0.72, 0, 1)',
+                    }}
                   >
                     {activeDragId
                       ? (() => {
