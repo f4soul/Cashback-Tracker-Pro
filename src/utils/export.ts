@@ -5,23 +5,27 @@ import { saveAs } from 'file-saver';
 import { MonthData, Bank } from '../types';
 import { getBankDetails } from '../constants';
 
-export const exportToExcel = (data: MonthData, customBanks: Bank[], filename: string) => {
+export const exportToExcel = (
+  data: MonthData,
+  customBanks: Bank[],
+  filename: string,
+) => {
   try {
     const rows: any[] = [];
 
-    data.entries.forEach(entry => {
+    data.entries.forEach((entry) => {
       let bank = getBankDetails(entry.bankId, entry.customBankName);
       if (!bank && entry.bankId.startsWith('custom_')) {
-        bank = customBanks.find(b => b.id === entry.bankId);
+        bank = customBanks.find((b) => b.id === entry.bankId);
       }
-      
+
       const bankName = bank?.name || 'Неизвестный банк';
 
-      entry.categories.forEach(category => {
+      entry.categories.forEach((category) => {
         rows.push({
-          'Банк': bankName,
-          'Категория': category.name,
-          'Процент': category.percent
+          Банк: bankName,
+          Категория: category.name,
+          Процент: category.percent,
         });
       });
     });
@@ -32,19 +36,24 @@ export const exportToExcel = (data: MonthData, customBanks: Bank[], filename: st
 
     // Auto-size columns
     const maxWidths = rows.reduce((acc, row) => {
-      Object.keys(row).forEach(key => {
+      Object.keys(row).forEach((key) => {
         const val = row[key] ? row[key].toString() : '';
         acc[key] = Math.max(acc[key] || key.length, val.length);
       });
       return acc;
     }, {});
 
-    worksheet['!cols'] = Object.keys(maxWidths).map(key => ({
-      wch: maxWidths[key] + 2
+    worksheet['!cols'] = Object.keys(maxWidths).map((key) => ({
+      wch: maxWidths[key] + 2,
     }));
 
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const dataBlob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+    const dataBlob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
+    });
     saveAs(dataBlob, filename);
   } catch (error) {
     console.error('Error generating Excel:', error);
@@ -58,21 +67,24 @@ export const exportToPDF = async (elementId: string, filename: string) => {
 
   try {
     const isDark = document.documentElement.classList.contains('dark');
-    
+
     // Add a temporary class to ensure the element renders well for PDF
     element.classList.add('pdf-export-mode');
-    
+
     // Wait a brief moment for the class to apply and layout to settle
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     // Get dimensions after the class is applied
     const rect = element.getBoundingClientRect();
     const pdfWidth = rect.width;
     const pdfHeight = rect.height;
-    
+
     const dataUrl = await toPng(element, {
       quality: 1,
       pixelRatio: 4, // Maximum quality for PDF
+      cacheBust: true,
+      includeQueryParams: true,
+      fetchRequestInit: { cache: 'no-cache' },
       backgroundColor: isDark ? '#111827' : '#ffffff',
       width: pdfWidth,
       height: pdfHeight,
@@ -82,10 +94,10 @@ export const exportToPDF = async (elementId: string, filename: string) => {
         opacity: '1',
         visibility: 'visible',
         position: 'static',
-        left: '0'
-      }
+        left: '0',
+      },
     });
-    
+
     element.classList.remove('pdf-export-mode');
 
     // Create PDF with custom dimensions to fit the content exactly
@@ -94,9 +106,9 @@ export const exportToPDF = async (elementId: string, filename: string) => {
       unit: 'px',
       format: [pdfWidth, pdfHeight],
       compress: true,
-      precision: 16
+      precision: 16,
     });
-    
+
     pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
     pdf.save(filename);
   } catch (error) {
@@ -112,27 +124,30 @@ export const exportToImage = async (elementId: string, filename: string) => {
 
   try {
     const isDark = document.documentElement.classList.contains('dark');
-    
+
     // Add a temporary class to ensure the element renders well
     element.classList.add('pdf-export-mode');
-    
+
     // Wait a brief moment for the class to apply and layout to settle
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     const dataUrl = await toPng(element, {
       quality: 1,
       pixelRatio: 5, // Maximum quality for images
+      cacheBust: true,
+      includeQueryParams: true,
+      fetchRequestInit: { cache: 'no-cache' },
       backgroundColor: isDark ? '#111827' : '#ffffff',
       style: {
         opacity: '1',
         visibility: 'visible',
         position: 'static',
-        left: '0'
-      }
+        left: '0',
+      },
     });
-    
+
     element.classList.remove('pdf-export-mode');
-    
+
     const link = document.createElement('a');
     link.download = filename;
     link.href = dataUrl;
