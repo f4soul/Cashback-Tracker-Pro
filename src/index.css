@@ -104,11 +104,14 @@ h6 {
 /* Styles applied only during PDF export */
 .pdf-export-mode {
 	max-width: none !important;
+	width: 100% !important;
 	margin: 0 !important;
 	border: none !important;
 	box-shadow: none !important;
 	border-radius: 0 !important;
 	background-color: white !important;
+	padding: 20px !important;
+	/* Add padding to prevent content from touching edges */
 }
 
 .dark .pdf-export-mode {
