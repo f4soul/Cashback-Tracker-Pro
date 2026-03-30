@@ -71,50 +71,52 @@ interface SortableBankCardProps {
   onDelete: () => void;
 }
 
-const SortableBankCard: React.FC<SortableBankCardProps> = memo(
-  ({ entry, bank, logoShape, onEdit, onDelete }) => {
-    const {
+interface BankCardProps extends SortableBankCardProps {
+  isDragging?: boolean;
+  isOverlay?: boolean;
+  attributes?: any;
+  listeners?: any;
+  style?: any;
+}
+
+// 1. Сначала объявляем базовый визуальный компонент BankCard
+const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
+  (
+    {
+      entry,
+      bank,
+      logoShape,
+      onEdit,
+      onDelete,
+      isDragging,
+      isOverlay,
       attributes,
       listeners,
-      setNodeRef,
-      transform,
-      transition,
-      isDragging,
-    } = useSortable({
-      id: entry.id,
-      animateLayoutChanges: () => true,
-    });
-
-    const style = {
-      transform: CSS.Translate.toString(transform),
-      transition,
-      zIndex: isDragging ? 50 : undefined,
-    };
-
-    const logoUrl = entry.customLogo || bank.logoUrl;
-
+      style,
+    },
+    ref,
+  ) => {
     return (
-      <motion.div
-        ref={setNodeRef}
+      <div
+        ref={ref}
         style={style}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{
-          opacity: isDragging ? 0.5 : 1,
-          y: 0,
-          scale: isDragging ? 1.02 : 1,
-        }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
         className={clsx(
           'flex items-center justify-between p-3 bg-white dark:bg-gray-800/50 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm group/card select-none',
-          isDragging && 'border-[var(--accent-color)] shadow-xl z-50',
+          isDragging && !isOverlay && 'opacity-30',
+          isOverlay &&
+            'border-[var(--accent-color)] shadow-2xl scale-105 z-50 ring-2 ring-[var(--accent-color)] ring-opacity-50 cursor-grabbing bg-white dark:bg-gray-800',
         )}
       >
         <div className="flex items-center gap-3 min-w-0">
           <button
             {...attributes}
             {...listeners}
-            className="p-3 -ml-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-grab active:cursor-grabbing shrink-0 touch-none"
+            className={clsx(
+              'p-3 -ml-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 shrink-0 touch-none',
+              isOverlay
+                ? 'cursor-grabbing'
+                : 'cursor-grab active:cursor-grabbing',
+            )}
           >
             <GripVertical className="w-4 h-4" />
           </button>
@@ -169,6 +171,51 @@ const SortableBankCard: React.FC<SortableBankCardProps> = memo(
             <Trash2 className="w-4 h-4" />
           </button>
         </div>
+      </div>
+    );
+  },
+);
+
+// 2. Затем объявляем SortableBankCard, который использует BankCard внутри себя
+const SortableBankCard: React.FC<SortableBankCardProps> = memo(
+  ({ entry, bank, logoShape, onEdit, onDelete }) => {
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+      isDragging,
+    } = useSortable({
+      id: entry.id,
+      animateLayoutChanges: () => true,
+    });
+
+    const style = {
+      transform: CSS.Translate.toString(transform),
+      transition,
+      zIndex: isDragging ? 50 : undefined,
+    };
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
+      >
+        <BankCard
+          ref={setNodeRef}
+          style={style}
+          entry={entry}
+          bank={bank}
+          logoShape={logoShape}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          isDragging={isDragging}
+          attributes={attributes}
+          listeners={listeners}
+        />
       </motion.div>
     );
   },
