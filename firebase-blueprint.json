@@ -1,0 +1,63 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User settings and custom data",
+      "type": "object",
+      "properties": {
+        "settings": {
+          "type": "object",
+          "description": "Application visual settings"
+        },
+        "customBanks": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "User-defined banks"
+        },
+        "customCategories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "User-defined categories"
+        }
+      },
+      "required": ["settings", "customBanks", "customCategories"]
+    },
+    "Month": {
+      "title": "Month",
+      "description": "Monthly cashback data",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Owner user ID"
+        },
+        "monthId": {
+          "type": "string",
+          "description": "Month identifier (YYYY-MM)"
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "List of cashback entries for the month"
+        }
+      },
+      "required": ["uid", "monthId", "entries"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile and settings"
+    },
+    "/months/{monthDocId}": {
+      "schema": "Month",
+      "description": "Cashback entries for a specific month"
+    }
+  }
+}

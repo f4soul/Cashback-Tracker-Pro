@@ -1,0 +1,93 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: {userId}
+    // Fields:
+    //   - settings: map (required) - App visual settings
+    //   - customBanks: list (required) - User-defined banks
+    //   - customCategories: list (required) - User-defined categories
+    //
+    // Collection: months
+    // Document ID: {userId}_{monthId}
+    // Fields:
+    //   - uid: string (required) - Owner user ID
+    //   - monthId: string (required) - Month identifier (YYYY-MM)
+    //   - entries: list (required) - List of cashback entries
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        ((exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
+          (request.auth.token.email == "filimlive@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return hasRequiredFields(['settings', 'customBanks', 'customCategories']) &&
+             data.settings is map &&
+             data.customBanks is list &&
+             data.customCategories is list;
+    }
+
+    function isValidMonth(data) {
+      return hasRequiredFields(['uid', 'monthId', 'entries']) &&
+             data.uid is string &&
+             data.monthId is string &&
+             data.entries is list &&
+             (data.uid == request.auth.uid || isAdmin());
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidUser(request.resource.data);
+      allow update: if (isOwner(userId) && isValidUser(request.resource.data)) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /months/{monthDocId} {
+      allow read: if isAuthenticated() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && (isAdmin() || (isValidMonth(request.resource.data) && monthDocId.startsWith(request.auth.uid + "_")));
+      allow update: if isAuthenticated() && (isAdmin() || (isValidMonth(request.resource.data) && resource.data.uid == request.auth.uid));
+      allow delete: if isAuthenticated() && (resource.data.uid == request.auth.uid || isAdmin());
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
