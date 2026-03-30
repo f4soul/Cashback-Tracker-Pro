@@ -145,6 +145,17 @@ h6 {
 	/* gray-50 */
 }
 
+.pdf-export-mode .flex-1 {
+	flex: 1 1 0% !important;
+	min-width: 0 !important;
+	/* Важно для предотвращения переполнения */
+}
+
+.pdf-export-mode .break-words {
+	word-break: break-word !important;
+	white-space: normal !important;
+}
+
 .dark .pdf-export-mode .dark\:bg-gray-800\/40 {
 	background-color: #1f2937 !important;
 	/* gray-800 */
