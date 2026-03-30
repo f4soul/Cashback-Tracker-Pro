@@ -45,39 +45,10 @@ export default function App() {
   const [hasInitialSync, setHasInitialSync] = useState(false);
 
   // Local storage as fallback/initial state
-  const [allData, setAllData] = useLocalStorage<MonthData[]>('cashback_data', [
-    {
-      monthId: '2026-02',
-      entries: [
-        {
-          id: 'test-1',
-          bankId: 'tinkoff',
-          categories: [
-            { name: 'Супермаркеты', percent: '5' },
-            { name: 'Аптеки', percent: '5' },
-            { name: 'Транспорт', percent: '5' },
-          ],
-        },
-        {
-          id: 'test-2',
-          bankId: 'alfa',
-          categories: [
-            { name: 'Продукты', percent: '5' },
-            { name: 'Кафе и рестораны', percent: '5' },
-            { name: 'Красота', percent: '10' },
-          ],
-        },
-        {
-          id: 'test-3',
-          bankId: 'sber',
-          categories: [
-            { name: 'АЗС', percent: '10' },
-            { name: 'Дом и ремонт', percent: '5' },
-          ],
-        },
-      ],
-    },
-  ]);
+  const [allData, setAllData] = useLocalStorage<MonthData[]>(
+    'cashback_data',
+    [],
+  );
   const [customBanks, setCustomBanks] = useLocalStorage<Bank[]>(
     'custom_banks',
     [],
