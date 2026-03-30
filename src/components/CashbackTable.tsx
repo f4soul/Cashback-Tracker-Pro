@@ -172,7 +172,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                     </span>
                   </div>
 
-                  <div className="flex flex-col justify-center flex-1 py-0.5 min-w-0 w-full">
+                  <div className="flex flex-col justify-center flex-1 py-0.5 min-w-0">
                     <div className="flex flex-col bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700/60 rounded shadow-sm overflow-hidden w-full">
                       {sortedCategories.map((cat, idx, arr) => {
                         const name = typeof cat === 'string' ? cat : cat.name;
@@ -185,14 +185,14 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                             className={clsx(
                               'flex items-center justify-between text-[11px] font-semibold text-gray-800 dark:text-gray-200 px-2 py-1',
                               idx !== arr.length - 1 &&
-                                'border-b border-gray-100 dark:border-gray-700/50',
+                                'border-b border-gray-100 dark:border-gray-700/60',
                             )}
                           >
-                            <span className="leading-none break-words">
+                            <span className="leading-tight truncate pr-2">
                               {formatCategoryName(name)}
                             </span>
                             {percent && (
-                              <span className="text-[var(--percent-text)] font-extrabold bg-[var(--percent-bg)] px-1.5 py-0.5 rounded-[4px] text-[10px] ml-2 shrink-0 leading-none">
+                              <span className="text-[var(--percent-text)] font-extrabold bg-[var(--percent-bg)] px-1.5 py-0.5 rounded-[4px] text-[10px] shrink-0 leading-none">
                                 {percent}%
                               </span>
                             )}
