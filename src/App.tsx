@@ -45,10 +45,39 @@ export default function App() {
   const [hasInitialSync, setHasInitialSync] = useState(false);
 
   // Local storage as fallback/initial state
-  const [allData, setAllData] = useLocalStorage<MonthData[]>(
-    'cashback_data',
-    [],
-  );
+  const [allData, setAllData] = useLocalStorage<MonthData[]>('cashback_data', [
+    {
+      monthId: '2026-02',
+      entries: [
+        {
+          id: 'test-1',
+          bankId: 'tinkoff',
+          categories: [
+            { name: 'Супермаркеты', percent: '5' },
+            { name: 'Аптеки', percent: '5' },
+            { name: 'Транспорт', percent: '5' },
+          ],
+        },
+        {
+          id: 'test-2',
+          bankId: 'alfa',
+          categories: [
+            { name: 'Продукты', percent: '5' },
+            { name: 'Кафе и рестораны', percent: '5' },
+            { name: 'Красота', percent: '10' },
+          ],
+        },
+        {
+          id: 'test-3',
+          bankId: 'sber',
+          categories: [
+            { name: 'АЗС', percent: '10' },
+            { name: 'Дом и ремонт', percent: '5' },
+          ],
+        },
+      ],
+    },
+  ]);
   const [customBanks, setCustomBanks] = useLocalStorage<Bank[]>(
     'custom_banks',
     [],
@@ -89,6 +118,7 @@ export default function App() {
         if (snapshot.exists()) {
           const data = snapshot.data();
           if (data.settings) setSettings(data.settings);
+          if (data.theme) setTheme(data.theme);
           if (data.customBanks) setCustomBanks(data.customBanks);
           if (data.customCategories) setCustomCategories(data.customCategories);
         } else {
@@ -96,6 +126,7 @@ export default function App() {
           const initialUserData = JSON.parse(
             JSON.stringify({
               settings,
+              theme,
               customBanks,
               customCategories,
             }),
@@ -245,7 +276,11 @@ export default function App() {
   }, [theme, settings]);
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    if (user) {
+      saveToFirestore('settings', { theme: newTheme });
+    }
   };
 
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
