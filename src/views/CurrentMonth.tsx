@@ -81,69 +81,76 @@ const SortableBankCard: React.FC<SortableBankCardProps> = memo(({ entry, bank, l
       ref={setNodeRef}
       style={style}
       initial={{ opacity: 0, y: 10 }}
-      animate={{ 
-        opacity: isDragging ? 0.5 : 1, 
+      animate={{
+        opacity: isDragging ? 0.5 : 1,
         y: 0,
         scale: isDragging ? 1.02 : 1,
       }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
       className={clsx(
-        "flex items-center justify-between p-3 bg-white dark:bg-gray-800/50 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm group/card select-none",
-        isDragging && "border-[var(--accent-color)] shadow-xl z-50"
+        'flex items-center justify-between p-3 bg-white dark:bg-gray-800/50 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm group/card select-none',
+        isDragging && 'border-[var(--accent-color)] shadow-xl z-50',
       )}
     >
       <div className="flex items-center gap-3 min-w-0">
         <button
           {...attributes}
           {...listeners}
-          className="p-3 -ml-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-grab active:cursor-grabbing shrink-0"
+          className="p-3 -ml-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-grab active:cursor-grabbing shrink-0 touch-none"
         >
           <GripVertical className="w-4 h-4" />
         </button>
-        
-        <BankLogo 
-          bank={bank} 
-          customLogo={entry.customLogo} 
-          logoShape={logoShape} 
+
+        <BankLogo
+          bank={bank}
+          customLogo={entry.customLogo}
+          logoShape={logoShape}
           size="lg"
         />
-        
+
         <div className="min-w-0 flex-1">
-          <h3 className="font-bold text-sm text-gray-900 dark:text-white truncate leading-tight">{bank.name}</h3>
+          <h3 className="font-bold text-sm text-gray-900 dark:text-white truncate leading-tight">
+            {bank.name}
+          </h3>
           <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 truncate leading-none mt-1 uppercase tracking-wider">
-            {entry.categories.length} {entry.categories.length === 1 ? 'категория' : entry.categories.length < 5 ? 'категории' : 'категорий'}
+            {entry.categories.length}{' '}
+            {entry.categories.length === 1
+              ? 'категория'
+              : entry.categories.length < 5
+                ? 'категории'
+                : 'категорий'}
           </p>
         </div>
       </div>
-      
+
       <div className="flex items-center gap-1 shrink-0 ml-2 relative z-10">
-          <button
-            type="button"
-            onPointerDown={(e) => e.stopPropagation()}
-            onMouseDown={(e) => e.stopPropagation()}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onEdit();
-            }}
-            className="p-2 text-gray-400 hover:text-[var(--accent-color)] hover:bg-[var(--percent-bg)] rounded-xl transition-all cursor-pointer"
-          >
-            <Edit2 className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onPointerDown={(e) => e.stopPropagation()}
-            onMouseDown={(e) => e.stopPropagation()}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onDelete();
-            }}
-            className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl transition-all cursor-pointer"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+        <button
+          type="button"
+          onPointerDown={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onEdit();
+          }}
+          className="p-2 text-gray-400 hover:text-[var(--accent-color)] hover:bg-[var(--percent-bg)] rounded-xl transition-all cursor-pointer"
+        >
+          <Edit2 className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          onPointerDown={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onDelete();
+          }}
+          className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl transition-all cursor-pointer"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
       </div>
     </motion.div>
   );
