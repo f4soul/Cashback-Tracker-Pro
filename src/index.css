@@ -119,4 +119,53 @@ h6 {
 .pdf-export-mode * {
 	-webkit-print-color-adjust: exact !important;
 	print-color-adjust: exact !important;
+	box-shadow: none !important;
+	text-shadow: none !important;
+	transition: none !important;
+	animation: none !important;
+	filter: none !important;
+	backdrop-filter: none !important;
+}
+
+.pdf-export-mode .shadow-sm,
+.pdf-export-mode .shadow,
+.pdf-export-mode .shadow-md,
+.pdf-export-mode .shadow-lg,
+.pdf-export-mode .shadow-xl,
+.pdf-export-mode .shadow-2xl,
+.pdf-export-mode .shadow-inner {
+	box-shadow: none !important;
+}
+
+.pdf-export-mode .bg-gray-50\/80 {
+	background-color: #f9fafb !important;
+	/* gray-50 */
+}
+
+.dark .pdf-export-mode .dark\:bg-gray-800\/40 {
+	background-color: #1f2937 !important;
+	/* gray-800 */
+}
+
+.pdf-export-mode img {
+	border: 1px solid #e5e7eb !important;
+	/* gray-200 */
+	box-shadow: none !important;
+	filter: none !important;
+}
+
+.pdf-export-mode .border-r,
+.pdf-export-mode [class*="border-r"] {
+	border-right: none !important;
+	border-right-width: 0 !important;
+}
+
+.pdf-export-mode .border-gray-200\/60 {
+	border-color: #e5e7eb !important;
+	/* gray-200 */
+}
+
+.dark .pdf-export-mode .dark\:border-gray-700\/60 {
+	border-color: #374151 !important;
+	/* gray-700 */
 }
