@@ -188,7 +188,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                                 'border-b border-gray-100 dark:border-gray-700/60',
                             )}
                           >
-                            <span className="leading-tight truncate pr-2">
+                            <span className="leading-tight truncate pr-4 flex-1">
                               {formatCategoryName(name)}
                             </span>
                             {percent && (
