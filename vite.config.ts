@@ -6,9 +6,8 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
-
   return {
-    base: '/', // важно для Vercel
+    base: '/',
     plugins: [
       react(),
       tailwindcss(),
@@ -58,11 +57,12 @@ export default defineConfig(({ mode }) => {
         manifest: {
           name: 'Cashback Tracker Pro',
           short_name: 'Cashback',
-          description: 'Умный трекер кэшбэка и банковских карт',
+          description: 'Умный трекер кэшбэка',
           theme_color: '#10b981',
           background_color: '#f9fafb',
           display: 'standalone',
           orientation: 'portrait',
+          categories: ['finance', 'utilities'],
           start_url: '/',
           id: 'cashback-tracker-pro',
 

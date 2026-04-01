@@ -23,7 +23,6 @@ export interface CashbackEntry {
 
 export interface AppSettings {
   logoShape: LogoShape;
-  fontSize: number; // 12-20
   accentColor: string;
   percentBlockBg: string;
   percentBlockText: string;

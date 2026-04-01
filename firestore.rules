@@ -1,29 +1,6 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // ===============================================================
-    // Assumed Data Model
-    // ===============================================================
-    //
-    // Collection: users
-    // Document ID: {userId}
-    // Fields:
-    //   - settings: map (required) - App visual settings
-    //   - customBanks: list (required) - User-defined banks
-    //   - customCategories: list (required) - User-defined categories
-    //
-    // Collection: months
-    // Document ID: {userId}_{monthId}
-    // Fields:
-    //   - uid: string (required) - Owner user ID
-    //   - monthId: string (required) - Month identifier (YYYY-MM)
-    //   - entries: list (required) - List of cashback entries
-    //
-    // ===============================================================
-
-    // ===============================================================
-    // Helper Functions
-    // ===============================================================
     
     function isAuthenticated() {
       return request.auth != null;

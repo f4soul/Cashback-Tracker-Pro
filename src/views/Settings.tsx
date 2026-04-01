@@ -1,13 +1,14 @@
-import React, { useCallback, memo, useState } from 'react';
+import React, { useCallback, memo, useState, useRef } from 'react';
 import { AppSettings, LogoShape, Bank, MonthData } from '../types';
 import { BankLogo } from '../components/BankLogo';
-import { Circle, Square, RectangleHorizontal, Type, Palette, Download, Image as ImageIcon, FileSpreadsheet, FileText, Check, RotateCcw, Search } from 'lucide-react';
+import { Circle, Square, RectangleHorizontal, Type, Palette, Download, Image as ImageIcon, FileSpreadsheet, FileText, Check, RotateCcw, Search, Database, Upload } from 'lucide-react';
 import { clsx } from 'clsx';
 import { exportToPDF, exportToExcel, exportToImage } from '../utils/export';
 import { CashbackTable } from '../components/CashbackTable';
 import { MccDirectory } from '../components/MccDirectory';
 import { VersionHistory } from '../components/VersionHistory';
 import { Modal } from '../components/ui/Modal';
+import { toast } from 'sonner';
 
 interface SettingsProps {
   settings: AppSettings;
@@ -16,11 +17,23 @@ interface SettingsProps {
   currentMonthData: MonthData;
   onAddTestData?: () => void;
   userEmail?: string | null;
+  onExportJSON?: () => void;
+  onImportJSON?: (data: any) => Promise<boolean>;
 }
 
-export const Settings: React.FC<SettingsProps> = memo(({ settings, setSettings, customBanks, currentMonthData, onAddTestData, userEmail }) => {
+export const Settings: React.FC<SettingsProps> = memo(({ 
+  settings, 
+  setSettings, 
+  customBanks, 
+  currentMonthData, 
+  onAddTestData, 
+  userEmail,
+  onExportJSON,
+  onImportJSON
+}) => {
   const [isMccDirectoryOpen, setIsMccDirectoryOpen] = useState(false);
   const [isVersionHistoryOpen, setIsVersionHistoryOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const updateSetting = useCallback(<K extends keyof AppSettings>(key: K, value: AppSettings[K]) => {
     setSettings(prev => ({ ...prev, [key]: value }));
@@ -45,6 +58,30 @@ export const Settings: React.FC<SettingsProps> = memo(({ settings, setSettings, 
     { name: 'Neutral', value: '#525252' },
     { name: 'Stone', value: '#57534e' },
   ];
+
+  const handleImportClick = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const json = JSON.parse(event.target?.result as string);
+        if (onImportJSON) {
+          await onImportJSON(json);
+          toast.success('ДАННЫЕ УСПЕШНО ИМПОРТИРОВАНЫ');
+        }
+      } catch (error) {
+        toast.error('ОШИБКА ПРИ ИМПОРТЕ ДАННЫХ');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  }, [onImportJSON]);
 
   const handleCustomColorChange = useCallback((hex: string) => {
     if (/^#[0-9A-F]{3,6}$/i.test(hex)) {
@@ -71,44 +108,42 @@ export const Settings: React.FC<SettingsProps> = memo(({ settings, setSettings, 
     exportToPDF('settings-export-table', `Кэшбек_${currentMonthData.monthId}.pdf`);
   }, [currentMonthData.monthId]);
 
-  return (
-    <div className="flex flex-col gap-3 pb-8">
-      {/* Header Section */}
-      <div className="px-2 mb-1">
-        <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest truncate whitespace-nowrap">Персонализация интерфейса и экспорт данных</p>
-      </div>
+  const isAdmin = userEmail === 'filimlive@gmail.com';
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-start">
-        {/* Left Column */}
-        <div className="flex flex-col gap-3">
-          {/* MCC Directory Card */}
-          <div className="bg-white dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-white/5 p-3.5 shadow-sm space-y-2.5">
-            <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
-              <div className="w-7 h-7 rounded-lg bg-[var(--accent-color)]/10 flex items-center justify-center">
-                <Search className="w-3.5 h-3.5 text-[var(--accent-color)]" />
-              </div>
-              <h2 className="text-sm font-bold">Справочник МСС</h2>
+  return (
+    <div className="flex flex-col gap-4 pb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* MCC Directory Card - Order 1 */}
+        <div className="bg-white dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-white/5 p-4 shadow-sm flex flex-col gap-3 order-1">
+          <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
+            <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
+              <Search className="w-4 h-4 text-[var(--accent-color)]" />
             </div>
-            
+            <h2 className="text-sm font-bold">Справочник МСС</h2>
+          </div>
+          
+          <div className="flex-1 flex items-center">
             <button
               onClick={() => setIsMccDirectoryOpen(true)}
-              className="w-full py-3 px-4 bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-[10px] font-bold text-[var(--accent-color)] uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm active:scale-95"
+              className="w-full py-3.5 px-4 bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-[10px] font-bold text-[var(--accent-color)] uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm active:scale-95"
             >
-              <Search className="w-3.5 h-3.5" />
+              <Search className="w-4 h-4" />
               Открыть справочник
             </button>
           </div>
+        </div>
 
-          {/* Accent Color Card */}
-          <div className="bg-white dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-white/5 p-3.5 shadow-sm space-y-2.5">
-            <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
-              <div className="w-7 h-7 rounded-lg bg-[var(--accent-color)]/10 flex items-center justify-center">
-                <Palette className="w-3.5 h-3.5 text-[var(--accent-color)]" />
-              </div>
-              <h2 className="text-sm font-bold">Акцентный цвет</h2>
+        {/* Accent Color Card - Order 3 on mobile, 2 on desktop */}
+        <div className="bg-white dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-white/5 p-4 shadow-sm flex flex-col gap-3 order-3 lg:order-2">
+          <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
+            <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
+              <Palette className="w-4 h-4 text-[var(--accent-color)]" />
             </div>
+            <h2 className="text-sm font-bold">Акцентный цвет</h2>
+          </div>
 
-            <div className="grid grid-cols-8 gap-2 sm:gap-3">
+          <div className="flex-1 flex items-center">
+            <div className="grid grid-cols-8 gap-2 w-full">
               {colors.map((color) => (
                 <button
                   key={color.name}
@@ -146,59 +181,19 @@ export const Settings: React.FC<SettingsProps> = memo(({ settings, setSettings, 
               </div>
             </div>
           </div>
-
-          {/* Export Card */}
-          <div className="bg-white dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-white/5 p-3.5 shadow-sm space-y-2.5">
-            <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
-              <div className="w-7 h-7 rounded-lg bg-[var(--accent-color)]/10 flex items-center justify-center">
-                <Download className="w-3.5 h-3.5 text-[var(--accent-color)]" />
-              </div>
-              <h2 className="text-sm font-bold">Экспорт данных</h2>
-            </div>
-            
-            <div className="flex p-1 bg-gray-50 dark:bg-gray-900/50 rounded-3xl border border-gray-100 dark:border-white/5">
-              <button 
-                onClick={handleExportImage}
-                className="flex-1 flex flex-col items-center justify-center py-3 rounded-xl hover:bg-white dark:hover:bg-gray-800 hover:shadow-sm transition-all group cursor-pointer"
-                title="Изображение (PNG)"
-              >
-                <ImageIcon className="w-5 h-5 text-blue-500 group-hover:scale-110 transition-transform mb-1" />
-                <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight">PNG</span>
-              </button>
-
-              <button 
-                onClick={handleExportExcel}
-                className="flex-1 flex flex-col items-center justify-center py-3 rounded-xl hover:bg-white dark:hover:bg-gray-800 hover:shadow-sm transition-all group cursor-pointer border-x border-gray-100 dark:border-white/5"
-                title="Таблица (Excel)"
-              >
-                <FileSpreadsheet className="w-5 h-5 text-emerald-500 group-hover:scale-110 transition-transform mb-1" />
-                <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight">Excel</span>
-              </button>
-
-              <button 
-                onClick={handleExportPDF}
-                className="flex-1 flex flex-col items-center justify-center py-3 rounded-xl hover:bg-white dark:hover:bg-gray-800 hover:shadow-sm transition-all group cursor-pointer"
-                title="Документ (PDF)"
-              >
-                <FileText className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform mb-1" />
-                <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight">PDF</span>
-              </button>
-            </div>
-          </div>
         </div>
 
-        {/* Right Column */}
-        <div className="flex flex-col gap-3">
-          {/* Logo Shape Card */}
-          <div className="bg-white dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-white/5 p-3.5 shadow-sm space-y-2.5">
-            <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
-              <div className="w-7 h-7 rounded-lg bg-[var(--accent-color)]/10 flex items-center justify-center">
-                <Circle className="w-3.5 h-3.5 text-[var(--accent-color)]" />
-              </div>
-              <h2 className="text-sm font-bold">Форма логотипов</h2>
+        {/* Logo Shape Card - Order 2 on mobile, 3 on desktop */}
+        <div className="bg-white dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-white/5 p-4 shadow-sm flex flex-col gap-3 order-2 lg:order-3">
+          <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
+            <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
+              <Circle className="w-4 h-4 text-[var(--accent-color)]" />
             </div>
-            
-            <div className="flex p-1 bg-gray-50 dark:bg-gray-900/50 rounded-3xl border border-gray-100 dark:border-white/5">
+            <h2 className="text-sm font-bold">Форма логотипов</h2>
+          </div>
+          
+          <div className="flex-1 flex items-center">
+            <div className="flex p-1 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-white/5 w-full">
               {(['circle', 'square', 'rectangle'] as LogoShape[]).map((shape) => (
                 <button
                   key={shape}
@@ -220,117 +215,158 @@ export const Settings: React.FC<SettingsProps> = memo(({ settings, setSettings, 
               ))}
             </div>
           </div>
+        </div>
 
-          {/* Typography Card */}
-          <div className="bg-white dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-white/5 p-3.5 shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
-                <div className="w-7 h-7 rounded-lg bg-[var(--accent-color)]/10 flex items-center justify-center">
-                  <Type className="w-3.5 h-3.5 text-[var(--accent-color)]" />
-                </div>
-                <h2 className="text-sm font-bold">Типографика</h2>
-              </div>
-              {settings.fontSize !== 16 && (
-                <button
-                  onClick={() => updateSetting('fontSize', 16)}
-                  className="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 hover:text-[var(--accent-color)] transition-colors uppercase tracking-wider cursor-pointer"
-                >
-                  <RotateCcw className="w-3 h-3" />
-                  Сброс
-                </button>
-              )}
+        {/* Text Color Card - Order 4 */}
+        <div className="bg-white dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-white/5 p-4 shadow-sm flex flex-col gap-3 order-4">
+          <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
+            <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
+              <Type className="w-4 h-4 text-[var(--accent-color)]" />
             </div>
+            <h2 className="text-sm font-bold">Цвет текста</h2>
+          </div>
 
-            <div className="space-y-3">
-              <div className="space-y-2">
-                <div className="flex justify-between items-center text-[10px] text-gray-400 font-bold uppercase tracking-widest px-1">
-                  <span>A</span>
-                  <span className="text-[var(--accent-color)] bg-[var(--percent-bg)] px-2 py-0.5 rounded-full">{settings.fontSize}px</span>
-                  <span className="text-lg">A</span>
-                </div>
+          <div className="flex-1 flex items-center">
+            <div className="grid grid-cols-8 gap-2 w-full">
+              {fontColors.map((color) => (
+                <button
+                  key={color.name}
+                  type="button"
+                  onClick={() => updateSetting('fontColor', color.value)}
+                  className={clsx(
+                    "aspect-square rounded-full transition-all flex items-center justify-center relative border border-gray-100 dark:border-white/10 cursor-pointer shrink-0",
+                    settings.fontColor === color.value
+                      ? "scale-95 shadow-md ring-2 ring-inset ring-white/40 dark:ring-white/20"
+                      : "hover:scale-105 opacity-90 hover:opacity-100",
+                    color.value === '#ffffff' && "border-gray-300 dark:border-gray-600 shadow-sm"
+                  )}
+                  style={{ backgroundColor: color.value }}
+                >
+                  {settings.fontColor === color.value && <Check className="w-4 h-4 text-white mix-blend-difference" />}
+                </button>
+              ))}
+              
+              <div className="relative aspect-square rounded-full overflow-hidden transition-all hover:scale-105 flex items-center justify-center bg-gray-50 dark:bg-gray-900/50 cursor-pointer shrink-0 group">
+                <div className="absolute inset-0" style={{ backgroundColor: settings.fontColor }} />
+                <Palette className="w-4 h-4 text-white mix-blend-difference z-10 opacity-50 group-hover:opacity-100 transition-opacity" />
                 <input
-                  type="range"
-                  min="14"
-                  max="22"
-                  step="1"
-                  value={settings.fontSize}
-                  onChange={(e) => updateSetting('fontSize', parseInt(e.target.value))}
-                  className="w-full h-1.5 bg-gray-100 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[var(--accent-color)]"
+                  type="color"
+                  value={settings.fontColor}
+                  onChange={(e) => updateSetting('fontColor', e.target.value)}
+                  className="absolute inset-[-20px] w-[calc(100%+40px)] h-[calc(100%+40px)] cursor-pointer opacity-0 z-20"
                 />
-              </div>
-
-              <div className="grid grid-cols-8 gap-2 sm:gap-3 pt-1">
-                {fontColors.map((color) => (
-                  <button
-                    key={color.name}
-                    type="button"
-                    onClick={() => updateSetting('fontColor', color.value)}
-                    className={clsx(
-                      "aspect-square rounded-full transition-all flex items-center justify-center relative border border-gray-100 dark:border-white/10 cursor-pointer shrink-0",
-                      settings.fontColor === color.value
-                        ? "scale-95 shadow-md ring-2 ring-inset ring-white/40 dark:ring-white/20"
-                        : "hover:scale-105 opacity-90 hover:opacity-100",
-                      color.value === '#ffffff' && "border-gray-300 dark:border-gray-600 shadow-sm"
-                    )}
-                    style={{ backgroundColor: color.value }}
-                  >
-                    {settings.fontColor === color.value && <Check className="w-4 h-4 text-white mix-blend-difference" />}
-                  </button>
-                ))}
-                
-                <div className="relative aspect-square rounded-full overflow-hidden transition-all hover:scale-105 flex items-center justify-center bg-gray-50 dark:bg-gray-900/50 cursor-pointer shrink-0 group">
-                  <div className="absolute inset-0" style={{ backgroundColor: settings.fontColor }} />
-                  <Palette className="w-4 h-4 text-white mix-blend-difference z-10 opacity-50 group-hover:opacity-100 transition-opacity" />
-                  <input
-                    type="color"
-                    value={settings.fontColor}
-                    onChange={(e) => updateSetting('fontColor', e.target.value)}
-                    className="absolute inset-[-20px] w-[calc(100%+40px)] h-[calc(100%+40px)] cursor-pointer opacity-0 z-20"
-                  />
-                </div>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Version History Card */}
-          {userEmail === 'filimlive@gmail.com' && (
-            <div className="bg-white dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-white/5 p-3.5 shadow-sm space-y-2.5">
+
+        {/* Export Card - Full Width - Order 5 */}
+        <div className="bg-white dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-white/5 p-4 shadow-sm space-y-3 lg:col-span-2 order-5">
+          <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
+            <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
+              <Download className="w-4 h-4 text-[var(--accent-color)]" />
+            </div>
+            <h2 className="text-sm font-bold">Экспорт данных</h2>
+          </div>
+          
+          <div className="flex p-1 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-white/5">
+            <button 
+              onClick={handleExportImage}
+              className="flex-1 flex flex-col items-center justify-center py-3 rounded-xl hover:bg-white dark:hover:bg-gray-800 hover:shadow-sm transition-all group cursor-pointer"
+              title="Изображение (PNG)"
+            >
+              <ImageIcon className="w-5 h-5 text-blue-500 group-hover:scale-110 transition-transform mb-1" />
+              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight">PNG</span>
+            </button>
+
+            <button 
+              onClick={handleExportExcel}
+              className="flex-1 flex flex-col items-center justify-center py-3 rounded-xl hover:bg-white dark:hover:bg-gray-800 hover:shadow-sm transition-all group cursor-pointer border-x border-gray-100 dark:border-white/5"
+              title="Таблица (Excel)"
+            >
+              <FileSpreadsheet className="w-5 h-5 text-emerald-500 group-hover:scale-110 transition-transform mb-1" />
+              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight">Excel</span>
+            </button>
+
+            <button 
+              onClick={handleExportPDF}
+              className="flex-1 flex flex-col items-center justify-center py-3 rounded-xl hover:bg-white dark:hover:bg-gray-800 hover:shadow-sm transition-all group cursor-pointer"
+              title="Документ (PDF)"
+            >
+              <FileText className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform mb-1" />
+              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight">PDF</span>
+            </button>
+
+            <button 
+              onClick={onExportJSON}
+              className="flex-1 flex flex-col items-center justify-center py-3 rounded-xl hover:bg-white dark:hover:bg-gray-800 hover:shadow-sm transition-all group cursor-pointer border-l border-gray-100 dark:border-white/5"
+              title="Экспорт JSON (Backup)"
+            >
+              <Database className="w-5 h-5 text-indigo-500 group-hover:scale-110 transition-transform mb-1" />
+              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight">JSON</span>
+            </button>
+
+            <button 
+              onClick={handleImportClick}
+              className="flex-1 flex flex-col items-center justify-center py-3 rounded-xl hover:bg-white dark:hover:bg-gray-800 hover:shadow-sm transition-all group cursor-pointer border-l border-gray-100 dark:border-white/5"
+              title="Импорт JSON"
+            >
+              <Upload className="w-5 h-5 text-amber-500 group-hover:scale-110 transition-transform mb-1" />
+              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight">Импорт</span>
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleFileChange} 
+                accept=".json" 
+                className="hidden" 
+              />
+            </button>
+          </div>
+        </div>
+
+        {/* Admin Cards - Order 6 */}
+        {isAdmin && (
+          <>
+            {/* Version History Card */}
+            <div className="bg-white dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-white/5 p-4 shadow-sm space-y-3 order-6">
               <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
-                <div className="w-7 h-7 rounded-lg bg-[var(--accent-color)]/10 flex items-center justify-center">
-                  <FileText className="w-3.5 h-3.5 text-[var(--accent-color)]" />
+                <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
+                  <FileText className="w-4 h-4 text-[var(--accent-color)]" />
                 </div>
                 <h2 className="text-sm font-bold">История версий</h2>
               </div>
               
               <button
                 onClick={() => setIsVersionHistoryOpen(true)}
-                className="w-full py-3 px-4 bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm font-bold text-gray-700 dark:text-gray-300 transition-all cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-3.5 px-4 bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm font-bold text-gray-700 dark:text-gray-300 transition-all cursor-pointer flex items-center justify-center gap-2"
               >
                 Посмотреть историю изменений
               </button>
             </div>
-          )}
 
-          {/* Test Data Card */}
-          {onAddTestData && userEmail === 'filimlive@gmail.com' && (
-            <div className="bg-white dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-white/5 p-3.5 shadow-sm space-y-2.5">
-              <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
-                <div className="w-7 h-7 rounded-lg bg-[var(--accent-color)]/10 flex items-center justify-center">
-                  <RotateCcw className="w-3.5 h-3.5 text-[var(--accent-color)]" />
+            {/* Test Data Card */}
+            {onAddTestData && (
+              <div className="bg-white dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-white/5 p-4 shadow-sm space-y-3 order-6">
+                <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
+                  <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
+                    <RotateCcw className="w-4 h-4 text-[var(--accent-color)]" />
+                  </div>
+                  <h2 className="text-sm font-bold">Тестовые данные</h2>
                 </div>
-                <h2 className="text-sm font-bold">Тестовые данные</h2>
+                
+                <button
+                  onClick={onAddTestData}
+                  className="w-full py-3.5 px-4 bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm font-bold text-gray-700 dark:text-gray-300 transition-all cursor-pointer flex items-center justify-center gap-2"
+                >
+                  Добавить тестовые данные в архив
+                </button>
               </div>
-              
-              <button
-                onClick={onAddTestData}
-                className="w-full py-3 px-4 bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm font-bold text-gray-700 dark:text-gray-300 transition-all cursor-pointer flex items-center justify-center gap-2"
-              >
-                Добавить тестовые данные в архив
-              </button>
-            </div>
-          )}
-        </div>
+            )}
+          </>
+        )}
       </div>
+
 
       {/* Hidden table for export */}
       <div className="fixed -left-[2000px] top-0 pointer-events-none opacity-0">

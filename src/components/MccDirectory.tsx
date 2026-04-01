@@ -38,6 +38,12 @@ export const MccDirectory: React.FC<MccDirectoryProps> = ({ isOpen, onClose }) =
   const [mccData, setMccData] = useState<MccItemType[]>([]);
 
   useEffect(() => {
+    if (!isOpen) {
+      setSearchQuery('');
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
     fetch('/mcc.json?t=' + Date.now())
       .then(response => response.json())
       .then(data => {

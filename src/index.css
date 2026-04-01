@@ -4,130 +4,118 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-	--font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-	--radius-app: 1.25rem;
-	/* 20px */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --radius-app: 1.25rem; /* 20px */
 }
 
 @layer utilities {
-	.clip-octagon {
-		clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
-	}
+  .clip-octagon {
+    clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+  }
 }
 
 html {
-	font-size: var(--app-font-size, 16px);
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	text-rendering: optimizeLegibility;
+  font-size: var(--app-font-size, 16px);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-	background-color: #f8fafc;
-	/* slate-50 */
-	-webkit-tap-highlight-color: transparent;
-	@apply text-slate-900;
-	font-size: 1rem;
-	line-height: 1.5;
+  background-color: #f8fafc; /* slate-50 */
+  -webkit-tap-highlight-color: transparent;
+  @apply text-slate-900;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .dark body {
-	background-color: #030712;
-	/* gray-950 */
-	@apply text-white;
+  background-color: #030712; /* gray-950 */
+  @apply text-white;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-	color: inherit;
+h1, h2, h3, h4, h5, h6 {
+  color: inherit;
 }
 
 .app-content-text {
-	color: var(--app-font-color);
+  color: var(--app-font-color);
 }
 
-.app-content-text h1,
-.app-content-text h2,
-.app-content-text h3,
-.app-content-text h4,
-.app-content-text h5,
+.app-content-text h1, 
+.app-content-text h2, 
+.app-content-text h3, 
+.app-content-text h4, 
+.app-content-text h5, 
 .app-content-text h6 {
-	color: var(--app-font-color);
+  color: var(--app-font-color);
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-	width: 3px;
-	height: 3px;
+  width: 3px;
+  height: 3px;
 }
 
 ::-webkit-scrollbar-track {
-	background: transparent;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-	background: rgba(0, 0, 0, 0.05);
-	border-radius: 10px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.15);
 }
 
 .dark ::-webkit-scrollbar-thumb {
-	background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-	background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 /* Hide scrollbar for specific elements if needed */
 .scrollbar-hide::-webkit-scrollbar {
-	display: none;
+  display: none;
 }
-
 .scrollbar-hide {
-	-ms-overflow-style: none;
-	scrollbar-width: none;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .dark body {
-	background-color: #030712;
-	/* gray-950 */
+  background-color: #030712; /* gray-950 */
 }
 
 /* Styles applied only during PDF export */
+.pdf-export-mode,
+.pdf-export-mode * {
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  transition: none !important;
+  animation: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+}
+
 .pdf-export-mode {
-	max-width: none !important;
-	width: 100% !important;
-	margin: 0 !important;
-	border: none !important;
-	box-shadow: none !important;
-	border-radius: 0 !important;
-	background-color: white !important;
-	padding: 20px !important;
-	/* Add padding to prevent content from touching edges */
+  max-width: none !important;
+  margin: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 32px !important; /* More generous padding for export */
+  background-color: white !important;
 }
 
 .dark .pdf-export-mode {
-	background-color: #111827 !important;
-	/* gray-900 */
-}
-
-.pdf-export-mode * {
-	-webkit-print-color-adjust: exact !important;
-	print-color-adjust: exact !important;
-	box-shadow: none !important;
-	text-shadow: none !important;
-	transition: none !important;
-	animation: none !important;
-	filter: none !important;
-	backdrop-filter: none !important;
+  background-color: #111827 !important; /* gray-900 */
 }
 
 .pdf-export-mode .shadow-sm,
@@ -137,49 +125,33 @@ h6 {
 .pdf-export-mode .shadow-xl,
 .pdf-export-mode .shadow-2xl,
 .pdf-export-mode .shadow-inner {
-	box-shadow: none !important;
+  box-shadow: none !important;
 }
 
 .pdf-export-mode .bg-gray-50\/80 {
-	background-color: #f9fafb !important;
-	/* gray-50 */
-}
-
-.pdf-export-mode .flex-1 {
-	flex: 1 1 0% !important;
-	min-width: 0 !important;
-	/* Важно для предотвращения переполнения */
-}
-
-.pdf-export-mode .break-words {
-	word-break: break-word !important;
-	white-space: normal !important;
+  background-color: #f9fafb !important; /* gray-50 */
 }
 
 .dark .pdf-export-mode .dark\:bg-gray-800\/40 {
-	background-color: #1f2937 !important;
-	/* gray-800 */
+  background-color: #1f2937 !important; /* gray-800 */
 }
 
 .pdf-export-mode img {
-	border: 1px solid #e5e7eb !important;
-	/* gray-200 */
-	box-shadow: none !important;
-	filter: none !important;
+  border: 1px solid #e5e7eb !important; /* gray-200 */
+  box-shadow: none !important;
+  filter: none !important;
 }
 
 .pdf-export-mode .border-r,
 .pdf-export-mode [class*="border-r"] {
-	border-right: none !important;
-	border-right-width: 0 !important;
+  border-right: none !important;
+  border-right-width: 0 !important;
 }
 
 .pdf-export-mode .border-gray-200\/60 {
-	border-color: #e5e7eb !important;
-	/* gray-200 */
+  border-color: #e5e7eb !important; /* gray-200 */
 }
 
 .dark .pdf-export-mode .dark\:border-gray-700\/60 {
-	border-color: #374151 !important;
-	/* gray-700 */
+  border-color: #374151 !important; /* gray-700 */
 }

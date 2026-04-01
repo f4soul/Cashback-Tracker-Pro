@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback, memo } from 'react';
 import { MonthData, Bank, LogoShape } from '../types';
 import { formatMonthId, capitalize } from '../utils/date';
+import { pluralize } from '../utils/format';
 import { CashbackTable } from '../components/CashbackTable';
 import { ConfirmModal } from '../components/ui/ConfirmModal';
 import { exportToPDF, exportToExcel, exportToImage } from '../utils/export';
@@ -115,10 +116,6 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="px-2 mb-1">
-        <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest truncate whitespace-nowrap">История ваших накоплений за прошлые периоды</p>
-      </div>
-
       {/* Filters Section */}
       <div className="bg-white dark:bg-gray-800/50 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm p-3 sm:p-4 flex flex-col gap-3 sm:gap-4">
         <div className="flex items-center gap-2 sm:gap-3">
@@ -361,8 +358,8 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                                       </div>
                                       <div className="min-w-0 flex-1">
                                         <h4 className="font-bold text-xs sm:text-sm text-gray-900 dark:text-white truncate leading-tight group-hover:text-[var(--accent-color)] transition-colors" title={bank.name}>{bank.name}</h4>
-                                        <p className="text-[9px] sm:text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5 truncate">
-                                          {entry.categories.length} {entry.categories.length === 1 ? 'кат.' : 'кат.'}
+                                        <p className="text-[8px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5 truncate">
+                                          {entry.categories.length} {pluralize(entry.categories.length, ['категория', 'категории', 'категорий'])}
                                         </p>
                                       </div>
                                     </motion.div>

@@ -1,10 +1,10 @@
 {
-  "projectId": "gen-lang-client-0613795147",
-  "appId": "1:954329599512:web:622c287a3426eb07547d6d",
-  "apiKey": "AIzaSyADPfIHbEOBYx6SdCrpw5x2Wq3OI7PmhP8",
-  "authDomain": "gen-lang-client-0613795147.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-5ffb3b12-303e-4dd4-a3e8-cde581e701be",
-  "storageBucket": "gen-lang-client-0613795147.firebasestorage.app",
-  "messagingSenderId": "954329599512",
-  "measurementId": ""
+	"apiKey": "AIzaSyDAl96BZZgpbka52uUidSwXR7_otdCG3B0",
+	"authDomain": "cashback-tracker-pro.firebaseapp.com",
+	"projectId": "cashback-tracker-pro",
+	"storageBucket": "cashback-tracker-pro.firebasestorage.app",
+	"messagingSenderId": "196802533007",
+	"appId": "1:196802533007:web:8f2e79b8dee72f58cfc2fa",
+	"measurementId": "G-J9VMRDVEZY",
+	"firestoreDatabaseId": "(default)"
 }
