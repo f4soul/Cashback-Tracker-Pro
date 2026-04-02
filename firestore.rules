@@ -1,7 +1,9 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    
+
+    // ====================== ФУНКЦИИ ======================
     function isAuthenticated() {
       return request.auth != null;
     }
@@ -11,58 +13,63 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isAuthenticated() &&
-        ((exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
-          (request.auth.token.email == "filimlive@gmail.com" && request.auth.token.email_verified == true));
+      return isAuthenticated() && 
+             (request.auth.token.email == "filimlive@gmail.com" && 
+              request.auth.token.email_verified == true);
+      // Если позже добавишь роль admin в users/{uid}, можно раскомментировать:
+      // || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    function hasRequiredFields(fields) {
-      return request.resource.data.keys().hasAll(fields);
+    function hasOnlyAllowedFields(allowedFields) {
+      return request.resource.data.keys().hasOnly(allowedFields);
     }
 
-    function hasOnlyAllowedFields(fields) {
-      return request.resource.data.keys().hasOnly(fields);
-    }
-
-    // ===============================================================
-    // Domain Validators
-    // ===============================================================
-
+    // ====================== ВАЛИДАЦИЯ ======================
     function isValidUser(data) {
-      return hasRequiredFields(['settings', 'customBanks', 'customCategories']) &&
-             data.settings is map &&
+      return data.settings is map &&
              data.customBanks is list &&
              data.customCategories is list;
     }
 
     function isValidMonth(data) {
-      return hasRequiredFields(['uid', 'monthId', 'entries']) &&
-             data.uid is string &&
+      return data.uid is string &&
              data.monthId is string &&
              data.entries is list &&
-             (data.uid == request.auth.uid || isAdmin());
+             data.uid == request.auth.uid;   // строго проверяем uid
     }
 
-    // ===============================================================
-    // Rules
-    // ===============================================================
+    // ====================== ПРАВИЛА ======================
 
+    // Пользователи — очень строго
     match /users/{userId} {
-      allow read: if isOwner(userId) || isAdmin();
+      allow read, update: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId) && isValidUser(request.resource.data);
-      allow update: if (isOwner(userId) && isValidUser(request.resource.data)) || isAdmin();
       allow delete: if isAdmin();
     }
 
+    // Основная коллекция с данными по месяцам
     match /months/{monthDocId} {
-      allow read: if isAuthenticated() && (resource.data.uid == request.auth.uid || isAdmin());
-      allow create: if isAuthenticated() && (isAdmin() || (isValidMonth(request.resource.data) && monthDocId.startsWith(request.auth.uid + "_")));
-      allow update: if isAuthenticated() && (isAdmin() || (isValidMonth(request.resource.data) && resource.data.uid == request.auth.uid));
-      allow delete: if isAuthenticated() && (resource.data.uid == request.auth.uid || isAdmin());
+      
+      // Чтение: только свои документы
+      allow read: if isAuthenticated() && 
+                    (resource.data.uid == request.auth.uid || isAdmin());
+
+      // Создание: только свои документы и правильный формат id
+      allow create: if isAuthenticated() && 
+                      isValidMonth(request.resource.data) &&
+                      monthDocId.startsWith(request.auth.uid + "_");
+
+      // Обновление: только свои документы
+      allow update: if isAuthenticated() && 
+                      resource.data.uid == request.auth.uid && 
+                      isValidMonth(request.resource.data);
+
+      // Удаление: только свои или админ
+      allow delete: if isAuthenticated() && 
+                      (resource.data.uid == request.auth.uid || isAdmin());
     }
 
-    // Default deny
+    // ====================== ЗАПРЕТ ВСЁГО ОСТАЛЬНОГО ======================
     match /{document=**} {
       allow read, write: if false;
     }

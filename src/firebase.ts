@@ -7,9 +7,8 @@ import {
 } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 
-// Firebase конфигурация из переменных окружения Vercel
+// Firebase конфигурация из .env / Vercel
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -22,23 +21,14 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize App Check (защита от злоупотреблений)
-// const appCheck = initializeAppCheck(app, {
-//   provider: new ReCaptchaV3Provider(
-//     import.meta.env.VITE_RECAPTCHA_SITE_KEY || '',
-//   ),
-//   isTokenAutoRefreshEnabled: true, // автоматически обновлять токен
-// });
-
 export const auth = getAuth(app);
-export const db = getFirestore(
-  app,
-  import.meta.env.VITE_FIREBASE_DATABASE_ID || undefined,
-);
+export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const googleProvider = new GoogleAuthProvider();
 
-// Error Handling Spec for Firestore Operations
+// ======================
+// Обработка ошибок
+// ======================
 export enum OperationType {
   CREATE = 'create',
   UPDATE = 'update',
