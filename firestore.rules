@@ -13,18 +13,13 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isAuthenticated() && 
-             (request.auth.token.email == "filimlive@gmail.com" && 
+      return isAuthenticated() &&
+             (request.auth.token.email == "filimlive@gmail.com" &&
               request.auth.token.email_verified == true);
-      // Если позже добавишь роль admin в users/{uid}, можно раскомментировать:
-      // || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+             // || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    function hasOnlyAllowedFields(allowedFields) {
-      return request.resource.data.keys().hasOnly(allowedFields);
-    }
-
-    // ====================== ВАЛИДАЦИЯ ======================
+    // ====================== ВАЛИДАТОРЫ ======================
     function isValidUser(data) {
       return data.settings is map &&
              data.customBanks is list &&
@@ -34,42 +29,43 @@ service cloud.firestore {
     function isValidMonth(data) {
       return data.uid is string &&
              data.monthId is string &&
-             data.entries is list &&
-             data.uid == request.auth.uid;   // строго проверяем uid
+             data.entries is list;
     }
 
     // ====================== ПРАВИЛА ======================
 
-    // Пользователи — очень строго
+    // Пользователи
     match /users/{userId} {
-      allow read, update: if isOwner(userId) || isAdmin();
+      allow read,   update: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId) && isValidUser(request.resource.data);
       allow delete: if isAdmin();
     }
 
-    // Основная коллекция с данными по месяцам
+    // Основная коллекция месяцев
     match /months/{monthDocId} {
       
-      // Чтение: только свои документы
+      // Чтение: свои данные + админ видит всё
       allow read: if isAuthenticated() && 
                     (resource.data.uid == request.auth.uid || isAdmin());
 
-      // Создание: только свои документы и правильный формат id
+      // Создание — самое важное для тестовых данных
       allow create: if isAuthenticated() && 
                       isValidMonth(request.resource.data) &&
-                      monthDocId.startsWith(request.auth.uid + "_");
+                      (isAdmin() || 
+                       (request.resource.data.uid == request.auth.uid && 
+                        monthDocId.startsWith(request.auth.uid + "_")));
 
-      // Обновление: только свои документы
+      // Обновление — только свои данные
       allow update: if isAuthenticated() && 
-                      resource.data.uid == request.auth.uid && 
+                      resource.data.uid == request.auth.uid &&
                       isValidMonth(request.resource.data);
 
-      // Удаление: только свои или админ
+      // Удаление — только свои или админ
       allow delete: if isAuthenticated() && 
                       (resource.data.uid == request.auth.uid || isAdmin());
     }
 
-    // ====================== ЗАПРЕТ ВСЁГО ОСТАЛЬНОГО ======================
+    // ====================== ЗАПРЕТ ВСЕГО ОСТАЛЬНОГО ======================
     match /{document=**} {
       allow read, write: if false;
     }
