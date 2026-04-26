@@ -18,10 +18,9 @@ export default defineConfig(({ mode }) => {
           'favicon.ico',
           'apple-touch-icon.png',
           'icon.svg',
-          'logos/*.svg',
-          'logos/*.png',
         ],
         workbox: {
+          maximumFileSizeToCacheInBytes: 5000000,
           globPatterns: ['**/*.{js,css,html,svg,png,ico,txt}'],
           runtimeCaching: [
             {

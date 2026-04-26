@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useMemo, memo } from 'react';
 import { Bank, CashbackEntry, CategoryItem, LogoShape } from '../types';
+import { bankLogos } from '../generatedLogos';
 import { BANKS, COMMON_CATEGORIES, getBankDetails } from '../constants';
 import { BankLogo } from './BankLogo';
 import { Check, Plus, Search, Upload, X, Crop, Circle, Square, Squircle, Trash2 } from 'lucide-react';
@@ -75,7 +76,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
         name: customBankName,
         color: '#64748b',
         logoText: customBankName.charAt(0).toUpperCase(),
-        logoUrl: '/logos/bank-icon.png'
+        logoUrl: '' + bankLogos['bank-icon'] + ''
       };
     }
     return allBanks.find(b => b.id === selectedBankId);
@@ -155,7 +156,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
         name: customBankName,
         color: '#64748b',
         logoText: customBankName.charAt(0).toUpperCase(),
-        logoUrl: '/logos/bank-icon.png'
+        logoUrl: '' + bankLogos['bank-icon'] + ''
       });
       onSave({
         bankId: newBankId,
