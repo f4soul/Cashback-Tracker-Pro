@@ -19,16 +19,7 @@ export const BankLogo: React.FC<BankLogoProps> = memo(({
 }) => {
   const [error, setError] = useState(false);
   
-  const getResolvedUrl = (url: string | undefined): string | undefined => {
-    if (!url) return undefined;
-    if (url.startsWith('http') || url.startsWith('data:')) return url;
-    if (url.startsWith('/')) {
-      return import.meta.env.BASE_URL + url.slice(1);
-    }
-    return url;
-  };
-
-  const logoUrl = getResolvedUrl(customLogo || bank.logoUrl);
+  const logoUrl = customLogo || bank.logoUrl;
 
   const sizeClasses = {
     xs: logoShape === 'rectangle' ? 'w-5 h-7 text-[7px]' : 'w-5 h-5 text-[7px]',
