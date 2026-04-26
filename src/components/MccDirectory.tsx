@@ -65,15 +65,22 @@ export const MccDirectory: React.FC<MccDirectoryProps> = ({ isOpen, onClose }) =
   }, [searchQuery, mccData]);
 
   return (
-    <>
+    <AnimatePresence>
       {isOpen && (
         <>
-          <div
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm z-50 transform-gpu"
+            className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm z-50"
           />
-          <div
-            className="fixed bottom-0 left-1/2 -translate-x-1/2 z-50 h-[85vh] w-full max-w-4xl lg:max-w-[700px] bg-gray-50 dark:bg-[#1c1c1e] rounded-t-3xl shadow-2xl flex flex-col overflow-hidden transform-gpu"
+          <motion.div
+            initial={{ y: '100%', x: '-50%' }}
+            animate={{ y: 0, x: '-50%' }}
+            exit={{ y: '100%', x: '-50%' }}
+            transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
+            className="fixed bottom-0 left-1/2 z-50 h-[85vh] w-full max-w-4xl lg:max-w-[700px] bg-gray-50 dark:bg-[#1c1c1e] rounded-t-3xl shadow-2xl flex flex-col overflow-hidden"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-4 bg-white dark:bg-[#2c2c2e] border-b border-gray-200 dark:border-white/10 shrink-0">
@@ -118,9 +125,9 @@ export const MccDirectory: React.FC<MccDirectoryProps> = ({ isOpen, onClose }) =
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
         </>
       )}
-    </>
+    </AnimatePresence>
   );
 };

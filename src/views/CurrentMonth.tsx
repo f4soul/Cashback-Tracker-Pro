@@ -214,7 +214,12 @@ const SortableBankCard: React.FC<SortableBankCardProps> = memo(
     };
 
     return (
-      <div className="transform-gpu will-change-transform">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
+      >
         <BankCard
           ref={setNodeRef}
           style={style}
@@ -227,7 +232,7 @@ const SortableBankCard: React.FC<SortableBankCardProps> = memo(
           attributes={attributes}
           listeners={listeners}
         />
-      </div>
+      </motion.div>
     );
   },
 );
@@ -633,11 +638,14 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
         {/* Table/Bank List Switcher - Simplified and Compact */}
         <div className="bg-white dark:bg-gray-800/50 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
           <div className="flex p-0.5 gap-0.5 relative">
-            <div
-              className={clsx(
-                  "absolute inset-y-0.5 rounded-2xl bg-gray-50 dark:bg-gray-900 shadow-sm z-0 transition-all duration-300 transform-gpu",
-                  activeSubTab === 'table' ? 'left-[0.125rem] right-[50%]' : 'left-[50%] right-[0.125rem]'
-              )}
+            <motion.div
+              className="absolute inset-y-0.5 rounded-2xl bg-gray-50 dark:bg-gray-900 shadow-sm z-0"
+              initial={false}
+              animate={{
+                left: activeSubTab === 'table' ? '0.125rem' : '50%',
+                right: activeSubTab === 'table' ? '50%' : '0.125rem',
+              }}
+              transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
             />
             <button
               onClick={() => setActiveSubTab('table')}
@@ -668,10 +676,14 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
 
         {/* Content Area */}
         <div className="relative mt-1">
+          <AnimatePresence mode="wait">
             {activeSubTab === 'table' ? (
-              <div
+              <motion.div
                 key="table-view"
-                className="transform-gpu"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
               >
                 <CashbackTable
                   id="current-cashback-table"
@@ -687,11 +699,14 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   allMonthIds={switcherMonthIds}
                   isAfter25={showSwitcher}
                 />
-              </div>
+              </motion.div>
             ) : (
-              <div
+              <motion.div
                 key="list-view"
-                className="transform-gpu"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
               >
                 {data.entries.length === 0 ? (
                   <button
@@ -719,6 +734,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                       strategy={verticalListSortingStrategy}
                     >
                       <div className="grid grid-cols-1 gap-1">
+                        <AnimatePresence initial={false}>
                           {data.entries.map((entry) => {
                             const bank =
                               getBankDetails(
@@ -747,6 +763,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                               />
                             );
                           })}
+                        </AnimatePresence>
                       </div>
                     </SortableContext>
                     <DragOverlay
@@ -789,8 +806,9 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                     </DragOverlay>
                   </DndContext>
                 )}
-              </div>
+              </motion.div>
             )}
+          </AnimatePresence>
         </div>
 
         <Modal

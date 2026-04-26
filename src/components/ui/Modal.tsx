@@ -22,14 +22,21 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
   }, [isOpen]);
 
   return (
-    <>
+    <AnimatePresence>
       {isOpen && (
         <>
-          <div
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             onClick={onClose}
             className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]"
           />
-          <div
+          <motion.div
+            initial={{ opacity: 0, y: 100, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 100, scale: 0.95 }}
+            transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
             className="fixed inset-x-4 bottom-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 bg-white dark:bg-gray-900 rounded-3xl shadow-2xl z-[70] overflow-hidden max-h-[85vh] flex flex-col md:w-[500px]"
           >
             <div className="flex items-center justify-between p-3 sm:p-4 border-b border-gray-200 dark:border-gray-800">
@@ -41,12 +48,12 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="p-3 pt-0 sm:p-4 sm:pt-0 overflow-y-auto transform-gpu">
+            <div className="p-3 pt-0 sm:p-4 sm:pt-0 overflow-y-auto">
               {children}
             </div>
-          </div>
+          </motion.div>
         </>
       )}
-    </>
+    </AnimatePresence>
   );
 };

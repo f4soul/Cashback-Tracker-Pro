@@ -48,20 +48,28 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   const Icon = variant === 'danger' ? Trash2 : variant === 'warning' ? AlertTriangle : Info;
 
   return (
-    <>
+    <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 transform-gpu">
-          <div
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm transform-gpu"
+            className="absolute inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm"
             aria-hidden="true"
           />
-          <div
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-title"
             aria-describedby="modal-description"
-            className="relative w-full max-w-[400px] bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col transform-gpu"
+            className="relative w-full max-w-[400px] bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col"
           >
             <div className="p-6 sm:p-8 flex flex-col items-center text-center">
               <div className={clsx(
@@ -70,10 +78,17 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                 variant === 'warning' ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-500' : 
                 'bg-blue-50 dark:bg-blue-900/20 text-blue-500'
               )}>
-                <div>
+                <motion.div
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.1, duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
+                >
                   <Icon className="w-8 h-8" />
-                </div>
-                <div
+                </motion.div>
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0.5 }}
+                  animate={{ scale: 1.5, opacity: 0 }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
                   className={clsx(
                     "absolute inset-0 rounded-full border-2",
                     variant === 'danger' ? 'border-red-500/30' : 
@@ -98,7 +113,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                   onClose();
                 }}
                 className={clsx(
-                  "flex-1 py-3.5 px-4 rounded-2xl font-bold text-sm transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2 transform-gpu",
+                  "flex-1 py-3.5 px-4 rounded-2xl font-bold text-sm transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2",
                   variant === 'danger' 
                     ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/25 hover:shadow-red-500/40' 
                     : variant === 'warning'
@@ -111,14 +126,14 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
               <button
                 ref={cancelRef}
                 onClick={onClose}
-                className="flex-1 py-3.5 px-4 rounded-2xl font-bold text-sm text-gray-700 dark:text-gray-300 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-all active:scale-95 cursor-pointer transform-gpu"
+                className="flex-1 py-3.5 px-4 rounded-2xl font-bold text-sm text-gray-700 dark:text-gray-300 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-all active:scale-95 cursor-pointer"
               >
                 {cancelText}
               </button>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
-    </>
+    </AnimatePresence>
   );
 };
