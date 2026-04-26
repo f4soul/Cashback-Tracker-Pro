@@ -268,18 +268,13 @@ export const BankForm: React.FC<BankFormProps> = memo(({
               />
             </div>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-64 overflow-y-auto p-1 scrollbar-hide">
-              <AnimatePresence mode="popLayout">
                 {filteredBanks.map(bank => {
                   const isCustom = bank.id.startsWith('custom_');
                   
                   return (
-                    <motion.div 
+                    <div 
                       key={bank.id} 
-                      layout
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      className="relative group/bank"
+                      className="relative group/bank transform-gpu"
                     >
                       <div
                         onClick={() => setSelectedBankId(bank.id)}
@@ -305,10 +300,9 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                           <X className="w-3 h-3" />
                         </button>
                       )}
-                    </motion.div>
+                    </div>
                   );
                 })}
-              </AnimatePresence>
             </div>
             {filteredBanks.length === 0 && searchQuery.trim() && (
               <button
@@ -324,10 +318,8 @@ export const BankForm: React.FC<BankFormProps> = memo(({
             )}
           </>
         ) : (
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col gap-3 p-3 rounded-2xl border border-[var(--accent-color)]/20 bg-[var(--percent-bg)]/20 backdrop-blur-sm"
+          <div 
+            className="flex flex-col gap-3 p-3 rounded-2xl border border-[var(--accent-color)]/20 bg-[var(--percent-bg)]/20 backdrop-blur-sm transform-gpu"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -358,7 +350,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>
-          </motion.div>
+          </div>
         )}
       </div>
 

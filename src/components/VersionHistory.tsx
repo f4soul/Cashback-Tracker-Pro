@@ -33,22 +33,19 @@ export const VersionHistory: React.FC = () => {
             </div>
             {openIndex === index ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
           </button>
-          <AnimatePresence>
+          <>
             {openIndex === index && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="bg-white dark:bg-gray-900"
+              <div
+                className="bg-white dark:bg-gray-900 overflow-hidden transform-gpu"
               >
                 <ul className="p-4 space-y-2 text-sm text-gray-600 dark:text-gray-300 list-disc list-inside">
                   {v.changes.map((change, i) => (
                     <li key={i}>{change}</li>
                   ))}
                 </ul>
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
+          </>
         </div>
       ))}
     </div>

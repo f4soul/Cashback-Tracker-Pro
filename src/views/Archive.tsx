@@ -171,15 +171,12 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                 <ChevronDown className={clsx("w-4 h-4 text-gray-400 transition-transform", openBankDropdown && "rotate-180")} />
               </button>
 
-              <AnimatePresence>
+              <>
                 {openBankDropdown && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setOpenBankDropdown(false)} />
-                    <motion.div
-                      initial={{ opacity: 0, y: 4, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 4, scale: 0.95 }}
-                      className="absolute top-full left-0 right-0 mt-2 z-20 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl max-h-64 overflow-y-auto scrollbar-hide p-1.5"
+                    <div
+                      className="absolute top-full left-0 right-0 mt-2 z-20 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl max-h-64 overflow-y-auto scrollbar-hide p-1.5 transform-gpu"
                     >
                       <button
                         onClick={() => { setSelectedBankFilter(''); setOpenBankDropdown(false); }}
@@ -210,10 +207,10 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                           <span className="truncate">{b.name}</span>
                         </button>
                       ))}
-                    </motion.div>
+                    </div>
                   </>
                 )}
-              </AnimatePresence>
+              </>
             </div>
 
             {/* Category Filter Dropdown */}
@@ -232,15 +229,12 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                 <ChevronDown className={clsx("w-4 h-4 text-gray-400 transition-transform", openCategoryDropdown && "rotate-180")} />
               </button>
 
-              <AnimatePresence>
+              <>
                 {openCategoryDropdown && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setOpenCategoryDropdown(false)} />
-                    <motion.div
-                      initial={{ opacity: 0, y: 4, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 4, scale: 0.95 }}
-                      className="absolute top-full left-0 right-0 mt-2 z-20 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl max-h-64 overflow-y-auto scrollbar-hide p-1.5"
+                    <div
+                      className="absolute top-full left-0 right-0 mt-2 z-20 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl max-h-64 overflow-y-auto scrollbar-hide p-1.5 transform-gpu"
                     >
                       <button
                         onClick={() => { setSelectedCategoryFilter(''); setOpenCategoryDropdown(false); }}
@@ -263,10 +257,10 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                           {c}
                         </button>
                       ))}
-                    </motion.div>
+                    </div>
                   </>
                 )}
-              </AnimatePresence>
+              </>
             </div>
           </div>
         )}
@@ -317,14 +311,10 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                   </div>
                 </div>
                 
-                    <AnimatePresence>
+                    <>
                       {isExpanded && (
-                        <motion.div 
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.3, ease: 'easeInOut' }}
-                          className="overflow-hidden"
+                        <div 
+                          className="overflow-hidden transform-gpu"
                         >
                           <div className="p-4 sm:p-5 pt-0 border-t border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/20">
                             {/* Compact banks list in Archive */}
@@ -342,13 +332,11 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                                   const logoShape = globalLogoShape || 'circle';
                                   
                                   return (
-                                    <motion.div 
+                                    <div 
                                       key={entry.id} 
-                                      initial={{ opacity: 0, scale: 0.95 }}
-                                      animate={{ opacity: 1, scale: 1 }}
                                       className="flex items-center gap-2.5 sm:gap-3.5 p-2.5 sm:p-3.5 bg-white dark:bg-gray-800/80 rounded-3xl border border-gray-100 dark:border-gray-700/50 shadow-sm hover:shadow-md transition-all group"
                                     >
-                                      <div className="shrink-0">
+                                      <div className="shrink-0 bg-transparent flex items-center justify-center">
                                         <BankLogo 
                                           bank={bank} 
                                           customLogo={entry.customLogo} 
@@ -356,13 +344,13 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                                           size="sm"
                                         />
                                       </div>
-                                      <div className="min-w-0 flex-1">
+                                      <div className="min-w-0 flex-1 bg-transparent">
                                         <h4 className="font-bold text-xs sm:text-sm text-gray-900 dark:text-white truncate leading-tight group-hover:text-[var(--accent-color)] transition-colors" title={bank.name}>{bank.name}</h4>
                                         <p className="text-[8px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5 truncate">
                                           {entry.categories.length} {pluralize(entry.categories.length, ['категория', 'категории', 'категорий'])}
                                         </p>
                                       </div>
-                                    </motion.div>
+                                    </div>
                                   );
                                 })}
                               </div>
@@ -407,9 +395,9 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                               onExportImage={() => handleExportImage(month.monthId)}
                             />
                           </div>
-                        </motion.div>
+                        </div>
                       )}
-                    </AnimatePresence>
+                    </>
               </div>
             );
           })}

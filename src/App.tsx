@@ -375,6 +375,15 @@ export default function App() {
     ],
   );
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const [headerVisible, setHeaderVisible] = useState(true);
   const [navVisible, setNavVisible] = useState(true);
   const [navExpanded, setNavExpanded] = useState(true);
@@ -873,13 +882,40 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-2">
-            <AuthButton
-              isMobile
-              user={user}
-              isSyncing={isSyncing}
-              onLogoutClick={() => setIsLogoutModalOpen(true)}
-              theme={theme}
-            />
+            {!isMobile && (
+              <AuthButton
+                isMobile
+                user={user}
+                isSyncing={isSyncing}
+                onLogoutClick={() => setIsLogoutModalOpen(true)}
+                theme={theme}
+              />
+            )}
+            {isMobile && user ? (
+              <div
+                className="w-10 h-10 flex items-center justify-center bg-gray-100/50 dark:bg-white/5 border border-gray-200 dark:border-white/20 rounded-full cursor-pointer hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
+                onClick={() => setIsLogoutModalOpen(true)}
+              >
+                {user.photoURL ? (
+                  <img
+                    src={user.photoURL}
+                    alt={user.displayName || ''}
+                    className="w-8 h-8 rounded-full object-cover shrink-0"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <User className="w-5 h-5 text-[var(--accent-color)]" />
+                )}
+              </div>
+            ) : isMobile && !user ? (
+               <button
+                  onClick={loginWithGoogle}
+                  className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--accent-color)] text-white shadow-lg shadow-[var(--accent-color)]/20"
+                  title="Войти в облако"
+                >
+                  <LogIn className="w-5 h-5" />
+               </button>
+            ) : null}
             <button
               onClick={toggleTheme}
               className="w-10 h-10 rounded-full bg-gray-100/50 dark:bg-white/5 border border-gray-200 dark:border-white/20 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/20 transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center shadow-sm"
@@ -948,19 +984,17 @@ export default function App() {
 
       <div
         className={clsx(
-          'md:hidden fixed bottom-3 left-0 right-0 z-50 px-3 flex justify-center transition-all duration-300',
+          'md:hidden fixed bottom-3 left-0 right-0 z-50 px-3 flex justify-center transition-all duration-300 transform-gpu',
           !navVisible && navExpanded && 'translate-y-20',
         )}
       >
-        <motion.nav
-          initial={false}
-          animate={{
+        <nav
+          className="w-full bg-white/90 dark:bg-[#1c1c1e]/90 backdrop-blur-2xl border border-gray-200/50 dark:border-white/10 shadow-2xl flex items-center px-1 overflow-hidden transition-all duration-300"
+          style={{
             maxWidth: navExpanded ? 320 : 180,
             borderRadius: navExpanded ? 24 : 32,
             height: navExpanded ? 68 : 56,
           }}
-          transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-          className="w-full bg-white/90 dark:bg-[#1c1c1e]/90 backdrop-blur-2xl border border-gray-200/50 dark:border-white/10 shadow-2xl flex items-center px-1 overflow-hidden"
           onClick={() => !navExpanded && setNavExpanded(true)}
         >
           <button
@@ -969,45 +1003,41 @@ export default function App() {
               setActiveTab('current');
             }}
             className={clsx(
-              'flex-1 flex flex-col items-center justify-center h-full relative group cursor-pointer min-w-0',
+              'flex-1 flex flex-col items-center justify-center h-full relative group cursor-pointer min-w-0 transition-colors duration-300',
               activeTab === 'current'
                 ? 'text-[var(--accent-color)]'
                 : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300',
             )}
           >
-            <motion.div
+            <div
               className={clsx(
-                'p-1.5 rounded-xl flex items-center justify-center',
+                'p-1.5 rounded-xl flex items-center justify-center transition-all duration-300',
                 activeTab === 'current'
-                  ? 'bg-[var(--accent-color)]/10'
-                  : 'bg-transparent',
+                  ? 'bg-[var(--accent-color)]/10 scale-110'
+                  : 'bg-transparent scale-100',
               )}
-              animate={{ scale: activeTab === 'current' ? 1.1 : 1 }}
-              transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
             >
-              <motion.div
-                animate={{ scale: navExpanded ? 1 : 0.85 }}
-                transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
+              <div
+                className="transition-transform duration-300 transform-gpu"
+                style={{ scale: navExpanded ? 1 : 0.85 }}
               >
                 <Wallet className="w-6 h-6" />
-              </motion.div>
-            </motion.div>
-            <motion.div
-              initial={false}
-              animate={{
+              </div>
+            </div>
+            <div
+              className="overflow-hidden flex items-center justify-center transition-all duration-300 transform-gpu"
+              style={{
                 opacity: navExpanded ? 1 : 0,
                 height: navExpanded ? 14 : 0,
                 marginTop: navExpanded ? 1 : 0,
                 scale: navExpanded ? 1 : 0.8,
                 width: navExpanded ? 'auto' : 0,
               }}
-              transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-              className="overflow-hidden flex items-center justify-center"
             >
               <span className="text-[9px] font-bold tracking-wider uppercase whitespace-nowrap">
                 Кэшбек
               </span>
-            </motion.div>
+            </div>
           </button>
 
           <button
@@ -1016,45 +1046,41 @@ export default function App() {
               setActiveTab('archive');
             }}
             className={clsx(
-              'flex-1 flex flex-col items-center justify-center h-full relative group cursor-pointer min-w-0',
+              'flex-1 flex flex-col items-center justify-center h-full relative group cursor-pointer min-w-0 transition-colors duration-300',
               activeTab === 'archive'
                 ? 'text-[var(--accent-color)]'
                 : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300',
             )}
           >
-            <motion.div
+            <div
               className={clsx(
-                'p-1.5 rounded-xl flex items-center justify-center',
+                'p-1.5 rounded-xl flex items-center justify-center transition-all duration-300',
                 activeTab === 'archive'
-                  ? 'bg-[var(--accent-color)]/10'
-                  : 'bg-transparent',
+                  ? 'bg-[var(--accent-color)]/10 scale-110'
+                  : 'bg-transparent scale-100',
               )}
-              animate={{ scale: activeTab === 'archive' ? 1.1 : 1 }}
-              transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
             >
-              <motion.div
-                animate={{ scale: navExpanded ? 1 : 0.85 }}
-                transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
+              <div
+                className="transition-transform duration-300 transform-gpu"
+                style={{ scale: navExpanded ? 1 : 0.85 }}
               >
                 <History className="w-6 h-6" />
-              </motion.div>
-            </motion.div>
-            <motion.div
-              initial={false}
-              animate={{
+              </div>
+            </div>
+            <div
+              className="overflow-hidden flex items-center justify-center transition-all duration-300 transform-gpu"
+              style={{
                 opacity: navExpanded ? 1 : 0,
                 height: navExpanded ? 14 : 0,
                 marginTop: navExpanded ? 1 : 0,
                 scale: navExpanded ? 1 : 0.8,
                 width: navExpanded ? 'auto' : 0,
               }}
-              transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-              className="overflow-hidden flex items-center justify-center"
             >
               <span className="text-[9px] font-bold tracking-wider uppercase whitespace-nowrap">
                 Архив
               </span>
-            </motion.div>
+            </div>
           </button>
 
           <button
@@ -1063,47 +1089,43 @@ export default function App() {
               setActiveTab('settings');
             }}
             className={clsx(
-              'flex-1 flex flex-col items-center justify-center h-full relative group cursor-pointer min-w-0',
+              'flex-1 flex flex-col items-center justify-center h-full relative group cursor-pointer min-w-0 transition-colors duration-300',
               activeTab === 'settings'
                 ? 'text-[var(--accent-color)]'
                 : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300',
             )}
           >
-            <motion.div
+            <div
               className={clsx(
-                'p-1.5 rounded-xl flex items-center justify-center',
+                'p-1.5 rounded-xl flex items-center justify-center transition-all duration-300',
                 activeTab === 'settings'
-                  ? 'bg-[var(--accent-color)]/10'
-                  : 'bg-transparent',
+                  ? 'bg-[var(--accent-color)]/10 scale-110'
+                  : 'bg-transparent scale-100',
               )}
-              animate={{ scale: activeTab === 'settings' ? 1.1 : 1 }}
-              transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
             >
-              <motion.div
-                animate={{ scale: navExpanded ? 1 : 0.85 }}
-                transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
+              <div
+                className="transition-transform duration-300 transform-gpu"
+                style={{ scale: navExpanded ? 1 : 0.85 }}
               >
                 <SettingsIcon className="w-6 h-6" />
-              </motion.div>
-            </motion.div>
-            <motion.div
-              initial={false}
-              animate={{
+              </div>
+            </div>
+            <div
+              className="overflow-hidden flex items-center justify-center transition-all duration-300 transform-gpu"
+              style={{
                 opacity: navExpanded ? 1 : 0,
                 height: navExpanded ? 14 : 0,
                 marginTop: navExpanded ? 1 : 0,
                 scale: navExpanded ? 1 : 0.8,
                 width: navExpanded ? 'auto' : 0,
               }}
-              transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-              className="overflow-hidden flex items-center justify-center"
             >
               <span className="text-[9px] font-bold tracking-wider uppercase whitespace-nowrap">
                 Настройки
               </span>
-            </motion.div>
+            </div>
           </button>
-        </motion.nav>
+        </nav>
       </div>
     </div>
   );

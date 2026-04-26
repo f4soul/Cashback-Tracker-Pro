@@ -42,7 +42,7 @@ export const BankLogo: React.FC<BankLogoProps> = memo(({
         alt={bank.name}
         onError={() => setError(true)}
         className={clsx(
-          "object-contain shadow-sm transition-all duration-500 shrink-0 border border-gray-200/60 dark:border-gray-700/60",
+          "object-contain shadow-sm shrink-0 border border-gray-200/60 dark:border-gray-700/60 transform-gpu",
           sizeClasses[size],
           shapeClasses[logoShape],
           className
@@ -57,7 +57,7 @@ export const BankLogo: React.FC<BankLogoProps> = memo(({
   return (
     <div
       className={clsx(
-        "flex items-center justify-center text-white font-bold shadow-sm transition-all duration-500 shrink-0 border border-gray-200/60 dark:border-gray-700/60",
+        "flex items-center justify-center text-white font-bold shadow-sm shrink-0 border border-gray-200/60 dark:border-gray-700/60 transform-gpu",
         sizeClasses[size],
         shapeClasses[logoShape],
         className
