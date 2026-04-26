@@ -347,13 +347,13 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
           const tableMaxWidth = 896; // max-w-4xl
           const contentMargin = (contentAreaWidth - tableMaxWidth) / 2;
 
-          // On desktop, we try to place the FAB in the right gutter (outside the table)
-          // Table width is 896px centered.
-          // We set right position to be slightly less than contentMargin to keep it visible
-          if (contentMargin > 60) {
-            setRightPos(contentMargin - 60); // Place it just outside the table edge
+          // On desktop, we want to place the FAB outside the table to avoid overlap
+          if (contentMargin > 80) {
+            setRightPos(contentMargin - 64); 
+          } else if (isWide) {
+            setRightPos(24);
           } else {
-            setRightPos(12); // Minimum gap if window is narrow
+            setRightPos(16);
           }
         } else {
           setRightPos(16);

@@ -6,8 +6,14 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
+  
+  // Автоматическое определение base url для GitHub Pages
+  const isGitHubActions = process.env.GITHUB_ACTIONS === 'true';
+  const githubRepo = process.env.GITHUB_REPOSITORY ? process.env.GITHUB_REPOSITORY.split('/')[1] : '';
+  const basePath = isGitHubActions && githubRepo ? `/${githubRepo}/` : './';
+
   return {
-    base: './',
+    base: basePath,
     plugins: [
       react(),
       tailwindcss(),
