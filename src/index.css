@@ -21,9 +21,12 @@ html {
   text-rendering: optimizeLegibility;
 }
 
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
   background-color: #f8fafc; /* slate-50 */
-  -webkit-tap-highlight-color: transparent;
   @apply text-slate-900;
   font-size: 1rem;
   line-height: 1.5;
