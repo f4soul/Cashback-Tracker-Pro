@@ -117,25 +117,25 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
   return (
     <div className="flex flex-col gap-3">
       {/* Filters Section */}
-      <div className="bg-white dark:bg-gray-800/50 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm p-3 sm:p-4 flex flex-col gap-3 sm:gap-4">
+      <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2rem] border border-slate-200/50 dark:border-white/10 shadow-xl p-3 sm:p-4 flex flex-col gap-3 sm:gap-4">
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
               placeholder="Поиск по банку или категории..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 dark:text-white transition-all"
+              className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200/50 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all shadow-inner"
             />
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={clsx(
-              "p-2 rounded-xl border transition-colors flex items-center justify-center cursor-pointer",
+              "p-2 rounded-xl border transition-all flex items-center justify-center cursor-pointer active:scale-95",
               showFilters || selectedBankFilter || selectedCategoryFilter
-                ? "bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400"
-                : "bg-gray-50 dark:bg-gray-900/50 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                ? "bg-[var(--accent-color)] border-[var(--accent-color)] shadow-md shadow-[var(--accent-color)]/20 text-white"
+                : "bg-slate-50 dark:bg-slate-950 border-slate-200/50 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 shadow-sm"
             )}
           >
             <Filter className="w-5 h-5" />
@@ -143,16 +143,16 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
         </div>
 
         {showFilters && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-800 animate-in fade-in slide-in-from-top-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-200/50 dark:border-white/10 animate-in fade-in slide-in-from-top-2">
             {/* Bank Filter Dropdown */}
             <div className="flex flex-col gap-1.5 relative">
-              <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Фильтр по банку</label>
+              <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">Фильтр по банку</label>
               <button
                 onClick={() => {
                   setOpenBankDropdown(!openBankDropdown);
                   setOpenCategoryDropdown(false);
                 }}
-                className="w-full flex items-center justify-between px-3 py-2.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 dark:text-white transition-all cursor-pointer"
+                className="w-full flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200/50 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all cursor-pointer shadow-inner"
               >
                 <div className="flex items-center gap-2 overflow-hidden">
                   {selectedBankFilter ? (
@@ -185,7 +185,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                         onClick={() => { setSelectedBankFilter(''); setOpenBankDropdown(false); }}
                         className={clsx(
                           "w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-colors cursor-pointer",
-                          !selectedBankFilter ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400" : "hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+                          !selectedBankFilter ? "bg-[var(--percent-bg)] text-[var(--accent-color)]" : "hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
                         )}
                       >
                         <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0">
@@ -199,7 +199,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                           onClick={() => { setSelectedBankFilter(b.id); setOpenBankDropdown(false); }}
                           className={clsx(
                             "w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-colors mt-0.5 cursor-pointer",
-                            selectedBankFilter === b.id ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400" : "hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+                            selectedBankFilter === b.id ? "bg-[var(--percent-bg)] text-[var(--accent-color)]" : "hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
                           )}
                         >
                           <BankLogo 
@@ -218,13 +218,13 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
 
             {/* Category Filter Dropdown */}
             <div className="flex flex-col gap-1.5 relative">
-              <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Фильтр по категории</label>
+              <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">Фильтр по категории</label>
               <button
                 onClick={() => {
                   setOpenCategoryDropdown(!openCategoryDropdown);
                   setOpenBankDropdown(false);
                 }}
-                className="w-full flex items-center justify-between px-3 py-2.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 dark:text-white transition-all cursor-pointer"
+                className="w-full flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200/50 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all cursor-pointer shadow-inner"
               >
                 <span className={clsx("truncate", !selectedCategoryFilter && "text-gray-400")}>
                   {selectedCategoryFilter || "Все категории"}
@@ -246,7 +246,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                         onClick={() => { setSelectedCategoryFilter(''); setOpenCategoryDropdown(false); }}
                         className={clsx(
                           "w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-colors cursor-pointer",
-                          !selectedCategoryFilter ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400" : "hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+                          !selectedCategoryFilter ? "bg-[var(--percent-bg)] text-[var(--accent-color)]" : "hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
                         )}
                       >
                         Все категории
@@ -257,7 +257,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                           onClick={() => { setSelectedCategoryFilter(c); setOpenCategoryDropdown(false); }}
                           className={clsx(
                             "w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-colors mt-0.5 cursor-pointer",
-                            selectedCategoryFilter === c ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400" : "hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+                            selectedCategoryFilter === c ? "bg-[var(--percent-bg)] text-[var(--accent-color)]" : "hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
                           )}
                         >
                           {c}
@@ -292,7 +292,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                   className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer"
                 >
                   <div className="flex items-center gap-3 sm:gap-4">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-base sm:text-lg shrink-0">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[var(--percent-bg)] text-[var(--accent-color)] flex items-center justify-center font-bold text-base sm:text-lg shrink-0">
                       {month.monthId.split('-')[1]}
                     </div>
                     <div className="text-left min-w-0">
@@ -383,7 +383,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                                 className="flex-1 flex flex-col items-center justify-center py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 hover:shadow-sm transition-all group cursor-pointer border-x border-gray-100 dark:border-gray-800"
                                 title="Таблица (Excel)"
                               >
-                                <FileSpreadsheet className="w-4 h-4 text-emerald-500 group-hover:scale-110 transition-transform mb-0.5" />
+                                <FileSpreadsheet className="w-4 h-4 text-[var(--accent-color)] group-hover:scale-110 transition-transform mb-0.5" />
                                 <span className="text-[9px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight">Excel</span>
                               </button>
 

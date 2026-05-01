@@ -115,10 +115,10 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
         ref={ref}
         style={style}
         className={clsx(
-          'flex items-center justify-between p-3 bg-white dark:bg-gray-800/50 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm group/card select-none',
+          'flex items-center justify-between p-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-200/50 dark:border-white/10 shadow-sm group/card select-none hover:border-[var(--accent-color)]/30 transition-all',
           isDragging && !isOverlay && 'opacity-30',
           isOverlay &&
-            'border-[var(--accent-color)] shadow-2xl scale-105 z-50 ring-2 ring-[var(--accent-color)] ring-opacity-50 cursor-grabbing bg-white dark:bg-gray-800',
+            'border-[var(--accent-color)] shadow-2xl scale-105 z-50 ring-2 ring-[var(--accent-color)]/50 cursor-grabbing bg-white dark:bg-slate-900',
         )}
       >
         <div className="flex items-center gap-3 min-w-0">
@@ -126,7 +126,7 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
             {...attributes}
             {...listeners}
             className={clsx(
-              'p-3 -ml-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 shrink-0 touch-none',
+              'p-3 -ml-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 shrink-0 touch-none transition-colors active:scale-95',
               isOverlay
                 ? 'cursor-grabbing'
                 : 'cursor-grab active:cursor-grabbing',
@@ -143,10 +143,10 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
           />
 
           <div className="min-w-0 flex-1">
-            <h3 className="font-bold text-sm text-gray-900 dark:text-white truncate leading-tight">
+            <h3 className="font-bold text-sm text-slate-900 dark:text-white truncate leading-tight">
               {bank.name}
             </h3>
-            <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 truncate leading-none mt-1 uppercase tracking-wider">
+            <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 truncate leading-none mt-1 uppercase tracking-widest">
               {entry.categories.length}{' '}
               {pluralize(entry.categories.length, [
                 'категория',
@@ -167,7 +167,7 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
               e.stopPropagation();
               onEdit();
             }}
-            className="p-2 text-gray-400 hover:text-[var(--accent-color)] hover:bg-[var(--percent-bg)] rounded-xl transition-all cursor-pointer"
+            className="p-2 text-slate-400 hover:text-[var(--accent-color)] hover:bg-[var(--percent-bg)] rounded-xl transition-all cursor-pointer active:scale-95"
           >
             <Edit2 className="w-4 h-4" />
           </button>
@@ -180,7 +180,7 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
               e.stopPropagation();
               onDelete();
             }}
-            className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl transition-all cursor-pointer"
+            className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all cursor-pointer active:scale-95"
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -571,7 +571,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   setIsModalOpen(true);
                 }}
                 title="Добавить банк"
-                className="w-14 h-14 bg-[var(--accent-color)] text-white rounded-[var(--radius-app)] flex items-center justify-center shadow-xl shadow-[var(--accent-color)]/30 hover:shadow-2xl hover:shadow-[var(--accent-color)]/40 transition-all opacity-95 hover:opacity-100 cursor-pointer active:scale-90"
+                className="w-14 h-14 bg-[var(--accent-color)] text-white rounded-2xl flex items-center justify-center shadow-lg shadow-[var(--accent-color)]/30 hover:shadow-[var(--accent-color)]/40 transition-all opacity-95 hover:opacity-100 cursor-pointer active:scale-95"
               >
                 <Plus className="w-7 h-7" />
               </button>
@@ -622,7 +622,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                 );
                 setYOffset(snappedY);
               }}
-              className="fixed bottom-[110px] md:bottom-8 w-4 h-14 bg-[var(--accent-color)]/40 hover:bg-[var(--accent-color)] text-white flex items-center justify-center shadow-lg z-50 group cursor-grab active:cursor-grabbing rounded-l-[var(--radius-app)] transition-all touch-none select-none"
+              className="fixed bottom-[110px] md:bottom-8 w-4 h-14 bg-[var(--accent-color)]/40 hover:bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-2xl transition-all touch-none select-none backdrop-blur-md"
               style={{ right: 0 }}
               title="Показать кнопку (перетащите вертикально)"
             >
@@ -636,24 +636,21 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
         </AnimatePresence>
 
         {/* Table/Bank List Switcher - Simplified and Compact */}
-        <div className="bg-white dark:bg-gray-800/50 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
-          <div className="flex p-0.5 gap-0.5 relative">
-            <motion.div
-              className="absolute inset-y-0.5 rounded-2xl bg-gray-50 dark:bg-gray-900 shadow-sm z-0"
-              initial={false}
-              animate={{
-                left: activeSubTab === 'table' ? '0.125rem' : '50%',
-                right: activeSubTab === 'table' ? '50%' : '0.125rem',
+        <div className="flex p-1 gap-1 relative bg-slate-100/50 dark:bg-slate-800/50 backdrop-blur-md rounded-full overflow-hidden shadow-inner w-full border border-slate-200/50 dark:border-white/10">
+            <div
+              className="absolute inset-y-1 rounded-full bg-white dark:bg-slate-900 shadow-sm border border-slate-200/50 dark:border-white/5 z-0 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]"
+              style={{
+                left: activeSubTab === 'table' ? '0.25rem' : '50%',
+                right: activeSubTab === 'table' ? '50%' : '0.25rem',
               }}
-              transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
             />
             <button
               onClick={() => setActiveSubTab('table')}
               className={clsx(
-                'flex-1 flex items-center justify-center gap-2 py-2 rounded-2xl text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer relative z-10',
+                'flex-1 flex items-center justify-center gap-2 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer relative z-10',
                 activeSubTab === 'table'
                   ? 'text-[var(--accent-color)]'
-                  : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300',
+                  : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300',
               )}
             >
               <TableIcon className="w-4 h-4" />
@@ -662,16 +659,15 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
             <button
               onClick={() => setActiveSubTab('list')}
               className={clsx(
-                'flex-1 flex items-center justify-center gap-2 py-2 rounded-2xl text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer relative z-10',
+                'flex-1 flex items-center justify-center gap-2 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer relative z-10',
                 activeSubTab === 'list'
                   ? 'text-[var(--accent-color)]'
-                  : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300',
+                  : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300',
               )}
             >
               <LayoutList className="w-4 h-4" />
               Список банков
             </button>
-          </div>
         </div>
 
         {/* Content Area */}

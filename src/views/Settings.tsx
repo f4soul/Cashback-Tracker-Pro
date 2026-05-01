@@ -114,18 +114,18 @@ export const Settings: React.FC<SettingsProps> = memo(({
     <div className="flex flex-col gap-4 pb-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* MCC Directory Card - Order 1 */}
-        <div className="bg-white dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-white/5 p-4 shadow-sm flex flex-col gap-3 order-1">
-          <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
+        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2rem] border border-slate-200/50 dark:border-white/10 p-4 shadow-xl flex flex-col gap-3 order-1">
+          <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Search className="w-4 h-4 text-[var(--accent-color)]" />
             </div>
-            <h2 className="text-sm font-bold">Справочник МСС</h2>
+            <h2 className="text-sm">Справочник МСС</h2>
           </div>
           
           <div className="flex-1 flex items-center">
             <button
               onClick={() => setIsMccDirectoryOpen(true)}
-              className="w-full py-3.5 px-4 bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-[10px] font-bold text-[var(--accent-color)] uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm active:scale-95"
+              className="w-full py-3.5 px-4 bg-slate-50 dark:bg-slate-950 hover:bg-white dark:hover:bg-slate-900 border border-slate-200/50 dark:border-white/10 rounded-xl text-[10px] font-black text-[var(--accent-color)] uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 shadow-inner hover:shadow-sm active:scale-95"
             >
               <Search className="w-4 h-4" />
               Открыть справочник
@@ -134,12 +134,12 @@ export const Settings: React.FC<SettingsProps> = memo(({
         </div>
 
         {/* Accent Color Card - Order 3 on mobile, 2 on desktop */}
-        <div className="bg-white dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-white/5 p-4 shadow-sm flex flex-col gap-3 order-3 lg:order-2">
-          <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
+        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2rem] border border-slate-200/50 dark:border-white/10 p-4 shadow-xl flex flex-col gap-3 order-3 lg:order-2">
+          <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Palette className="w-4 h-4 text-[var(--accent-color)]" />
             </div>
-            <h2 className="text-sm font-bold">Акцентный цвет</h2>
+            <h2 className="text-sm">Акцентный цвет</h2>
           </div>
 
           <div className="flex-1 flex items-center">
@@ -184,25 +184,25 @@ export const Settings: React.FC<SettingsProps> = memo(({
         </div>
 
         {/* Logo Shape Card - Order 2 on mobile, 3 on desktop */}
-        <div className="bg-white dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-white/5 p-4 shadow-sm flex flex-col gap-3 order-2 lg:order-3">
-          <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
+        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2rem] border border-slate-200/50 dark:border-white/10 p-4 shadow-xl flex flex-col gap-3 order-2 lg:order-3">
+          <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Circle className="w-4 h-4 text-[var(--accent-color)]" />
             </div>
-            <h2 className="text-sm font-bold">Форма логотипов</h2>
+            <h2 className="text-sm">Форма логотипов</h2>
           </div>
           
           <div className="flex-1 flex items-center">
-            <div className="flex p-1 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-white/5 w-full">
+            <div className="flex p-1 bg-slate-50 dark:bg-slate-950 rounded-[1.5rem] border border-slate-200/50 dark:border-white/10 w-full shadow-inner">
               {(['circle', 'square', 'rectangle'] as LogoShape[]).map((shape) => (
                 <button
                   key={shape}
                   onClick={() => updateSetting('logoShape', shape)}
                   className={clsx(
-                    "flex-1 flex items-center justify-center py-2.5 rounded-xl transition-all cursor-pointer",
+                    "flex-1 flex items-center justify-center py-2.5 rounded-[1.25rem] transition-all cursor-pointer active:scale-95",
                     settings.logoShape === shape
-                      ? "bg-white dark:bg-gray-800 shadow-sm text-[var(--accent-color)] scale-[1.02]"
-                      : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                      ? "bg-white dark:bg-slate-900 shadow-sm border border-slate-200/50 dark:border-white/10 text-[var(--accent-color)]"
+                      : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 border border-transparent"
                   )}
                 >
                   <div className={clsx(
@@ -218,12 +218,12 @@ export const Settings: React.FC<SettingsProps> = memo(({
         </div>
 
         {/* Text Color Card - Order 4 */}
-        <div className="bg-white dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-white/5 p-4 shadow-sm flex flex-col gap-3 order-4">
-          <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
+        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2rem] border border-slate-200/50 dark:border-white/10 p-4 shadow-xl flex flex-col gap-3 order-4">
+          <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Type className="w-4 h-4 text-[var(--accent-color)]" />
             </div>
-            <h2 className="text-sm font-bold">Цвет текста</h2>
+            <h2 className="text-sm">Цвет текста</h2>
           </div>
 
           <div className="flex-1 flex items-center">
@@ -262,12 +262,12 @@ export const Settings: React.FC<SettingsProps> = memo(({
 
 
         {/* Export Card - Full Width - Order 5 */}
-        <div className="bg-white dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-white/5 p-4 shadow-sm space-y-3 lg:col-span-2 order-5">
-          <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
+        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2rem] border border-slate-200/50 dark:border-white/10 p-4 shadow-xl space-y-3 lg:col-span-2 order-5">
+          <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Download className="w-4 h-4 text-[var(--accent-color)]" />
             </div>
-            <h2 className="text-sm font-bold">Экспорт данных</h2>
+            <h2 className="text-sm">Экспорт данных</h2>
           </div>
           
           <div className="flex p-1 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-white/5">
@@ -285,7 +285,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
               className="flex-1 flex flex-col items-center justify-center py-3 rounded-xl hover:bg-white dark:hover:bg-gray-800 hover:shadow-sm transition-all group cursor-pointer border-x border-gray-100 dark:border-white/5"
               title="Таблица (Excel)"
             >
-              <FileSpreadsheet className="w-5 h-5 text-emerald-500 group-hover:scale-110 transition-transform mb-1" />
+              <FileSpreadsheet className="w-5 h-5 text-[var(--accent-color)] group-hover:scale-110 transition-transform mb-1" />
               <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight">Excel</span>
             </button>
 
@@ -329,12 +329,12 @@ export const Settings: React.FC<SettingsProps> = memo(({
         {isAdmin && (
           <>
             {/* Version History Card */}
-            <div className="bg-white dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-white/5 p-4 shadow-sm space-y-3 order-6">
-              <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
+            <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2rem] border border-slate-200/50 dark:border-white/10 p-4 shadow-xl space-y-3 order-6">
+              <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
                 <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
                   <FileText className="w-4 h-4 text-[var(--accent-color)]" />
                 </div>
-                <h2 className="text-sm font-bold">История версий</h2>
+                <h2 className="text-sm">История версий</h2>
               </div>
               
               <button
@@ -347,12 +347,12 @@ export const Settings: React.FC<SettingsProps> = memo(({
 
             {/* Test Data Card */}
             {onAddTestData && (
-              <div className="bg-white dark:bg-gray-800/50 backdrop-blur-xl rounded-3xl border border-gray-200 dark:border-white/5 p-4 shadow-sm space-y-3 order-6">
-                <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
+              <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2rem] border border-slate-200/50 dark:border-white/10 p-4 shadow-xl space-y-3 order-6">
+                <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
                   <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
                     <RotateCcw className="w-4 h-4 text-[var(--accent-color)]" />
                   </div>
-                  <h2 className="text-sm font-bold">Тестовые данные</h2>
+                  <h2 className="text-sm">Тестовые данные</h2>
                 </div>
                 
                 <button

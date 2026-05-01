@@ -69,7 +69,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             aria-modal="true"
             aria-labelledby="modal-title"
             aria-describedby="modal-description"
-            className="relative w-full max-w-[400px] bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col"
+            className="relative w-full max-w-[400px] bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2rem] shadow-2xl overflow-hidden flex flex-col border border-slate-200/50 dark:border-white/10"
           >
             <div className="p-6 sm:p-8 flex flex-col items-center text-center">
               <div className={clsx(
@@ -98,10 +98,10 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                 />
               </div>
               
-              <h3 id="modal-title" className="text-xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">
+              <h3 id="modal-title" className="text-xl font-black uppercase tracking-tight text-slate-900 dark:text-white mb-2 leading-tight">
                 {title}
               </h3>
-              <p id="modal-description" className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+              <p id="modal-description" className="text-sm font-semibold text-slate-500 dark:text-slate-400 leading-relaxed">
                 {message}
               </p>
             </div>
@@ -113,12 +113,12 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                   onClose();
                 }}
                 className={clsx(
-                  "flex-1 py-3.5 px-4 rounded-2xl font-bold text-sm transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2",
+                  "flex-1 py-3.5 px-4 rounded-xl font-bold text-sm transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2",
                   variant === 'danger' 
-                    ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/25 hover:shadow-red-500/40' 
+                    ? 'bg-red-500 hover:bg-red-600 text-white shadow-[0_4px_12px_rgba(239,68,68,0.3)] hover:shadow-[0_4px_16px_rgba(239,68,68,0.4)]' 
                     : variant === 'warning'
-                    ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40'
-                    : 'bg-[var(--accent-color)] hover:opacity-90 text-white shadow-lg shadow-[var(--accent-color)]/25 hover:shadow-[var(--accent-color)]/40'
+                    ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-[0_4px_12px_rgba(245,158,11,0.3)] hover:shadow-[0_4px_16px_rgba(245,158,11,0.4)]'
+                    : 'bg-[var(--accent-color)] hover:brightness-110 text-white shadow-md shadow-[var(--accent-color)]/20 hover:shadow-[var(--accent-color)]/40'
                 )}
               >
                 {confirmText}
@@ -126,7 +126,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
               <button
                 ref={cancelRef}
                 onClick={onClose}
-                className="flex-1 py-3.5 px-4 rounded-2xl font-bold text-sm text-gray-700 dark:text-gray-300 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-all active:scale-95 cursor-pointer"
+                className="flex-1 py-3.5 px-4 rounded-xl font-bold text-sm text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-all active:scale-95 cursor-pointer shadow-sm border border-slate-200/50 dark:border-white/10"
               >
                 {cancelText}
               </button>

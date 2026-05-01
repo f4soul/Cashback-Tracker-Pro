@@ -221,12 +221,12 @@ export const BankForm: React.FC<BankFormProps> = memo(({
               step={0.1}
               aria-labelledby="Zoom"
               onChange={(e) => setZoom(Number(e.target.value))}
-              className="flex-1 h-1 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+              className="flex-1 h-1 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[var(--accent-color)]"
             />
           </div>
           <button
             onClick={() => setCrop({ x: 0, y: 0 })}
-            className="w-full py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 rounded-xl transition-colors cursor-pointer"
+            className="w-full py-2 text-sm font-medium text-[var(--accent-color)] bg-[var(--percent-bg)]/50 hover:bg-[var(--percent-bg)] rounded-xl transition-colors cursor-pointer"
           >
             Центрировать
           </button>
@@ -240,7 +240,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
           </button>
           <button
             onClick={handleCropSave}
-            className="flex-1 px-4 py-2.5 rounded-xl font-medium text-white bg-emerald-500 hover:bg-emerald-600 transition-colors shadow-sm shadow-emerald-500/20 flex items-center justify-center gap-2 cursor-pointer"
+            className="flex-1 px-4 py-2.5 rounded-xl font-medium text-white bg-[var(--accent-color)] hover:opacity-90 transition-colors shadow-sm shadow-[var(--accent-color)]/20 flex items-center justify-center gap-2 cursor-pointer"
           >
             <Crop className="w-4 h-4" />
             Сохранить
@@ -264,7 +264,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                 placeholder="Поиск банка..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 dark:text-white transition-all"
+                className="w-full pl-9 pr-4 py-2.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all"
               />
             </div>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-64 overflow-y-auto p-1 scrollbar-hide">
@@ -283,7 +283,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                     >
                       <div
                         onClick={() => setSelectedBankId(bank.id)}
-                        className="w-full aspect-square flex flex-col items-center justify-center gap-1 p-1.5 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-[var(--accent-color)]/50 hover:bg-[var(--percent-bg)]/30 transition-all cursor-pointer group"
+                        className="w-full aspect-square flex flex-col items-center justify-center gap-1 p-1.5 rounded-2xl border border-slate-200/50 dark:border-white/10 hover:border-[var(--accent-color)]/50 hover:bg-[var(--percent-bg)]/30 transition-all cursor-pointer group"
                       >
                         <BankLogo 
                           bank={bank} 
@@ -316,7 +316,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                   setSelectedBankId('custom');
                   setCustomBankName(searchQuery.trim());
                 }}
-                className="w-full p-4 border border-dashed border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl text-emerald-700 dark:text-emerald-400 font-medium hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full p-4 border border-dashed border-[var(--accent-color)]/30 bg-[var(--accent-color)]/5 rounded-2xl text-[var(--accent-color)] font-medium hover:bg-[var(--percent-bg)] transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Plus className="w-5 h-5" />
                 Добавить банк "{searchQuery.trim()}"
@@ -327,7 +327,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col gap-3 p-3 rounded-2xl border border-[var(--accent-color)]/20 bg-[var(--percent-bg)]/20 backdrop-blur-sm"
+            className="flex flex-col gap-3 p-3 rounded-2xl border border-[var(--accent-color)]/20 bg-[var(--percent-bg)]/20 backdrop-blur-md"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -344,7 +344,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                 </div>
                 <div>
                   <span className="font-bold text-sm text-gray-900 dark:text-white block tracking-tight">{currentBank?.name}</span>
-                  <span className="text-[9px] font-bold text-[var(--accent-color)] uppercase tracking-wider cursor-pointer hover:underline mt-0.5 block" onClick={() => fileInputRef.current?.click()}>
+                  <span className="text-[9px] font-black tracking-widest uppercase text-[var(--accent-color)] cursor-pointer hover:underline mt-0.5 block" onClick={() => fileInputRef.current?.click()}>
                     Изменить логотип
                   </span>
                   <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleLogoUpload} />
@@ -376,7 +376,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
             placeholder="Поиск категорий..."
             value={categorySearchQuery}
             onChange={(e) => setCategorySearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 dark:text-white transition-all"
+            className="w-full pl-9 pr-4 py-2.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all"
           />
         </div>
         
@@ -388,10 +388,10 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                 key={cat}
                 onClick={() => toggleCategory(cat)}
                 className={clsx(
-                  "px-3 py-1.5 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 cursor-pointer",
+                  "px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 cursor-pointer",
                   isSelected
-                    ? "bg-[var(--accent-color)] text-white shadow-sm shadow-[var(--accent-color)]/20"
-                    : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                    ? "bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20"
+                    : "bg-white dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/80 border border-slate-200/50 dark:border-white/5 shadow-sm"
                 )}
               >
                 {isSelected && <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
@@ -403,7 +403,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
              <button
              key={cat.name}
              onClick={() => toggleCategory(cat.name)}
-             className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 bg-[var(--accent-color)] text-white shadow-sm shadow-[var(--accent-color)]/20 cursor-pointer"
+             className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 cursor-pointer"
            >
              <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
              {cat.name}
@@ -417,12 +417,12 @@ export const BankForm: React.FC<BankFormProps> = memo(({
             placeholder="Своя категория..."
             value={customCategory}
             onChange={(e) => setCustomCategory(e.target.value)}
-            className="flex-1 min-w-0 px-4 py-2.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all"
+            className="flex-1 min-w-0 px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200/50 dark:border-white/10 shadow-inner rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all"
           />
           <button
             type="submit"
             disabled={!customCategory.trim()}
-            className="shrink-0 p-2.5 bg-[var(--accent-color)] text-white rounded-xl hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+            className="shrink-0 p-2.5 bg-[var(--accent-color)] text-white rounded-xl hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer shadow-md shadow-[var(--accent-color)]/30 active:scale-95"
           >
             <Plus className="w-5 h-5" />
           </button>
@@ -449,7 +449,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                     placeholder="0"
                     value={cat.percent}
                     onChange={(e) => updateCategoryPercent(cat.name, e.target.value)}
-                    className="w-14 px-2 py-1 text-right bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 dark:text-white"
+                    className="w-14 px-2 py-1 text-right bg-slate-50 dark:bg-slate-950 border border-slate-200/50 dark:border-white/10 shadow-inner rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white"
                   />
                   <span className="text-gray-500 dark:text-gray-400 text-xs font-medium">%</span>
                 </div>
@@ -460,17 +460,17 @@ export const BankForm: React.FC<BankFormProps> = memo(({
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3 pt-3 border-t border-gray-200 dark:border-gray-800 mt-1">
+      <div className="flex gap-3 pt-3 border-t border-slate-200/50 dark:border-white/10 mt-1">
         <button
           onClick={onCancel}
-          className="flex-1 px-4 py-2.5 rounded-xl font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-sm cursor-pointer"
+          className="flex-1 px-4 py-2.5 rounded-xl font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all text-sm cursor-pointer shadow-sm active:scale-95"
         >
           Отмена
         </button>
         <button
           onClick={handleSave}
           disabled={!selectedBankId || selectedCategories.length === 0 || (isCustomBank && !customBankName.trim())}
-          className="flex-1 px-4 py-2.5 rounded-xl font-medium text-white bg-[var(--accent-color)] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm shadow-[var(--accent-color)]/20 text-sm cursor-pointer"
+          className="flex-1 px-4 py-2.5 rounded-xl font-bold text-white bg-[var(--accent-color)] hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md shadow-[var(--accent-color)]/30 active:scale-95 text-sm cursor-pointer"
         >
           Сохранить
         </button>

@@ -33,7 +33,7 @@ body {
 }
 
 .dark body {
-  background-color: #030712; /* gray-950 */
+  background-color: #0f172a; /* slate-900 */
   @apply text-white;
 }
 

@@ -117,7 +117,7 @@ const AuthButton = ({
     <button
       onClick={loginWithGoogle}
       className={clsx(
-        'flex items-center gap-2 rounded-3xl transition-all font-bold text-sm cursor-pointer shadow-lg shadow-[var(--accent-color)]/20',
+        'flex items-center gap-2 rounded-2xl transition-all font-bold text-sm cursor-pointer shadow-lg shadow-[var(--accent-color)]/20 hover:bg-[var(--accent-color)] hover:brightness-110 active:scale-95',
         isMobile
           ? 'px-3 py-2 bg-[var(--accent-color)] text-white'
           : 'px-4 py-3 w-full bg-[var(--accent-color)] text-white justify-center',
@@ -125,7 +125,7 @@ const AuthButton = ({
       title="Войти в облако"
     >
       <LogIn className="w-4 h-4" />
-      <span className={isMobile ? 'text-[10px] uppercase tracking-wider' : ''}>
+      <span className={isMobile ? 'text-[10px] uppercase tracking-wider font-black' : ''}>
         Войти
       </span>
     </button>
@@ -733,7 +733,7 @@ export default function App() {
     }
   }, [user, saveToFirestore, setAllData]);
   return (
-    <div className="h-[100dvh] overflow-hidden bg-gray-50/50 dark:bg-gray-950/50 font-sans transition-colors duration-300 flex flex-col md:flex-row">
+    <div className="h-[100dvh] overflow-hidden bg-slate-50 dark:bg-[#0B0F19] font-sans transition-colors duration-300 flex flex-col md:flex-row">
       <ConfirmModal
         isOpen={isLogoutModalOpen}
         onClose={() => setIsLogoutModalOpen(false)}
@@ -767,7 +767,7 @@ export default function App() {
         }}
       />
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-[280px] h-full bg-white/60 dark:bg-[#1c1c1e]/60 backdrop-blur-2xl border-r border-gray-200/50 dark:border-white/10 z-40 shrink-0">
+      <aside className="hidden md:flex flex-col w-[280px] h-full bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border-r border-slate-200/50 dark:border-white/10 z-40 shrink-0">
         <div className="px-6 py-10 flex flex-col h-full">
           <div className="flex items-center mb-12 px-1">
             <div className="flex items-center gap-3 flex-1">
@@ -775,17 +775,17 @@ export default function App() {
                 <Wallet className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight leading-none">
+                <h1 className="text-[20px] font-black text-slate-900 dark:text-white tracking-tight leading-none">
                   Cashback
                 </h1>
-                <p className="text-[10px] font-bold text-[var(--accent-color)] uppercase tracking-widest mt-1">
+                <p className="text-[10px] font-black text-[var(--accent-color)] uppercase tracking-widest mt-1">
                   Tracker Pro
                 </p>
               </div>
             </div>
             <button
               onClick={toggleTheme}
-              className="w-9 h-9 rounded-full bg-gray-100/50 dark:bg-white/5 border border-gray-200 dark:border-white/20 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/20 transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center shadow-sm"
+              className="w-10 h-10 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:bg-white/80 dark:hover:bg-white/10 transition-all active:scale-95 cursor-pointer flex items-center justify-center shadow-sm"
               title={
                 theme === 'light'
                   ? 'Включить темную тему'
@@ -804,10 +804,10 @@ export default function App() {
             <button
               onClick={() => setActiveTab('current')}
               className={clsx(
-                'flex items-center gap-3 px-4 py-3.5 rounded-3xl transition-all duration-300 text-sm font-semibold cursor-pointer',
+                'flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
                 activeTab === 'current'
-                  ? 'bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20'
-                  : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white',
+                  ? 'bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 border border-transparent'
+                  : 'text-slate-500 dark:text-slate-400 hover:bg-white/80 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white hover:border-[var(--accent-color)]/30 border border-transparent',
               )}
             >
               <Wallet className="w-5 h-5" />
@@ -816,10 +816,10 @@ export default function App() {
             <button
               onClick={() => setActiveTab('archive')}
               className={clsx(
-                'flex items-center gap-3 px-4 py-3.5 rounded-3xl transition-all duration-300 text-sm font-semibold cursor-pointer',
+                'flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
                 activeTab === 'archive'
-                  ? 'bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20'
-                  : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white',
+                  ? 'bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 border border-transparent'
+                  : 'text-slate-500 dark:text-slate-400 hover:bg-white/80 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white hover:border-[var(--accent-color)]/30 border border-transparent',
               )}
             >
               <History className="w-5 h-5" />
@@ -828,10 +828,10 @@ export default function App() {
             <button
               onClick={() => setActiveTab('settings')}
               className={clsx(
-                'flex items-center gap-3 px-4 py-3.5 rounded-3xl transition-all duration-300 text-sm font-semibold cursor-pointer',
+                'flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
                 activeTab === 'settings'
-                  ? 'bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20'
-                  : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white',
+                  ? 'bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 border border-transparent'
+                  : 'text-slate-500 dark:text-slate-400 hover:bg-white/80 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white hover:border-[var(--accent-color)]/30 border border-transparent',
               )}
             >
               <SettingsIcon className="w-5 h-5" />
@@ -857,16 +857,16 @@ export default function App() {
           !headerVisible && '-translate-y-full',
         )}
       >
-        <div className="max-w-3xl mx-auto bg-white/80 dark:bg-[#1c1c1e]/80 backdrop-blur-xl border border-gray-200/50 dark:border-white/10 rounded-3xl px-4 py-2.5 flex items-center justify-between shadow-sm">
+        <div className="max-w-3xl mx-auto bg-white/90 dark:bg-slate-950/90 backdrop-blur-2xl border border-slate-200/50 dark:border-white/10 rounded-3xl px-4 py-2.5 flex items-center justify-between shadow-xl">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-[var(--accent-color)] to-[var(--accent-color)] opacity-90 rounded-[22%] flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 bg-[var(--accent-color)] opacity-90 rounded-2xl flex items-center justify-center shadow-sm">
               <Wallet className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight leading-none">
+              <h1 className="text-[22px] font-black text-slate-900 dark:text-white tracking-tight leading-none">
                 Cashback
               </h1>
-              <p className="text-[10px] font-bold text-[var(--accent-color)] uppercase tracking-widest mt-0.5">
+              <p className="text-[10px] font-black text-[var(--accent-color)] uppercase tracking-widest mt-0.5">
                 Tracker Pro
               </p>
             </div>
@@ -882,7 +882,7 @@ export default function App() {
             />
             <button
               onClick={toggleTheme}
-              className="w-10 h-10 rounded-full bg-gray-100/50 dark:bg-white/5 border border-gray-200 dark:border-white/20 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/20 transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center shadow-sm"
+              className="w-10 h-10 rounded-full bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:bg-white/80 dark:hover:bg-white/10 transition-all active:scale-95 cursor-pointer flex items-center justify-center shadow-sm"
               title={
                 theme === 'light'
                   ? 'Включить темную тему'
@@ -905,44 +905,70 @@ export default function App() {
         className="flex-1 overflow-y-auto scrollbar-hide app-content-text pt-[5.25rem] pb-[7rem] md:pt-12 md:pb-12 relative"
       >
         <div className="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 pt-2 pb-3 lg:pt-0 lg:pb-8">
-          {activeTab === 'current' ? (
-            <CurrentMonth
-              data={currentMonthData}
-              selectedMonthId={selectedMonthId}
-              onMonthChange={setSelectedMonthId}
-              onUpdate={handleUpdateCurrentMonth}
-              onDeleteEntry={(entryId) =>
-                deleteMonthEntry(selectedMonthId, entryId)
-              }
-              customBanks={customBanks}
-              customCategories={customCategories}
-              onAddCustomBank={handleAddCustomBank}
-              onDeleteCustomBank={handleDeleteCustomBank}
-              onAddCustomCategory={handleAddCustomCategory}
-              globalLogoShape={settings.logoShape}
-              allMonthIds={allData.map((d) => d.monthId)}
-            />
-          ) : activeTab === 'archive' ? (
-            <Archive
-              allData={archiveData}
-              customBanks={customBanks}
-              customCategories={customCategories}
-              onDeleteEntry={deleteMonthEntry}
-              onDeleteMonth={handleDeleteMonth}
-              globalLogoShape={settings.logoShape}
-            />
-          ) : (
-            <Settings
-              settings={settings}
-              setSettings={handleUpdateSettings}
-              customBanks={customBanks}
-              currentMonthData={currentMonthData}
-              onAddTestData={handleAddTestData}
-              userEmail={user?.email}
-              onExportJSON={handleExportAllData}
-              onImportJSON={handleImportAllData}
-            />
-          )}
+          <AnimatePresence mode="wait" initial={false}>
+            {activeTab === 'current' ? (
+              <motion.div
+                key="current"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+              >
+                <CurrentMonth
+                  data={currentMonthData}
+                  selectedMonthId={selectedMonthId}
+                  onMonthChange={setSelectedMonthId}
+                  onUpdate={handleUpdateCurrentMonth}
+                  onDeleteEntry={(entryId) =>
+                    deleteMonthEntry(selectedMonthId, entryId)
+                  }
+                  customBanks={customBanks}
+                  customCategories={customCategories}
+                  onAddCustomBank={handleAddCustomBank}
+                  onDeleteCustomBank={handleDeleteCustomBank}
+                  onAddCustomCategory={handleAddCustomCategory}
+                  globalLogoShape={settings.logoShape}
+                  allMonthIds={allData.map((d) => d.monthId)}
+                />
+              </motion.div>
+            ) : activeTab === 'archive' ? (
+              <motion.div
+                key="archive"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+              >
+                <Archive
+                  allData={archiveData}
+                  customBanks={customBanks}
+                  customCategories={customCategories}
+                  onDeleteEntry={deleteMonthEntry}
+                  onDeleteMonth={handleDeleteMonth}
+                  globalLogoShape={settings.logoShape}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="settings"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+              >
+                <Settings
+                  settings={settings}
+                  setSettings={handleUpdateSettings}
+                  customBanks={customBanks}
+                  currentMonthData={currentMonthData}
+                  onAddTestData={handleAddTestData}
+                  userEmail={user?.email}
+                  onExportJSON={handleExportAllData}
+                  onImportJSON={handleImportAllData}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </main>
 
@@ -960,7 +986,7 @@ export default function App() {
             height: navExpanded ? 68 : 56,
           }}
           transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-          className="w-full bg-white/90 dark:bg-[#1c1c1e]/90 backdrop-blur-2xl border border-gray-200/50 dark:border-white/10 shadow-2xl flex items-center px-1 overflow-hidden"
+          className="w-full bg-white/90 dark:bg-slate-950/90 backdrop-blur-2xl border border-slate-200/50 dark:border-white/10 shadow-2xl flex items-center px-1 overflow-hidden"
           onClick={() => !navExpanded && setNavExpanded(true)}
         >
           <button
@@ -979,8 +1005,8 @@ export default function App() {
               className={clsx(
                 'p-1.5 rounded-xl flex items-center justify-center',
                 activeTab === 'current'
-                  ? 'bg-[var(--accent-color)]/10'
-                  : 'bg-transparent',
+                  ? 'bg-[var(--accent-color)]/10 text-[var(--accent-color)]'
+                  : 'bg-transparent text-slate-500 dark:text-slate-400',
               )}
               animate={{ scale: activeTab === 'current' ? 1.1 : 1 }}
               transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
@@ -1026,8 +1052,8 @@ export default function App() {
               className={clsx(
                 'p-1.5 rounded-xl flex items-center justify-center',
                 activeTab === 'archive'
-                  ? 'bg-[var(--accent-color)]/10'
-                  : 'bg-transparent',
+                  ? 'bg-[var(--accent-color)]/10 text-[var(--accent-color)]'
+                  : 'bg-transparent text-slate-500 dark:text-slate-400',
               )}
               animate={{ scale: activeTab === 'archive' ? 1.1 : 1 }}
               transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
@@ -1073,8 +1099,8 @@ export default function App() {
               className={clsx(
                 'p-1.5 rounded-xl flex items-center justify-center',
                 activeTab === 'settings'
-                  ? 'bg-[var(--accent-color)]/10'
-                  : 'bg-transparent',
+                  ? 'bg-[var(--accent-color)]/10 text-[var(--accent-color)]'
+                  : 'bg-transparent text-slate-500 dark:text-slate-400',
               )}
               animate={{ scale: activeTab === 'settings' ? 1.1 : 1 }}
               transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}

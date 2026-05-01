@@ -16,16 +16,16 @@ interface MccItemType {
 const MccItem: React.FC<{ item: MccItemType }> = ({ item }) => {
   return (
     <div
-      className="w-full bg-white dark:bg-[#2c2c2e] p-3.5 rounded-2xl border border-gray-200 dark:border-white/5 flex items-center gap-3 shadow-sm text-left"
+      className="w-full bg-white/60 dark:bg-slate-900/60 backdrop-blur-md p-3.5 rounded-2xl border border-slate-200/50 dark:border-white/10 flex items-center gap-3 shadow-sm text-left hover:border-[var(--accent-color)]/30 transition-all hover:bg-white dark:hover:bg-slate-900"
     >
-      <div className="w-14 h-12 rounded-xl bg-gray-100 dark:bg-[#1c1c1e] flex items-center justify-center shrink-0">
-        <span className="text-sm font-bold text-gray-900 dark:text-white">{item.code}</span>
+      <div className="w-14 h-12 rounded-xl bg-slate-100 dark:bg-slate-950 flex items-center justify-center shrink-0">
+        <span className="text-sm font-black text-slate-900 dark:text-white">{item.code}</span>
       </div>
       <div className="flex-1 min-w-0">
-        <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+        <h3 className="text-sm font-bold text-slate-900 dark:text-white">
           {item.name}
         </h3>
-        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5">
+        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
           {item.group}
         </p>
       </div>
@@ -80,29 +80,29 @@ export const MccDirectory: React.FC<MccDirectoryProps> = ({ isOpen, onClose }) =
             animate={{ y: 0, x: '-50%' }}
             exit={{ y: '100%', x: '-50%' }}
             transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-            className="fixed bottom-0 left-1/2 z-50 h-[85vh] w-full max-w-4xl lg:max-w-[700px] bg-gray-50 dark:bg-[#1c1c1e] rounded-t-3xl shadow-2xl flex flex-col overflow-hidden"
+            className="fixed bottom-0 left-1/2 z-50 h-[85vh] w-full max-w-4xl lg:max-w-[700px] bg-slate-50/90 dark:bg-[#0B0F19]/90 backdrop-blur-2xl rounded-t-[2rem] shadow-2xl flex flex-col overflow-hidden border border-slate-200/50 dark:border-white/10"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-4 bg-white dark:bg-[#2c2c2e] border-b border-gray-200 dark:border-white/10 shrink-0">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Справочник МСС-кодов</h2>
+            <div className="flex items-center justify-between px-4 py-4 bg-white/50 dark:bg-slate-900/50 border-b border-slate-200/50 dark:border-white/10 shrink-0">
+              <h2 className="text-lg font-black tracking-tight text-slate-900 dark:text-white uppercase">Справочник МСС-кодов</h2>
               <button
                 onClick={onClose}
-                className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/20 transition-colors cursor-pointer"
+                className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/20 transition-all cursor-pointer active:scale-95"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Search */}
-            <div className="px-4 py-3 bg-white dark:bg-[#2c2c2e] border-b border-gray-200 dark:border-white/10 shrink-0">
+            <div className="px-4 py-3 bg-white/50 dark:bg-slate-900/50 border-b border-slate-200/50 dark:border-white/10 shrink-0">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Поиск по коду или названию..."
-                  className="w-full pl-10 pr-10 py-3 bg-gray-100 dark:bg-[#1c1c1e] border-none rounded-xl text-sm font-medium text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-[var(--accent-color)] transition-shadow"
+                  className="w-full pl-10 pr-10 py-3 bg-white dark:bg-slate-950 border border-slate-200/50 dark:border-white/10 shadow-inner rounded-xl text-sm font-bold text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] transition-all"
                 />
               </div>
             </div>
@@ -118,7 +118,7 @@ export const MccDirectory: React.FC<MccDirectoryProps> = ({ isOpen, onClose }) =
                   </p>
                   <button
                     onClick={() => window.open(`https://www.google.com/search?q=MCC+код+${searchQuery}`, '_blank')}
-                    className="px-4 py-2 bg-[var(--accent-color)] text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer"
+                    className="px-4 py-2 bg-[var(--accent-color)] text-white rounded-xl text-sm font-bold shadow-md shadow-[var(--accent-color)]/20 hover:brightness-110 transition-all cursor-pointer active:scale-95"
                   >
                     Поиск в Google
                   </button>

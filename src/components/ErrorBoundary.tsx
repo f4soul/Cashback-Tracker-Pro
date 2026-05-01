@@ -51,18 +51,18 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-950">
-          <div className="max-w-md w-full bg-white dark:bg-[#1c1c1e] rounded-3xl p-8 shadow-xl border border-gray-200/50 dark:border-white/10 text-center">
-            <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <AlertCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
+        <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50 dark:bg-[#0B0F19]">
+          <div className="max-w-md w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2rem] p-8 shadow-xl border border-slate-200/50 dark:border-white/10 text-center">
+            <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+              <AlertCircle className="w-8 h-8 text-red-500" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Упс! Что-то пошло не так</h2>
-            <p className="text-gray-500 dark:text-gray-400 mb-8 text-sm leading-relaxed">
+            <h2 className="text-xl font-black uppercase tracking-tight text-slate-900 dark:text-white mb-2">Упс! Что-то пошло не так</h2>
+            <p className="text-slate-500 dark:text-slate-400 mb-8 text-sm font-semibold leading-relaxed">
               {errorMessage}
             </p>
             <button
               onClick={this.handleReset}
-              className="flex items-center justify-center gap-2 w-full py-4 bg-[var(--accent-color)] text-white rounded-2xl font-bold hover:opacity-90 transition-all shadow-lg shadow-[var(--accent-color)]/20"
+              className="flex items-center justify-center gap-2 w-full py-4 bg-[var(--accent-color)] text-white rounded-xl font-bold hover:brightness-110 transition-all shadow-md shadow-[var(--accent-color)]/30 active:scale-95 cursor-pointer"
             >
               <RefreshCcw className="w-5 h-5" />
               Перезагрузить приложение
