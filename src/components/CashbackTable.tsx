@@ -76,7 +76,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
     return (
       <div
         id={id}
-        className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2rem] shadow-xl border border-slate-200/50 dark:border-white/10 p-2 sm:p-4 w-full mx-auto overflow-hidden relative transition-all duration-500"
+        className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl shadow-xl border border-slate-200/50 dark:border-white/10 p-2 sm:p-4 w-full mx-auto overflow-hidden relative transition-all duration-500"
       >
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-4 px-1 gap-2 flex-wrap">
@@ -89,7 +89,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                         key={mId}
                         onClick={() => onMonthChange?.(mId)}
                         className={clsx(
-                          'px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer',
+                          'px-3 py-1 rounded-xl text-[10px] font-black tracking-widest transition-all cursor-pointer',
                           (selectedMonthId || monthId) === mId
                             ? 'bg-[var(--accent-color)] text-white shadow-sm'
                             : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300',
@@ -99,7 +99,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                       </button>
                     ))}
                   </div>
-                  <h2 className="hidden [.pdf-export-mode_&]:block text-lg font-black text-slate-900 dark:text-white tracking-tight uppercase whitespace-nowrap">
+                  <h2 className="hidden [.pdf-export-mode_&]:block text-lg font-black text-slate-900 dark:text-white tracking-tight whitespace-nowrap">
                     <span className="text-[var(--accent-color)]">
                       {capitalize(
                         formatMonthId(selectedMonthId || monthId).split(' ')[0],
@@ -108,7 +108,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                   </h2>
                 </>
               ) : (
-                <h2 className="text-lg font-black text-slate-900 dark:text-white tracking-tight uppercase whitespace-nowrap flex items-center justify-start gap-1">
+                <h2 className="text-lg font-black text-slate-900 dark:text-white tracking-tight whitespace-nowrap flex items-center justify-start gap-1">
                   <span className="text-[var(--accent-color)]">
                     {capitalize(formatMonthId(monthId).split(' ')[0])}
                   </span>
@@ -167,7 +167,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
           </div>
 
           {entries.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-8 text-center bg-slate-50 dark:bg-[#0B0F19] rounded-[2rem] border border-dashed border-slate-200/50 dark:border-white/10">
+            <div className="flex flex-col items-center justify-center p-8 text-center bg-slate-50 dark:bg-[#0B0F19] rounded-3xl border border-dashed border-slate-200/50 dark:border-white/10">
               <div className="w-12 h-12 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200/50 dark:border-white/10 flex items-center justify-center mb-3">
                 <span className="text-xl">🏦</span>
               </div>

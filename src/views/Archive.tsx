@@ -117,7 +117,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
   return (
     <div className="flex flex-col gap-3">
       {/* Filters Section */}
-      <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2rem] border border-slate-200/50 dark:border-white/10 shadow-xl p-3 sm:p-4 flex flex-col gap-3 sm:gap-4">
+      <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl border border-slate-200/50 dark:border-white/10 shadow-xl p-3 sm:p-4 flex flex-col gap-3 sm:gap-4">
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -292,11 +292,13 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                   className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer"
                 >
                   <div className="flex items-center gap-3 sm:gap-4">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[var(--percent-bg)] text-[var(--accent-color)] flex items-center justify-center font-bold text-base sm:text-lg shrink-0">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[var(--accent-color)]/10 dark:bg-[var(--accent-color)]/30 text-[var(--accent-color)] flex items-center justify-center font-bold text-base sm:text-lg shrink-0">
                       {month.monthId.split('-')[1]}
                     </div>
                     <div className="text-left min-w-0">
-                      <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white capitalize leading-tight truncate">{formatMonthId(month.monthId)}</h3>
+                      <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white leading-tight truncate">
+                        {capitalize(formatMonthId(month.monthId))}
+                      </h3>
                       <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">{month.entries.length} {month.entries.length === 1 ? 'банк' : month.entries.length < 5 ? 'банка' : 'банков'}</p>
                     </div>
                   </div>

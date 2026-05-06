@@ -114,7 +114,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
     <div className="flex flex-col gap-4 pb-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* MCC Directory Card - Order 1 */}
-        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2rem] border border-slate-200/50 dark:border-white/10 p-4 shadow-xl flex flex-col gap-3 order-1">
+        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl border border-slate-200/50 dark:border-white/10 p-4 shadow-xl flex flex-col gap-3 order-1">
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Search className="w-4 h-4 text-[var(--accent-color)]" />
@@ -134,7 +134,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
         </div>
 
         {/* Accent Color Card - Order 3 on mobile, 2 on desktop */}
-        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2rem] border border-slate-200/50 dark:border-white/10 p-4 shadow-xl flex flex-col gap-3 order-3 lg:order-2">
+        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl border border-slate-200/50 dark:border-white/10 p-4 shadow-xl flex flex-col gap-3 order-3 lg:order-2">
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Palette className="w-4 h-4 text-[var(--accent-color)]" />
@@ -184,7 +184,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
         </div>
 
         {/* Logo Shape Card - Order 2 on mobile, 3 on desktop */}
-        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2rem] border border-slate-200/50 dark:border-white/10 p-4 shadow-xl flex flex-col gap-3 order-2 lg:order-3">
+        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl border border-slate-200/50 dark:border-white/10 p-4 shadow-xl flex flex-col gap-3 order-2 lg:order-3">
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Circle className="w-4 h-4 text-[var(--accent-color)]" />
@@ -218,7 +218,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
         </div>
 
         {/* Text Color Card - Order 4 */}
-        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2rem] border border-slate-200/50 dark:border-white/10 p-4 shadow-xl flex flex-col gap-3 order-4">
+        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl border border-slate-200/50 dark:border-white/10 p-4 shadow-xl flex flex-col gap-3 order-4">
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Type className="w-4 h-4 text-[var(--accent-color)]" />
@@ -262,7 +262,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
 
 
         {/* Export Card - Full Width - Order 5 */}
-        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2rem] border border-slate-200/50 dark:border-white/10 p-4 shadow-xl space-y-3 lg:col-span-2 order-5">
+        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl border border-slate-200/50 dark:border-white/10 p-4 shadow-xl space-y-3 lg:col-span-2 order-5">
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Download className="w-4 h-4 text-[var(--accent-color)]" />
@@ -329,7 +329,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
         {isAdmin && (
           <>
             {/* Version History Card */}
-            <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2rem] border border-slate-200/50 dark:border-white/10 p-4 shadow-xl space-y-3 order-6">
+            <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl border border-slate-200/50 dark:border-white/10 p-4 shadow-xl space-y-3 order-6">
               <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
                 <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
                   <FileText className="w-4 h-4 text-[var(--accent-color)]" />
@@ -347,7 +347,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
 
             {/* Test Data Card */}
             {onAddTestData && (
-              <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2rem] border border-slate-200/50 dark:border-white/10 p-4 shadow-xl space-y-3 order-6">
+              <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl border border-slate-200/50 dark:border-white/10 p-4 shadow-xl space-y-3 order-6">
                 <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
                   <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
                     <RotateCcw className="w-4 h-4 text-[var(--accent-color)]" />

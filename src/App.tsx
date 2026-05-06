@@ -775,10 +775,10 @@ export default function App() {
                 <Wallet className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-[20px] font-black text-slate-900 dark:text-white tracking-tight leading-none">
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight leading-none">
                   Cashback
                 </h1>
-                <p className="text-[10px] font-black text-[var(--accent-color)] uppercase tracking-widest mt-1">
+                <p className="text-[10px] font-bold text-[var(--accent-color)] uppercase tracking-widest mt-1">
                   Tracker Pro
                 </p>
               </div>
@@ -859,11 +859,11 @@ export default function App() {
       >
         <div className="max-w-3xl mx-auto bg-white/90 dark:bg-slate-950/90 backdrop-blur-2xl border border-slate-200/50 dark:border-white/10 rounded-3xl px-4 py-2.5 flex items-center justify-between shadow-xl">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[var(--accent-color)] opacity-90 rounded-2xl flex items-center justify-center shadow-sm">
+            <div className="w-10 h-10 bg-gradient-to-br from-[var(--accent-color)] to-[var(--accent-color)] opacity-90 rounded-[22%] flex items-center justify-center shadow-lg">
               <Wallet className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-[22px] font-black text-slate-900 dark:text-white tracking-tight leading-none">
+              <h1 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight leading-none">
                 Cashback
               </h1>
               <p className="text-[10px] font-black text-[var(--accent-color)] uppercase tracking-widest mt-0.5">

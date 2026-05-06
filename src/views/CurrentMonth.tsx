@@ -636,7 +636,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
         </AnimatePresence>
 
         {/* Table/Bank List Switcher - Simplified and Compact */}
-        <div className="flex p-1 gap-1 relative bg-slate-100/50 dark:bg-slate-800/50 backdrop-blur-md rounded-full overflow-hidden shadow-inner w-full border border-slate-200/50 dark:border-white/10">
+        <div className="flex gap-1 relative bg-slate-100/50 dark:bg-slate-800/50 backdrop-blur-md rounded-full overflow-hidden shadow-inner w-full border border-slate-200/50 dark:border-white/10">
             <div
               className="absolute inset-y-1 rounded-full bg-white dark:bg-slate-900 shadow-sm border border-slate-200/50 dark:border-white/5 z-0 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]"
               style={{

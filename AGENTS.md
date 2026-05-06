@@ -1,56 +1,63 @@
-Cashback Tracker Pro - UI/UX Design System & Developer Guidelines
+# Cashback Tracker Pro - UI/UX Design System & Developer Guidelines
 
-This file contains the core UI/UX guidelines for this project. All future modifications, refactoring, and new components MUST adhere to these styles.
+Этот файл содержит основные правила UI/UX для проекта. Все будущие изменения, рефакторинг и новые компоненты ДОЛЖНЫ строго следовать этим стилям.
 
-1. Visual Style & Theme
+## 1. Визуальный стиль и тема
 
-Glassmorphism: Extensive use of frosted glass effects for depth and modern look.
-Standard glass panel: bg-white/60 dark:bg-slate-900/60 backdrop-blur-md
-Deep glass panel (modals/main cards): bg-white/90 dark:bg-slate-950/90 backdrop-blur-2xl
-Borders: Subtle, barely visible borders for separation.
-Light mode: border-slate-200 or border-slate-200/50
-Dark mode: border-white/10 or border-white/[0.08]
-Shadows:
-General: shadow-sm for small UI elements, shadow-xl or shadow-2xl for floating cards and modals.
-Colored Glow: Buttons or active elements often cast a soft colored glow, e.g., shadow-[var(--accent-color)]/20.
+*   **Глассморфизм (Glassmorphism):** Активно используется эффект матового стекла для создания глубины.
+    *   *Стандартная панель:* `bg-white/60 dark:bg-slate-900/60 backdrop-blur-md`
+    *   *Глубокая панель (модальные окна/основные карточки):* `bg-white/90 dark:bg-slate-950/90 backdrop-blur-2xl`
+*   **Границы (Borders):** Тонкие, едва заметные разделители.
+    *   *Светлая тема:* `border-slate-200/50`
+    *   *Темная тема:* `border-white/10` или `border-white/[0.08]`
+*   **Тени (Shadows):**
+    *   *Общие:* `shadow-sm` для мелких элементов, `shadow-xl` или `shadow-2xl` для плавающих карточек и модалок.
+    *   *Градиенты и Glow:* Основные кнопки и активные элементы могут иметь мягкое свечение: `shadow-[var(--accent-color)]/20`.
 
-2. Color Palette
+## 2. Цветовая палитра и переменные
 
-Brand / Primary: We use CSS variables `var(--accent-color)` and `var(--percent-bg)`. The user can change these in the settings, so DO NOT hardcode colors like `emerald-500`. ALWAYS use `bg-[var(--accent-color)]`, `text-[var(--accent-color)]`, `border-[var(--accent-color)]`, etc. Used for "income", active states, positive trends, and primary buttons.
-Secondary / Actions:
-Amber (amber-400, amber-500) for "cash-out", maturity, pending states.
-Red (red-500) for destructive actions (delete, close) or expenses.
-Backgrounds:
-Light mode: bg-slate-50 for app background, bg-white for solid cards.
-Dark mode: bg-[#0B0F19] / bg-slate-950 for app background, bg-[#111315] / bg-slate-900 for solid cards.
-Typography Colors:
-Headers/Primary text: text-slate-900 dark:text-white
-Secondary/Muted text: text-slate-500 dark:text-slate-400
+*   **Бренд / Акцент:** Используем переменные `--accent-color` (основной цвет) и `--percent-bg` (фон для блоков процентов).
+    *   **ВНИМАНИЕ:** НИКОГДА не хардкодьте цвета (например, `emerald-500`). ВСЕГДА используйте `bg-[var(--accent-color)]`, `text-[var(--accent-color)]`, `border-[var(--accent-color)]` и т.д.
+*   **Вторичные действия:**
+    *   *Янтарный (amber):* Для состояний "выплаты", ожидания или завершения периода.
+    *   *Красный (red):* Для удаления, ошибок или отрицательных трендов.
+*   **Фоны (Backgrounds):**
+    *   *Светлая тема:* `bg-slate-50` (фон приложения), `bg-white` (сплошные карточки).
+    *   *Темная тема:* `bg-[#030712]` / `slate-950` (фон приложения), `bg-slate-900` (сплошные карточки).
+*   **Типографика (Цвета):**
+    *   *Заголовки/Текст:* `text-gray-900 dark:text-white`
+    *   *Дополнительный/Приглушенный:* `text-gray-500 dark:text-gray-400`
 
-3. Typography Rules
+## 3. Правила типографики
 
-Main Headings: Strong, bold typography. Pattern: font-black uppercase tracking-tight.
-Small Labels / Subtitles: Pattern: text-[10px] or text-[8px], font-bold or font-black, uppercase tracking-widest, usually muted (text-slate-500).
-Numbers/Amounts: Emphasize numbers related to money with primary colors and bold weights.
+*   **Шрифт:** Основной шрифт проекта — **Inter**.
+*   **Заголовки (Main Headings):** Используем `font-bold` или `font-black` (в зависимости от контекста, предпочтительно `font-bold` для чистоты) с `tracking-tight`. Например: `text-xl font-bold tracking-tight`.
+*   **Ярлыки и подписи (Labels):** Размер `text-[10px]` или `text-[8px]`, `font-bold`, `uppercase`, `tracking-widest`.
+*   **Месяцы и Даты:** Месяцы (например, в заголовках таблиц) выводятся с большой буквы через функцию `capitalize`. **ВАЖНО:** Месяцы в заголовках НЕ должны быть в `uppercase`.
 
-4. Shapes & Rounding (Border Radius)
+## 4. Формы и скругления (Border Radius)
 
-Large containers (modals, main dashboard cards): Soft oversized corners like rounded-[2rem] or rounded-[2.5rem].
-Inner elements (buttons, inputs, filters, chips): Standardized to rounded-xl or rounded-2xl to match the outer softness.
+*   **Основные блоки (Dashboard, Таблицы, Модалки):** Используем `rounded-3xl` (ранее было `rounded-[2rem]`). Это стандарт для крупных контейнеров.
+*   **Внутренние элементы:** Кнопки, инпуты, чипсы фильтров — `rounded-xl` или `rounded-2xl`.
+*   **Иконка логотипа:** В хедере используется специфическое скругление `rounded-[22%]`, напоминающее форму суперэллипса Apple.
 
-5. Interaction & Animation
+## 5. Интерактивность и анимация
 
-Hover States:
-Buttons: Brighten or slightly pronounce the background hover:bg-white/80 dark:hover:bg-white/10 transition-all.
-Cards: Give outline feedback hover:border-[var(--accent-color)]/30.
-Click States: Physical button press feel using active:scale-95.
-Framer Motion: Use for smooth layout transitions (layoutId), modal entering (AnimatePresence), and pop-overs (initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}).
+*   **Ховеры (Hover):**
+    *   *Кнопки:* Приглушенное выделение `hover:bg-white/80 dark:hover:bg-white/10`.
+    *   *Карточки:* Мягкая подсветка границ `hover:border-[var(--accent-color)]/30`.
+*   **Клики:** Эффект физического нажатия через `active:scale-95`.
+*   **Framer Motion:** Используем для плавных переходов состояний (`layoutId`), появления модалок (`AnimatePresence`) и выпадающих списков.
 
-6. Layouts & Structure
+## 6. Локализация и контент
 
-Scrollbars: Hide default system scrollbars on custom horizontal/vertical scrolling containers using [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none].
-Action Blocks: Group related actions (like close buttons, navigation) consistently in top-right or logical corners with a unified background block.
+*   Приложение полностью на **русском языке**.
+*   Используйте `pluralize` (из `utils/format`) для правильных окончаний (банк, банка, банков).
+*   Числа, связанные с деньгами, должны быть четко выделены жирным шрифтом и, при необходимости, акцентным цветом.
 
-Rule of Thumb for AI Agents:
+---
 
-When asked to build or modify a new component, DO NOT use standard default Tailwind (like basic square buttons or generic flat grey backgrounds). Blend it with the glassmorphism, rounded corners, and dynamic accent colors (via `[var(--accent-color)]`) design rules defined above so it feels like a native part of the Cashback Tracker Pro platform. DO NOT HARDCODE EMERALD OR OTHER SPECIFIC COLORS for the primary accent color.
+**Золотое правило для AI-агентов:**
+
+При создании или изменении компонентов НЕ используйте стандартные дефолты Tailwind (квадратные углы, серые плоские фоны). Смешивайте компоненты с глассморфизмом, скруглениями `3xl` и динамическими акцентными цветами через `[var(--accent-color)]`. Интерфейс должен выглядеть "премиально", легко и воздушно.
+
