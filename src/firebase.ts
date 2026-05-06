@@ -9,16 +9,24 @@ import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 // Firebase конфигурация из .env / Vercel
+// ======================
+// Проверка конфигурации
+// ======================
+export const isFirebaseConfigured = !!(
+  import.meta.env.VITE_FIREBASE_API_KEY &&
+  import.meta.env.VITE_FIREBASE_PROJECT_ID
+);
+
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'placeholder',
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'placeholder',
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
+// Initialize Firebase only if keys exist or with placeholders to prevent crash
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
@@ -87,6 +95,10 @@ export function handleFirestoreError(
 
 // Auth functions
 export const loginWithGoogle = async () => {
+  if (!isFirebaseConfigured) {
+    console.error('Firebase is not configured. Please add keys to environment.');
+    return null;
+  }
   try {
     const result = await signInWithPopup(auth, googleProvider);
     return result.user;
@@ -100,6 +112,8 @@ export const logout = () => signOut(auth);
 
 // Connection test
 async function testConnection() {
+  if (!isFirebaseConfigured) return;
+  
   try {
     await getDocFromServer(doc(db, 'test', 'connection'));
   } catch (error) {
