@@ -772,7 +772,7 @@ export default function App() {
           <div className="flex items-center mb-12 px-1">
             <div className="flex items-center gap-3 flex-1">
               <div className="w-11 h-11 bg-gradient-to-br from-[var(--accent-color)] to-[var(--accent-color)] opacity-90 rounded-[22%] flex items-center justify-center shadow-lg">
-                <Wallet className="w-5 h-5 text-white" />
+                <Wallet className="w-6 h-6 text-white" />
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight leading-none">

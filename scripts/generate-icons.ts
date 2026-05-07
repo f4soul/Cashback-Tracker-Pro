@@ -17,6 +17,7 @@ async function generateIcons() {
     // Generate 192x192
     await sharp(inputSvg)
       .resize(192, 192)
+      .flatten({ background: { r: 255, g: 255, b: 255 } })
       .png()
       .toFile(path.join(outputDir, 'pwa-192x192.png'));
     console.log('Created pwa-192x192.png');
@@ -24,16 +25,19 @@ async function generateIcons() {
     // Generate 512x512
     await sharp(inputSvg)
       .resize(512, 512)
+      .flatten({ background: { r: 255, g: 255, b: 255 } })
       .png()
       .toFile(path.join(outputDir, 'pwa-512x512.png'));
     console.log('Created pwa-512x512.png');
 
     // Updated apple-touch-icon.png (180x180)
+    // iOS doesn't handle transparency well, so we flatten it with a background color
     await sharp(inputSvg)
       .resize(180, 180)
+      .flatten({ background: { r: 255, g: 255, b: 255 } }) // White background for the icon
       .png()
       .toFile(path.join(outputDir, 'apple-touch-icon.png'));
-    console.log('Updated apple-touch-icon.png (180x180)');
+    console.log('Updated apple-touch-icon.png (180x180) - Flattened background');
 
     // Generate favicon.ico (or just favicon.png 32x32)
     await sharp(inputSvg)

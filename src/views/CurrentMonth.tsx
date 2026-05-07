@@ -115,7 +115,7 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
         ref={ref}
         style={style}
         className={clsx(
-          'flex items-center justify-between p-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-200/50 dark:border-white/10 shadow-sm group/card select-none hover:border-[var(--accent-color)]/30 transition-all',
+          'flex items-center justify-between p-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-200/50 dark:border-white/10 shadow-sm group/card select-none hover:border-[var(--accent-color)]/30 transition-all translate-z-0',
           isDragging && !isOverlay && 'opacity-30',
           isOverlay &&
             'border-[var(--accent-color)] shadow-2xl scale-105 z-50 ring-2 ring-[var(--accent-color)]/50 cursor-grabbing bg-white dark:bg-slate-900',
@@ -636,7 +636,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
         </AnimatePresence>
 
         {/* Table/Bank List Switcher - Simplified and Compact */}
-        <div className="flex p-0.5 gap-1 relative bg-slate-100/50 dark:bg-slate-800/50 backdrop-blur-md rounded-full overflow-hidden shadow-inner w-full border border-slate-200/50 dark:border-white/10">
+        <div className="flex p-0.5 gap-1 relative bg-slate-100/50 dark:bg-slate-800/50 backdrop-blur-md rounded-full overflow-hidden shadow-inner w-full border border-slate-200/50 dark:border-white/10 translate-z-0">
             <div
               className="absolute inset-y-1 rounded-full bg-white dark:bg-slate-900 shadow-sm border border-slate-200/50 dark:border-white/5 z-0 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]"
               style={{
