@@ -115,7 +115,7 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
         ref={ref}
         style={style}
         className={clsx(
-          'flex items-center justify-between p-3 bg-white/90 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl border border-slate-200/50 dark:border-white/10 shadow-sm group/card select-none hover:border-[var(--accent-color)]/30 transition-all translate-z-0 [backface-visibility:hidden] will-change-[backdrop-filter,transform]',
+          'flex items-center justify-between p-3 bg-white/98 dark:bg-slate-900/98 backdrop-blur-md rounded-2xl border border-slate-200/50 dark:border-white/10 shadow-sm group/card select-none hover:border-[var(--accent-color)]/30 transition-all translate-z-0 [backface-visibility:hidden] will-change-[backdrop-filter,transform]',
           isDragging && !isOverlay && 'opacity-30',
           isOverlay &&
             'border-[var(--accent-color)] shadow-2xl scale-105 z-50 ring-2 ring-[var(--accent-color)]/50 cursor-grabbing bg-white dark:bg-slate-900',
