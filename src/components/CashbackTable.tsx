@@ -76,14 +76,14 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
     return (
       <div
         id={id}
-        className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl shadow-xl border border-slate-200/50 dark:border-white/10 p-2 sm:p-4 w-full mx-auto overflow-hidden relative transition-all duration-500 translate-z-0"
+        className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl shadow-xl border border-slate-200/50 dark:border-white/10 p-2 sm:p-4 w-full mx-auto overflow-hidden relative transition-all duration-500 translate-z-0 [backface-visibility:hidden]"
       >
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-4 px-1 gap-2 flex-wrap">
             <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
               {isAfter25 && allMonthIds.length > 1 ? (
                 <>
-                  <div className="flex bg-white/60 dark:bg-slate-900/60 backdrop-blur-md rounded-2xl p-0.5 shrink-0 [.pdf-export-mode_&]:hidden border border-slate-200/50 dark:border-white/10 shadow-sm translate-z-0">
+                  <div className="flex bg-white/60 dark:bg-slate-900/60 backdrop-blur-md rounded-2xl p-0.5 shrink-0 [.pdf-export-mode_&]:hidden border border-slate-200/50 dark:border-white/10 shadow-sm translate-z-0 [backface-visibility:hidden]">
                     {allMonthIds.map((mId) => (
                       <button
                         key={mId}
@@ -194,7 +194,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                 return (
                   <div
                     key={entry.id}
-                    className="flex flex-row items-stretch gap-2 p-1.5 rounded-2xl bg-white/60 dark:bg-[#0B0F19]/60 border border-slate-200/50 dark:border-white/10 hover:bg-white dark:hover:bg-slate-900 hover:shadow-sm hover:border-[var(--accent-color)]/30 backdrop-blur-md transition-all duration-300 group translate-z-0"
+                    className="flex flex-row items-stretch gap-2 p-1.5 rounded-2xl bg-white/60 dark:bg-[#0B0F19]/95 border border-slate-200/50 dark:border-white/10 hover:bg-white dark:hover:bg-slate-900 hover:shadow-sm hover:border-[var(--accent-color)]/30 backdrop-blur-md transition-all duration-300 group translate-z-0 [backface-visibility:hidden] will-change-[backdrop-filter,transform]"
                     role="row"
                     aria-label={`Банк ${bank.name}`}
                   >
