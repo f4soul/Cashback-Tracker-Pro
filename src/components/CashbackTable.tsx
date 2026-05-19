@@ -194,7 +194,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                 return (
                   <div
                     key={entry.id}
-                    className="flex flex-row items-stretch gap-2 p-1.5 rounded-2xl bg-white/98 dark:bg-[#0B0F19]/98 border border-slate-200/50 dark:border-white/10 hover:bg-white dark:hover:bg-slate-900 hover:shadow-sm hover:border-[var(--accent-color)]/30 transition-all duration-300 group translate-z-0 [backface-visibility:hidden] will-change-[transform]"
+                    className="flex flex-row items-stretch gap-2 p-1.5 rounded-2xl bg-white/98 dark:bg-[#0B0F19]/98 border border-slate-200/50 dark:border-white/10 hover:bg-white dark:hover:bg-slate-900 hover:shadow-sm hover:border-[var(--accent-color)]/30 transition-all duration-300 group translate-z-0 [backface-visibility:hidden] will-change-transform isolate"
                     role="row"
                     aria-label={`Банк ${bank.name}`}
                   >
@@ -221,7 +221,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                             <div
                               key={idx}
                               className={clsx(
-                                'flex items-center justify-between text-[11px] font-bold text-slate-800 dark:text-slate-200 px-2 py-1',
+                                'flex items-center justify-between text-[11px] font-bold text-slate-800 dark:text-slate-200 px-2 py-1 translate-z-0',
                                 idx !== arr.length - 1 &&
                                   'border-b border-slate-100 dark:border-white/[0.04]',
                               )}
@@ -230,7 +230,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                                 {formatCategoryName(name)}
                               </span>
                               {percent && (
-                                <span className="text-[var(--percent-text)] font-extrabold bg-[var(--percent-bg)] px-1.5 py-0.5 rounded-[4px] text-[10px] shrink-0 leading-none translate-z-0">
+                                <span className="text-[var(--percent-text)] font-extrabold bg-[var(--percent-bg)] px-1.5 py-0.5 rounded-[4px] text-[10px] shrink-0 leading-none translate-z-0 [backface-visibility:hidden]">
                                   {percent}%
                                 </span>
                               )}
