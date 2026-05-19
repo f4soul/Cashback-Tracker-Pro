@@ -328,11 +328,11 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                           transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
                           className="overflow-hidden translate-z-0 will-change-[height,opacity] isolate"
                         >
-                          <div className="p-4 sm:p-5 pt-0 border-t border-slate-200/50 dark:border-white/10 bg-slate-50/50 dark:bg-slate-900/50 translate-z-0">
+                          <div className="p-4 sm:p-5 pt-0 border-t border-slate-200/50 dark:border-white/10 bg-slate-50 dark:bg-slate-900 translate-z-0">
                             {/* Compact banks list in Archive */}
                             <div className="flex flex-col gap-2 mb-4 sm:mb-6 mt-4 sm:mt-6">
                               <div className="px-1">
-                                <h4 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Банки в этом месяце</h4>
+                                <h4 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none">Банки в этом месяце</h4>
                               </div>
                               <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
                                 {month.entries.map(entry => {
@@ -346,9 +346,9 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                                   return (
                                     <motion.div 
                                       key={entry.id} 
-                                      initial={{ opacity: 0, scale: 0.95 }}
-                                      animate={{ opacity: 1, scale: 1 }}
-                                      className="flex items-center gap-2.5 sm:gap-3.5 p-2.5 sm:p-3.5 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md rounded-3xl border border-slate-200/50 dark:border-white/10 shadow-sm hover:shadow-md hover:border-[var(--accent-color)]/30 transition-all group translate-z-0 [backface-visibility:hidden] isolate"
+                                      initial={{ opacity: 0 }}
+                                      animate={{ opacity: 1 }}
+                                      className="flex items-center gap-2.5 sm:gap-3.5 p-2.5 sm:p-3.5 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/50 dark:border-white/10 shadow-sm hover:shadow-md hover:border-[var(--accent-color)]/30 transition-all group translate-z-0 [backface-visibility:hidden] isolate"
                                     >
                                       <div className="shrink-0">
                                         <BankLogo 
@@ -370,7 +370,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                               </div>
                             </div>
 
-                            <div className="flex p-0.5 bg-slate-100/50 dark:bg-white/5 backdrop-blur-md rounded-3xl border border-slate-200/50 dark:border-white/10 mb-4 translate-z-0">
+                            <div className="flex p-0.5 bg-slate-100 dark:bg-white/5 rounded-3xl border border-slate-200/50 dark:border-white/10 mb-4 translate-z-0">
                               <button 
                                 onClick={() => handleExportImage(month.monthId)}
                                 className="flex-1 flex flex-col items-center justify-center py-2 rounded-xl hover:bg-white/80 dark:hover:bg-white/10 hover:shadow-sm transition-all group cursor-pointer active:scale-95"
