@@ -76,7 +76,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
     return (
       <div
         id={id}
-        className="bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl rounded-3xl shadow-xl border border-slate-200/50 dark:border-white/10 p-2 sm:p-4 w-full mx-auto overflow-hidden relative transition-all duration-500 translate-z-0 [backface-visibility:hidden]"
+        className="bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl rounded-3xl shadow-xl border border-slate-200/50 dark:border-white/10 p-2 sm:p-4 w-full mx-auto overflow-hidden relative transition-all duration-500 translate-z-0 [backface-visibility:hidden] isolate"
       >
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-4 px-1 gap-2 flex-wrap">
@@ -194,7 +194,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                 return (
                   <div
                     key={entry.id}
-                    className="flex flex-row items-stretch gap-2 p-1.5 rounded-2xl bg-white/98 dark:bg-[#0B0F19]/98 border border-slate-200/50 dark:border-white/10 hover:bg-white dark:hover:bg-slate-900 hover:shadow-sm hover:border-[var(--accent-color)]/30 backdrop-blur-md transition-all duration-300 group translate-z-0 [backface-visibility:hidden] will-change-[backdrop-filter,transform]"
+                    className="flex flex-row items-stretch gap-2 p-1.5 rounded-2xl bg-white/98 dark:bg-[#0B0F19]/98 border border-slate-200/50 dark:border-white/10 hover:bg-white dark:hover:bg-slate-900 hover:shadow-sm hover:border-[var(--accent-color)]/30 transition-all duration-300 group translate-z-0 [backface-visibility:hidden] will-change-[transform]"
                     role="row"
                     aria-label={`Банк ${bank.name}`}
                   >
@@ -230,7 +230,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                                 {formatCategoryName(name)}
                               </span>
                               {percent && (
-                                <span className="text-[var(--percent-text)] font-extrabold bg-[var(--percent-bg)] px-1.5 py-0.5 rounded-[4px] text-[10px] shrink-0 leading-none">
+                                <span className="text-[var(--percent-text)] font-extrabold bg-[var(--percent-bg)] px-1.5 py-0.5 rounded-[4px] text-[10px] shrink-0 leading-none translate-z-0">
                                   {percent}%
                                 </span>
                               )}
