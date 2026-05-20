@@ -114,27 +114,27 @@ export const Settings: React.FC<SettingsProps> = memo(({
     <div className="flex flex-col gap-4 pb-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* MCC Directory Card - Order 1 */}
-        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl border border-slate-200/50 dark:border-white/10 p-4 shadow-xl flex flex-col gap-3 order-1">
+        <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-1">
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Search className="w-4 h-4 text-[var(--accent-color)]" />
             </div>
-            <h2 className="text-sm">Справочник МСС</h2>
+            <h2 className="text-sm border-transparent mt-[1px]">Справочник МСС</h2>
           </div>
           
           <div className="flex-1 flex items-center">
             <button
               onClick={() => setIsMccDirectoryOpen(true)}
-              className="w-full py-3.5 px-4 bg-slate-50 dark:bg-slate-950 hover:bg-white dark:hover:bg-slate-900 border border-slate-200/50 dark:border-white/10 rounded-xl text-[10px] font-black text-[var(--accent-color)] uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 shadow-inner hover:shadow-sm active:scale-95"
+              className="w-full py-3.5 px-4 bg-[#FAFAFA] dark:bg-[#111] hover:bg-white dark:hover:bg-[#1A1A1A] border border-slate-100 dark:border-white/5 rounded-[1.25rem] text-[10px] font-black text-[var(--accent-color)] uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-none hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] active:scale-95"
             >
-              <Search className="w-4 h-4" />
-              Открыть справочник
+              <Search className="w-3.5 h-3.5 shrink-0" />
+              <span className="leading-none mt-[1px]">Открыть справочник</span>
             </button>
           </div>
         </div>
 
         {/* Accent Color Card - Order 3 on mobile, 2 on desktop */}
-        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl border border-slate-200/50 dark:border-white/10 p-4 shadow-xl flex flex-col gap-3 order-3 lg:order-2">
+        <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-3 lg:order-2">
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Palette className="w-4 h-4 text-[var(--accent-color)]" />
@@ -184,24 +184,24 @@ export const Settings: React.FC<SettingsProps> = memo(({
         </div>
 
         {/* Logo Shape Card - Order 2 on mobile, 3 on desktop */}
-        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl border border-slate-200/50 dark:border-white/10 p-4 shadow-xl flex flex-col gap-3 order-2 lg:order-3">
+        <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-2 lg:order-3">
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Circle className="w-4 h-4 text-[var(--accent-color)]" />
             </div>
-            <h2 className="text-sm">Форма логотипов</h2>
+            <h2 className="text-sm border-transparent mt-[1px]">Форма логотипов</h2>
           </div>
           
           <div className="flex-1 flex items-center">
-            <div className="flex p-1 bg-slate-50 dark:bg-slate-950 rounded-[1.5rem] border border-slate-200/50 dark:border-white/10 w-full shadow-inner">
+            <div className="flex p-1 bg-white dark:bg-[#1A1A1A] rounded-[1.25rem] border border-slate-100 dark:border-white/5 shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] w-full">
               {(['circle', 'square', 'rectangle'] as LogoShape[]).map((shape) => (
                 <button
                   key={shape}
                   onClick={() => updateSetting('logoShape', shape)}
                   className={clsx(
-                    "flex-1 flex items-center justify-center py-2.5 rounded-[1.25rem] transition-all cursor-pointer active:scale-95",
+                    "flex-1 flex items-center justify-center py-2.5 rounded-xl transition-all cursor-pointer active:scale-95",
                     settings.logoShape === shape
-                      ? "bg-white dark:bg-slate-900 shadow-sm border border-slate-200/50 dark:border-white/10 text-[var(--accent-color)]"
+                      ? "bg-slate-50 dark:bg-white/[0.05] shadow-sm border border-slate-100 dark:border-transparent text-[var(--accent-color)]"
                       : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 border border-transparent"
                   )}
                 >
@@ -218,7 +218,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
         </div>
 
         {/* Text Color Card - Order 4 */}
-        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl border border-slate-200/50 dark:border-white/10 p-4 shadow-xl flex flex-col gap-3 order-4">
+        <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-4">
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Type className="w-4 h-4 text-[var(--accent-color)]" />
@@ -262,58 +262,58 @@ export const Settings: React.FC<SettingsProps> = memo(({
 
 
         {/* Export Card - Full Width - Order 5 */}
-        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl border border-slate-200/50 dark:border-white/10 p-4 shadow-xl space-y-3 lg:col-span-2 order-5">
+        <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] space-y-3 lg:col-span-2 order-5">
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Download className="w-4 h-4 text-[var(--accent-color)]" />
             </div>
-            <h2 className="text-sm">Экспорт данных</h2>
+            <h2 className="text-sm border-transparent mt-[1px]">Экспорт данных</h2>
           </div>
           
-          <div className="flex p-1 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-white/5">
+          <div className="flex p-1 gap-1 bg-white dark:bg-[#1A1A1A] rounded-[1.25rem] border border-slate-100 dark:border-white/5 shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)]">
             <button 
               onClick={handleExportImage}
-              className="flex-1 flex flex-col items-center justify-center py-3 rounded-xl hover:bg-white dark:hover:bg-gray-800 hover:shadow-sm transition-all group cursor-pointer"
+              className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.02] hover:shadow-sm dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] border border-transparent dark:hover:border-white/5 transition-all group cursor-pointer active:scale-95"
               title="Изображение (PNG)"
             >
-              <ImageIcon className="w-5 h-5 text-blue-500 group-hover:scale-110 transition-transform mb-1" />
-              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight">PNG</span>
+              <ImageIcon className="w-5 h-5 text-blue-500 group-hover:scale-110 transition-transform mb-1 shrink-0" />
+              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight leading-none mt-0.5">PNG</span>
             </button>
 
             <button 
               onClick={handleExportExcel}
-              className="flex-1 flex flex-col items-center justify-center py-3 rounded-xl hover:bg-white dark:hover:bg-gray-800 hover:shadow-sm transition-all group cursor-pointer border-x border-gray-100 dark:border-white/5"
+              className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.02] hover:shadow-sm dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] border border-transparent dark:hover:border-white/5 transition-all group cursor-pointer active:scale-95"
               title="Таблица (Excel)"
             >
-              <FileSpreadsheet className="w-5 h-5 text-[var(--accent-color)] group-hover:scale-110 transition-transform mb-1" />
-              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight">Excel</span>
+              <FileSpreadsheet className="w-5 h-5 text-[var(--accent-color)] group-hover:scale-110 transition-transform mb-1 shrink-0" />
+              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight leading-none mt-0.5">Excel</span>
             </button>
 
             <button 
               onClick={handleExportPDF}
-              className="flex-1 flex flex-col items-center justify-center py-3 rounded-xl hover:bg-white dark:hover:bg-gray-800 hover:shadow-sm transition-all group cursor-pointer"
+              className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.02] hover:shadow-sm dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] border border-transparent dark:hover:border-white/5 transition-all group cursor-pointer active:scale-95"
               title="Документ (PDF)"
             >
-              <FileText className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform mb-1" />
-              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight">PDF</span>
+              <FileText className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform mb-1 shrink-0" />
+              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight leading-none mt-0.5">PDF</span>
             </button>
 
             <button 
               onClick={onExportJSON}
-              className="flex-1 flex flex-col items-center justify-center py-3 rounded-xl hover:bg-white dark:hover:bg-gray-800 hover:shadow-sm transition-all group cursor-pointer border-l border-gray-100 dark:border-white/5"
+              className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.02] hover:shadow-sm dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] border border-transparent dark:hover:border-white/5 transition-all group cursor-pointer active:scale-95"
               title="Экспорт JSON (Backup)"
             >
-              <Database className="w-5 h-5 text-indigo-500 group-hover:scale-110 transition-transform mb-1" />
-              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight">JSON</span>
+              <Database className="w-5 h-5 text-indigo-500 group-hover:scale-110 transition-transform mb-1 shrink-0" />
+              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight leading-none mt-0.5">JSON</span>
             </button>
 
             <button 
               onClick={handleImportClick}
-              className="flex-1 flex flex-col items-center justify-center py-3 rounded-xl hover:bg-white dark:hover:bg-gray-800 hover:shadow-sm transition-all group cursor-pointer border-l border-gray-100 dark:border-white/5"
+              className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.02] hover:shadow-sm dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] border border-transparent dark:hover:border-white/5 transition-all group cursor-pointer active:scale-95"
               title="Импорт JSON"
             >
-              <Upload className="w-5 h-5 text-amber-500 group-hover:scale-110 transition-transform mb-1" />
-              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight">Импорт</span>
+              <Upload className="w-5 h-5 text-amber-500 group-hover:scale-110 transition-transform mb-1 shrink-0" />
+              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight leading-none mt-0.5">Импорт</span>
               <input 
                 type="file" 
                 ref={fileInputRef} 
@@ -329,17 +329,17 @@ export const Settings: React.FC<SettingsProps> = memo(({
         {isAdmin && (
           <>
             {/* Version History Card */}
-            <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl border border-slate-200/50 dark:border-white/10 p-4 shadow-xl space-y-3 order-6">
+            <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] space-y-3 order-6">
               <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
                 <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
                   <FileText className="w-4 h-4 text-[var(--accent-color)]" />
                 </div>
-                <h2 className="text-sm">История версий</h2>
+                <h2 className="text-sm border-transparent mt-[1px]">История версий</h2>
               </div>
               
               <button
                 onClick={() => setIsVersionHistoryOpen(true)}
-                className="w-full py-3.5 px-4 bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm font-bold text-gray-700 dark:text-gray-300 transition-all cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-3.5 px-4 bg-[#FAFAFA] dark:bg-[#111] hover:bg-white dark:hover:bg-[#1A1A1A] border border-slate-100 dark:border-white/5 rounded-[1.25rem] text-sm font-bold text-gray-700 dark:text-gray-300 transition-all cursor-pointer flex items-center justify-center gap-2 hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] active:scale-95"
               >
                 Посмотреть историю изменений
               </button>
@@ -347,17 +347,17 @@ export const Settings: React.FC<SettingsProps> = memo(({
 
             {/* Test Data Card */}
             {onAddTestData && (
-              <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl border border-slate-200/50 dark:border-white/10 p-4 shadow-xl space-y-3 order-6">
+              <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] space-y-3 order-6">
                 <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
                   <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
                     <RotateCcw className="w-4 h-4 text-[var(--accent-color)]" />
                   </div>
-                  <h2 className="text-sm">Тестовые данные</h2>
+                  <h2 className="text-sm border-transparent mt-[1px]">Тестовые данные</h2>
                 </div>
                 
                 <button
                   onClick={onAddTestData}
-                  className="w-full py-3.5 px-4 bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm font-bold text-gray-700 dark:text-gray-300 transition-all cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full py-3.5 px-4 bg-[#FAFAFA] dark:bg-[#111] hover:bg-white dark:hover:bg-[#1A1A1A] border border-slate-100 dark:border-white/5 rounded-[1.25rem] text-sm font-bold text-gray-700 dark:text-gray-300 transition-all cursor-pointer flex items-center justify-center gap-2 hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] active:scale-95"
                 >
                   Добавить тестовые данные в архив
                 </button>

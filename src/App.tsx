@@ -59,16 +59,16 @@ const AuthButton = ({
           className={clsx(
             'flex items-center relative group transition-all',
             isMobile
-              ? 'w-10 h-10 justify-center bg-gray-100/50 dark:bg-white/5 border border-gray-200 dark:border-white/20 rounded-full cursor-pointer'
-              : 'px-4 py-3 bg-gray-100/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 w-full gap-3 rounded-3xl',
+              ? 'w-9 h-9 justify-center bg-slate-50 dark:bg-[#111] border border-slate-100 dark:border-white/5 rounded-full cursor-pointer shadow-sm hover:bg-slate-100 dark:hover:bg-white/10 active:scale-95'
+              : 'px-4 py-3 bg-gray-100/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 w-full gap-3 rounded-[1.25rem]',
           )}
         >
           {isSyncing && (
             <div
               className={clsx(
-                'absolute bg-blue-500 rounded-full border-2 border-white dark:border-[#1c1c1e] animate-pulse z-10',
+                'absolute bg-blue-500 rounded-full border-2 border-slate-50 dark:border-[#111] animate-pulse z-10 shrink-0 pointer-events-none',
                 isMobile
-                  ? 'top-0 right-0 w-2.5 h-2.5'
+                  ? '-top-1 -right-1 w-3.5 h-3.5'
                   : '-top-1 -right-1 w-3 h-3',
               )}
               title="Синхронизация..."
@@ -78,12 +78,12 @@ const AuthButton = ({
             <img
               src={user.photoURL}
               alt={user.displayName || ''}
-              className="w-8 h-8 rounded-full object-cover shrink-0"
+              className={clsx("rounded-full object-cover shrink-0 pointer-events-none", isMobile ? "w-full h-full" : "w-8 h-8")}
               referrerPolicy="no-referrer"
             />
           ) : (
-            <div className="w-8 h-8 rounded-full bg-[var(--accent-color)]/20 flex items-center justify-center shrink-0">
-              <User className="w-4 h-4 text-[var(--accent-color)]" />
+            <div className={clsx("rounded-full bg-[var(--accent-color)]/20 flex items-center justify-center shrink-0", isMobile ? "w-full h-full" : "w-8 h-8")}>
+              <User className={clsx("text-[var(--accent-color)]", isMobile ? "w-5 h-5": "w-4 h-4")} />
             </div>
           )}
           {!isMobile && (
@@ -117,9 +117,9 @@ const AuthButton = ({
     <button
       onClick={loginWithGoogle}
       className={clsx(
-        'flex items-center gap-2 rounded-2xl transition-all font-bold text-sm cursor-pointer shadow-lg shadow-[var(--accent-color)]/20 hover:bg-[var(--accent-color)] hover:brightness-110 active:scale-95',
+        'flex items-center gap-2 rounded-[1.25rem] transition-all font-bold text-sm cursor-pointer shadow-lg shadow-[var(--accent-color)]/20 hover:bg-[var(--accent-color)] hover:brightness-110 active:scale-95 shrink-0',
         isMobile
-          ? 'px-3 py-2 bg-[var(--accent-color)] text-white'
+          ? 'h-8 px-4 bg-[var(--accent-color)] text-white'
           : 'px-4 py-3 w-full bg-[var(--accent-color)] text-white justify-center',
       )}
       title="Войти в облако"
@@ -733,7 +733,7 @@ export default function App() {
     }
   }, [user, saveToFirestore, setAllData]);
   return (
-    <div className="h-[100dvh] overflow-hidden bg-slate-50 dark:bg-[#0B0F19] font-sans transition-colors duration-300 flex flex-col md:flex-row">
+    <div className="h-[100dvh] overflow-hidden bg-[#FAFAFA] dark:bg-[#0A0A0A] font-sans transition-colors duration-300 flex flex-col md:flex-row">
       <ConfirmModal
         isOpen={isLogoutModalOpen}
         onClose={() => setIsLogoutModalOpen(false)}
@@ -753,7 +753,7 @@ export default function App() {
         richColors
         toastOptions={{
           style: {
-            borderRadius: '24px',
+            borderRadius: '20px',
             padding: '14px 24px',
             border: '1px solid',
             fontSize: '13px',
@@ -767,11 +767,11 @@ export default function App() {
         }}
       />
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-[280px] h-full bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border-r border-slate-200/50 dark:border-white/10 z-40 shrink-0">
+      <aside className="hidden md:flex flex-col w-[280px] h-full bg-white dark:bg-[#111] border-r border-slate-100 dark:border-white/5 z-40 shrink-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
         <div className="px-6 py-10 flex flex-col h-full">
           <div className="flex items-center mb-12 px-1">
             <div className="flex items-center gap-3 flex-1">
-              <div className="w-11 h-11 bg-gradient-to-br from-[var(--accent-color)] to-[var(--accent-color)] opacity-90 rounded-[22%] flex items-center justify-center shadow-lg">
+              <div className="w-11 h-11 bg-[var(--accent-color)] opacity-90 rounded-[22%] flex items-center justify-center shadow-sm">
                 <Wallet className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -785,7 +785,7 @@ export default function App() {
             </div>
             <button
               onClick={toggleTheme}
-              className="w-10 h-10 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:bg-white/80 dark:hover:bg-white/10 transition-all active:scale-95 cursor-pointer flex items-center justify-center shadow-sm"
+              className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-[#1A1A1A] border border-slate-100 dark:border-white/5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 transition-all active:scale-95 cursor-pointer flex items-center justify-center shadow-sm"
               title={
                 theme === 'light'
                   ? 'Включить темную тему'
@@ -804,38 +804,38 @@ export default function App() {
             <button
               onClick={() => setActiveTab('current')}
               className={clsx(
-                'flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
+                'flex items-center gap-3 px-4 py-3.5 rounded-[1.25rem] transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
                 activeTab === 'current'
                   ? 'bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 border border-transparent'
                   : 'text-slate-500 dark:text-slate-400 hover:bg-white/80 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white hover:border-[var(--accent-color)]/30 border border-transparent',
               )}
             >
-              <Wallet className="w-5 h-5" />
-              Кэшбек
+              <Wallet className="w-5 h-5 shrink-0" />
+              <span className="leading-none mt-[1px]">Кэшбек</span>
             </button>
             <button
               onClick={() => setActiveTab('archive')}
               className={clsx(
-                'flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
+                'flex items-center gap-3 px-4 py-3.5 rounded-[1.25rem] transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
                 activeTab === 'archive'
                   ? 'bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 border border-transparent'
                   : 'text-slate-500 dark:text-slate-400 hover:bg-white/80 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white hover:border-[var(--accent-color)]/30 border border-transparent',
               )}
             >
-              <History className="w-5 h-5" />
-              Архив
+              <History className="w-5 h-5 shrink-0" />
+              <span className="leading-none mt-[1px]">Архив</span>
             </button>
             <button
               onClick={() => setActiveTab('settings')}
               className={clsx(
-                'flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
+                'flex items-center gap-3 px-4 py-3.5 rounded-[1.25rem] transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
                 activeTab === 'settings'
                   ? 'bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 border border-transparent'
                   : 'text-slate-500 dark:text-slate-400 hover:bg-white/80 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white hover:border-[var(--accent-color)]/30 border border-transparent',
               )}
             >
-              <SettingsIcon className="w-5 h-5" />
-              Настройки
+              <SettingsIcon className="w-5 h-5 shrink-0" />
+              <span className="leading-none mt-[1px]">Настройки</span>
             </button>
           </nav>
 
@@ -857,9 +857,9 @@ export default function App() {
           !headerVisible && '-translate-y-full',
         )}
       >
-        <div className="max-w-3xl mx-auto bg-white/90 dark:bg-slate-950/90 backdrop-blur-2xl border border-slate-200/50 dark:border-white/10 rounded-3xl px-4 py-2.5 flex items-center justify-between shadow-xl">
+        <div className="max-w-3xl mx-auto bg-white/95 dark:bg-[#1A1A1A]/95 backdrop-blur-2xl border border-slate-100 dark:border-white/5 rounded-[1.25rem] px-4 py-2.5 flex items-center justify-between shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-[var(--accent-color)] to-[var(--accent-color)] opacity-90 rounded-[22%] flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 bg-[var(--accent-color)] opacity-90 rounded-[22%] flex items-center justify-center shadow-sm">
               <Wallet className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -882,7 +882,7 @@ export default function App() {
             />
             <button
               onClick={toggleTheme}
-              className="w-10 h-10 rounded-full bg-white/60 dark:bg-slate-900/60 border border-slate-200/50 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:bg-white/80 dark:hover:bg-white/10 transition-all active:scale-95 cursor-pointer flex items-center justify-center shadow-sm"
+              className="w-9 h-9 rounded-full bg-slate-50 dark:bg-[#111] border border-slate-100 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 transition-all active:scale-95 cursor-pointer flex items-center justify-center shadow-sm"
               title={
                 theme === 'light'
                   ? 'Включить темную тему'
@@ -982,11 +982,11 @@ export default function App() {
           initial={false}
           animate={{
             maxWidth: navExpanded ? 320 : 180,
-            borderRadius: navExpanded ? 24 : 32,
+            borderRadius: 20,
             height: navExpanded ? 68 : 56,
           }}
           transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-          className="w-full bg-white/90 dark:bg-slate-950/90 backdrop-blur-2xl border border-slate-200/50 dark:border-white/10 shadow-2xl flex items-center px-1 overflow-hidden"
+          className="w-full bg-white/95 dark:bg-[#1A1A1A]/95 backdrop-blur-2xl border border-slate-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.4)] flex items-center px-1 overflow-hidden"
           onClick={() => !navExpanded && setNavExpanded(true)}
         >
           <button

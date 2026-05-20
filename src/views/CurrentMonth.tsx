@@ -115,10 +115,10 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
         ref={ref}
         style={style}
         className={clsx(
-          'flex items-center justify-between p-3 bg-white/98 dark:bg-slate-900/98 backdrop-blur-md rounded-2xl border border-slate-200/50 dark:border-white/10 shadow-sm group/card select-none hover:border-[var(--accent-color)]/30 transition-all translate-z-0 [backface-visibility:hidden] will-change-[backdrop-filter,transform]',
+          'flex items-center justify-between p-3 bg-white dark:bg-[#1A1A1A] rounded-[1.25rem] border border-slate-100 dark:border-white/5 shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] group/card select-none hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-slate-200/50 dark:hover:border-white/10 transition-all translate-z-0 [backface-visibility:hidden] will-change-[transform]',
           isDragging && !isOverlay && 'opacity-30',
           isOverlay &&
-            'border-[var(--accent-color)] shadow-2xl scale-105 z-50 ring-2 ring-[var(--accent-color)]/50 cursor-grabbing bg-white dark:bg-slate-900',
+            'border-[var(--accent-color)] shadow-2xl scale-105 z-50 ring-2 ring-[var(--accent-color)]/50 cursor-grabbing bg-white dark:bg-[#1A1A1A]',
         )}
       >
         <div className="flex items-center gap-3 min-w-0">
@@ -511,7 +511,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
 
     return (
       <div className="flex flex-col relative gap-1">
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
           {!isFabHidden ? (
             <motion.div
               key="fab-container"
@@ -559,7 +559,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                 setYOffset(snappedY);
               }}
               className="fixed bottom-[110px] md:bottom-8 z-50 touch-none select-none"
-              style={{ right: rightPos }}
+              style={{ right: rightPos, willChange: 'transform, opacity' }}
             >
               <button
                 onClick={(e) => {
@@ -622,8 +622,8 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                 );
                 setYOffset(snappedY);
               }}
-              className="fixed bottom-[110px] md:bottom-8 w-4 h-14 bg-[var(--accent-color)]/40 hover:bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-2xl transition-all touch-none select-none backdrop-blur-md"
-              style={{ right: 0 }}
+              className="fixed bottom-[110px] md:bottom-8 w-4 h-14 bg-[var(--accent-color)]/40 hover:bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-2xl transition-colors touch-none select-none backdrop-blur-md"
+              style={{ right: 0, willChange: 'transform, opacity' }}
               title="Показать кнопку (перетащите вертикально)"
             >
               <div className="flex flex-col items-center gap-0.5 opacity-40 group-hover:opacity-100 transition-opacity">
@@ -636,37 +636,37 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
         </AnimatePresence>
 
         {/* Table/Bank List Switcher - Simplified and Compact */}
-        <div className="flex p-0.5 gap-1 relative bg-slate-100/50 dark:bg-slate-800/80 backdrop-blur-md rounded-full overflow-hidden shadow-inner w-full border border-slate-200/50 dark:border-white/10 translate-z-0 [backface-visibility:hidden]">
+        <div className="flex p-0.5 gap-0.5 relative bg-white dark:bg-[#1A1A1A] rounded-2xl border border-slate-100 dark:border-white/5 shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] w-full mb-2 translate-z-0 [backface-visibility:hidden] z-10">
             <div
-              className="absolute inset-y-1 rounded-full bg-white dark:bg-slate-900 shadow-sm border border-slate-200/50 dark:border-white/5 z-0 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]"
+              className="absolute inset-y-0.5 rounded-[0.85rem] bg-slate-50 dark:bg-white/[0.05] shadow-sm z-0 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]"
               style={{
-                left: activeSubTab === 'table' ? '0.25rem' : '50%',
-                right: activeSubTab === 'table' ? '50%' : '0.25rem',
+                left: activeSubTab === 'table' ? '0.125rem' : '50%',
+                right: activeSubTab === 'table' ? '50%' : '0.125rem',
               }}
             />
             <button
               onClick={() => setActiveSubTab('table')}
               className={clsx(
-                'flex-1 flex items-center justify-center gap-2 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer relative z-10',
+                'flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-[0.85rem] text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer relative z-10',
                 activeSubTab === 'table'
                   ? 'text-[var(--accent-color)]'
                   : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300',
               )}
             >
-              <TableIcon className="w-4 h-4" />
-              Таблица
+              <TableIcon className="w-3.5 h-3.5 shrink-0" />
+              <span className="leading-none mt-[1px]">Таблица</span>
             </button>
             <button
               onClick={() => setActiveSubTab('list')}
               className={clsx(
-                'flex-1 flex items-center justify-center gap-2 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer relative z-10',
+                'flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-[0.85rem] text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer relative z-10',
                 activeSubTab === 'list'
                   ? 'text-[var(--accent-color)]'
                   : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300',
               )}
             >
-              <LayoutList className="w-4 h-4" />
-              Список банков
+              <LayoutList className="w-3.5 h-3.5 shrink-0" />
+              <span className="leading-none mt-[1px]">Список банков</span>
             </button>
         </div>
 
@@ -710,10 +710,10 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                       setEditingEntry(undefined);
                       setIsModalOpen(true);
                     }}
-                    className="flex flex-col items-center justify-center p-8 text-center bg-gray-50 dark:bg-gray-900/50 rounded-3xl border border-dashed border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group w-full cursor-pointer"
+                    className="flex flex-col items-center justify-center p-8 text-center bg-[#FAFAFA] dark:bg-[#111] rounded-[1.25rem] border border-dashed border-slate-200 dark:border-white/10 hover:bg-white dark:hover:bg-[#1A1A1A] transition-colors group w-full cursor-pointer"
                   >
-                    <Plus className="w-8 h-8 text-gray-300 mb-2 group-hover:text-[var(--accent-color)] transition-colors" />
-                    <p className="text-xs text-gray-500">
+                    <Plus className="w-8 h-8 text-slate-300 dark:text-slate-600 mb-2 group-hover:text-[var(--accent-color)] dark:group-hover:text-[var(--accent-color)] transition-colors" />
+                    <p className="text-xs text-slate-500">
                       Добавьте первый банк
                     </p>
                   </button>

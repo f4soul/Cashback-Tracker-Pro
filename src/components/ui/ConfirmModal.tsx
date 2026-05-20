@@ -69,7 +69,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             aria-modal="true"
             aria-labelledby="modal-title"
             aria-describedby="modal-description"
-            className="relative w-full max-w-[400px] bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-slate-200/50 dark:border-white/10"
+            className="relative w-full max-w-[400px] bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-2xl rounded-[2rem] shadow-[0_20px_60px_rgb(0,0,0,0.1)] dark:shadow-[0_20px_60px_rgb(0,0,0,0.4)] overflow-hidden flex flex-col border border-slate-100 dark:border-white/5"
           >
             <div className="p-6 sm:p-8 flex flex-col items-center text-center">
               <div className={clsx(
@@ -113,7 +113,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                   onClose();
                 }}
                 className={clsx(
-                  "flex-1 py-3.5 px-4 rounded-xl font-bold text-sm transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2",
+                  "flex-1 py-3.5 px-4 rounded-[1.25rem] font-bold text-sm transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2",
                   variant === 'danger' 
                     ? 'bg-red-500 hover:bg-red-600 text-white shadow-[0_4px_12px_rgba(239,68,68,0.3)] hover:shadow-[0_4px_16px_rgba(239,68,68,0.4)]' 
                     : variant === 'warning'
@@ -126,7 +126,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
               <button
                 ref={cancelRef}
                 onClick={onClose}
-                className="flex-1 py-3.5 px-4 rounded-xl font-bold text-sm text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-all active:scale-95 cursor-pointer shadow-sm border border-slate-200/50 dark:border-white/10"
+                className="flex-1 py-3.5 px-4 rounded-[1.25rem] font-bold text-sm text-slate-700 dark:text-slate-300 bg-[#FAFAFA] hover:bg-white dark:bg-[#111] dark:hover:bg-[#1A1A1A] transition-all active:scale-95 cursor-pointer shadow-sm border border-slate-100 dark:border-white/5"
               >
                 {cancelText}
               </button>

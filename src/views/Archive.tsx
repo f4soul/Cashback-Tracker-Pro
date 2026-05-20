@@ -117,7 +117,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
   return (
     <div className="flex flex-col gap-3">
       {/* Filters Section */}
-      <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl border border-slate-200/50 dark:border-white/10 shadow-xl p-3 sm:p-4 flex flex-col gap-3 sm:gap-4">
+      <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] p-3 sm:p-4 flex flex-col gap-3 sm:gap-4">
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -126,16 +126,16 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
               placeholder="Поиск по банку или категории..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200/50 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all shadow-inner"
+              className="w-full pl-9 pr-4 py-2.5 bg-[#FAFAFA] dark:bg-[#111] border border-slate-100 dark:border-white/5 rounded-[1.25rem] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all shadow-inner"
             />
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={clsx(
-              "p-2 rounded-xl border transition-all flex items-center justify-center cursor-pointer active:scale-95",
+              "p-2.5 rounded-[1.25rem] border transition-all flex items-center justify-center cursor-pointer active:scale-95",
               showFilters || selectedBankFilter || selectedCategoryFilter
                 ? "bg-[var(--accent-color)] border-[var(--accent-color)] shadow-md shadow-[var(--accent-color)]/20 text-white"
-                : "bg-slate-50 dark:bg-slate-950 border-slate-200/50 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 shadow-sm"
+                : "bg-[#FAFAFA] dark:bg-[#111] border border-slate-100 dark:border-white/5 text-slate-500 dark:text-slate-400 hover:bg-white dark:hover:bg-[#1A1A1A] shadow-sm"
             )}
           >
             <Filter className="w-5 h-5" />
@@ -152,7 +152,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                   setOpenBankDropdown(!openBankDropdown);
                   setOpenCategoryDropdown(false);
                 }}
-                className="w-full flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200/50 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all cursor-pointer shadow-inner"
+                className="w-full flex items-center justify-between px-3 py-2.5 bg-[#FAFAFA] dark:bg-[#111] border border-slate-100 dark:border-white/5 rounded-[1.25rem] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all cursor-pointer shadow-none hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] hover:bg-white dark:hover:bg-[#1A1A1A]"
               >
                 <div className="flex items-center gap-2 overflow-hidden">
                   {selectedBankFilter ? (
@@ -179,7 +179,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                       initial={{ opacity: 0, y: 4, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 4, scale: 0.95 }}
-                      className="absolute top-full left-0 right-0 mt-2 z-20 bg-white/95 dark:bg-slate-900/95 border border-slate-200/50 dark:border-white/10 backdrop-blur-2xl rounded-2xl shadow-xl max-h-64 overflow-y-auto scrollbar-hide p-1.5"
+                      className="absolute top-full left-0 right-0 mt-2 z-20 bg-white/95 dark:bg-[#1A1A1A]/95 border border-slate-100 dark:border-white/5 backdrop-blur-2xl rounded-[1.25rem] shadow-[0_8px_30px_rgb(0,0,0,0.12)] max-h-64 overflow-y-auto scrollbar-hide p-1.5"
                     >
                       <button
                         onClick={() => { setSelectedBankFilter(''); setOpenBankDropdown(false); }}
@@ -224,7 +224,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                   setOpenCategoryDropdown(!openCategoryDropdown);
                   setOpenBankDropdown(false);
                 }}
-                className="w-full flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200/50 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all cursor-pointer shadow-inner"
+                className="w-full flex items-center justify-between px-3 py-2.5 bg-[#FAFAFA] dark:bg-[#111] border border-slate-100 dark:border-white/5 rounded-[1.25rem] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all cursor-pointer shadow-none hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] hover:bg-white dark:hover:bg-[#1A1A1A]"
               >
                 <span className={clsx("truncate", !selectedCategoryFilter && "text-gray-400")}>
                   {selectedCategoryFilter || "Все категории"}
@@ -240,7 +240,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                       initial={{ opacity: 0, y: 4, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 4, scale: 0.95 }}
-                      className="absolute top-full left-0 right-0 mt-2 z-20 bg-white/95 dark:bg-slate-900/95 border border-slate-200/50 dark:border-white/10 backdrop-blur-2xl rounded-2xl shadow-xl max-h-64 overflow-y-auto scrollbar-hide p-1.5"
+                      className="absolute top-full left-0 right-0 mt-2 z-20 bg-white/95 dark:bg-[#1A1A1A]/95 border border-slate-100 dark:border-white/5 backdrop-blur-2xl rounded-[1.25rem] shadow-[0_8px_30px_rgb(0,0,0,0.12)] max-h-64 overflow-y-auto scrollbar-hide p-1.5"
                     >
                       <button
                         onClick={() => { setSelectedCategoryFilter(''); setOpenCategoryDropdown(false); }}
@@ -283,13 +283,20 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
         </div>
       ) : (
         <div className="flex flex-col gap-3 sm:gap-4">
-          {filteredData.map(month => {
+          {filteredData.map((month) => {
             const isExpanded = expandedMonths.has(month.monthId);
+            
+            const containerCls = "bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] overflow-hidden transition-all duration-500 translate-z-0 [backface-visibility:hidden] isolate relative";
+            const headerCls = "w-full flex items-center justify-between p-4 sm:p-5 hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors cursor-pointer relative z-10";
+            const expandWrapCls = "p-4 sm:p-5 pt-0 border-t border-slate-100 dark:border-white/5 bg-[#FAFAFA] dark:bg-[#111] translate-z-0 relative z-10";
+            const chipCls = "flex items-center gap-2.5 sm:gap-3.5 p-2.5 sm:p-3.5 bg-white dark:bg-[#1A1A1A] rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-[var(--accent-color)]/30 transition-all group translate-z-0 [backface-visibility:hidden] isolate";
+            const exportBoxCls = "flex p-1 gap-1 bg-white dark:bg-[#1A1A1A] rounded-[1.25rem] border border-slate-100 dark:border-white/5 shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] mb-4 translate-z-0";
+
             return (
-              <div key={month.monthId} className="bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl rounded-3xl border border-slate-200/50 dark:border-white/10 shadow-sm overflow-hidden translate-z-0 [backface-visibility:hidden] isolate">
+              <div key={month.monthId} className={containerCls}>
                 <div
                   onClick={() => toggleMonth(month.monthId)}
-                  className="w-full flex items-center justify-between p-4 sm:p-5 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                  className={headerCls}
                 >
                   <div className="flex items-center gap-3 sm:gap-4">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[var(--accent-color)]/10 dark:bg-[var(--accent-color)]/20 text-[var(--accent-color)] flex items-center justify-center font-bold text-base sm:text-lg shrink-0 shadow-sm">
@@ -328,7 +335,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                           transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
                           className="overflow-hidden translate-z-0 will-change-[height,opacity] isolate"
                         >
-                          <div className="p-4 sm:p-5 pt-0 border-t border-slate-200/50 dark:border-white/10 bg-slate-50 dark:bg-slate-900 translate-z-0">
+                          <div className={expandWrapCls}>
                             {/* Compact banks list in Archive */}
                             <div className="flex flex-col gap-2 mb-4 sm:mb-6 mt-4 sm:mt-6">
                               <div className="px-1">
@@ -348,7 +355,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                                       key={entry.id} 
                                       initial={{ opacity: 0 }}
                                       animate={{ opacity: 1 }}
-                                      className="flex items-center gap-2.5 sm:gap-3.5 p-2.5 sm:p-3.5 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/50 dark:border-white/10 shadow-sm hover:shadow-md hover:border-[var(--accent-color)]/30 transition-all group translate-z-0 [backface-visibility:hidden] isolate"
+                                      className={chipCls}
                                     >
                                       <div className="shrink-0">
                                         <BankLogo 
@@ -370,32 +377,32 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
                               </div>
                             </div>
 
-                            <div className="flex p-0.5 bg-slate-100 dark:bg-white/5 rounded-3xl border border-slate-200/50 dark:border-white/10 mb-4 translate-z-0">
+                            <div className={exportBoxCls}>
                               <button 
                                 onClick={() => handleExportImage(month.monthId)}
-                                className="flex-1 flex flex-col items-center justify-center py-2 rounded-xl hover:bg-white/80 dark:hover:bg-white/10 hover:shadow-sm transition-all group cursor-pointer active:scale-95"
+                                className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.02] hover:shadow-sm dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] border border-transparent dark:hover:border-white/5 transition-all group cursor-pointer active:scale-95"
                                 title="Изображение (PNG)"
                               >
                                 <ImageIcon className="w-4 h-4 text-blue-500 group-hover:scale-110 transition-transform mb-0.5" />
-                                <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">PNG</span>
+                                <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-none">PNG</span>
                               </button>
 
                               <button 
                                 onClick={() => handleExportExcel(month)}
-                                className="flex-1 flex flex-col items-center justify-center py-2 rounded-xl hover:bg-white/80 dark:hover:bg-white/10 hover:shadow-sm transition-all group cursor-pointer border-x border-slate-200/50 dark:border-white/10 active:scale-90"
+                                className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.02] hover:shadow-sm dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] border border-transparent dark:hover:border-white/5 transition-all group cursor-pointer active:scale-95"
                                 title="Таблица (Excel)"
                               >
                                 <FileSpreadsheet className="w-4 h-4 text-[var(--accent-color)] group-hover:scale-110 transition-transform mb-0.5" />
-                                <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">Excel</span>
+                                <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-none">Excel</span>
                               </button>
 
                               <button 
                                 onClick={() => handleExport(month.monthId)}
-                                className="flex-1 flex flex-col items-center justify-center py-2 rounded-xl hover:bg-white/80 dark:hover:bg-white/10 hover:shadow-sm transition-all group cursor-pointer active:scale-95"
+                                className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.02] hover:shadow-sm dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] border border-transparent dark:hover:border-white/5 transition-all group cursor-pointer active:scale-95"
                                 title="Документ (PDF)"
                               >
                                 <FileText className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform mb-0.5" />
-                                <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">PDF</span>
+                                <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-none">PDF</span>
                               </button>
                             </div>
                             <CashbackTable 
