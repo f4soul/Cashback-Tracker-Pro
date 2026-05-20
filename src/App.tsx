@@ -57,35 +57,38 @@ const AuthButton = ({
         <div
           onClick={() => isMobile && onLogoutClick()}
           className={clsx(
-            'flex items-center relative group transition-all',
+            'flex items-center group transition-all',
             isMobile
-              ? 'w-9 h-9 justify-center bg-slate-50 dark:bg-[#111] border border-slate-100 dark:border-white/5 rounded-full cursor-pointer shadow-sm hover:bg-slate-100 dark:hover:bg-white/10 active:scale-95'
+              ? 'relative w-9 h-9 justify-center bg-slate-50 dark:bg-[#111] border border-slate-100 dark:border-white/5 rounded-full cursor-pointer shadow-sm hover:bg-slate-100 dark:hover:bg-white/10 active:scale-95'
               : 'px-4 py-3 bg-gray-100/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 w-full gap-3 rounded-[1.25rem]',
           )}
         >
-          {isSyncing && (
+          {isSyncing && isMobile && (
             <div
-              className={clsx(
-                'absolute bg-blue-500 rounded-full border-2 border-slate-50 dark:border-[#111] animate-pulse z-10 shrink-0 pointer-events-none',
-                isMobile
-                  ? '-top-1 -right-1 w-3.5 h-3.5'
-                  : '-top-1 -right-1 w-3 h-3',
-              )}
+              className="absolute bg-blue-500 rounded-full border-2 border-slate-50 dark:border-[#111] animate-pulse z-10 shrink-0 pointer-events-none -top-1 -right-1 w-3 h-3"
               title="Синхронизация..."
             />
           )}
-          {user.photoURL ? (
-            <img
-              src={user.photoURL}
-              alt={user.displayName || ''}
-              className={clsx("rounded-full object-cover shrink-0 pointer-events-none", isMobile ? "w-full h-full" : "w-8 h-8")}
-              referrerPolicy="no-referrer"
-            />
-          ) : (
-            <div className={clsx("rounded-full bg-[var(--accent-color)]/20 flex items-center justify-center shrink-0", isMobile ? "w-full h-full" : "w-8 h-8")}>
-              <User className={clsx("text-[var(--accent-color)]", isMobile ? "w-5 h-5": "w-4 h-4")} />
-            </div>
-          )}
+          <div className={clsx("relative shrink-0", isMobile ? "w-full h-full" : "w-8 h-8")}>
+            {user.photoURL ? (
+              <img
+                src={user.photoURL}
+                alt={user.displayName || ''}
+                className="w-full h-full rounded-full object-cover pointer-events-none"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <div className="w-full h-full rounded-full bg-[var(--accent-color)]/20 flex items-center justify-center">
+                <User className={clsx("text-[var(--accent-color)]", isMobile ? "w-5 h-5": "w-4 h-4")} />
+              </div>
+            )}
+            {isSyncing && !isMobile && (
+              <div
+                className="absolute bg-blue-500 rounded-full border-2 border-slate-50 dark:border-[#111] animate-pulse z-10 shrink-0 pointer-events-none -top-0.5 -right-0.5 w-2.5 h-2.5"
+                title="Синхронизация..."
+              />
+            )}
+          </div>
           {!isMobile && (
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold text-gray-900 dark:text-white truncate">
