@@ -76,7 +76,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
     return (
       <div
         id={id}
-        className="bg-white dark:bg-[#0A0A0A] rounded-[1.25rem] md:rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] border border-slate-100 dark:border-white/5 p-2 sm:p-4 w-full mx-auto overflow-hidden relative transition-all duration-500 translate-z-0 [backface-visibility:hidden] isolate"
+        className="bg-white dark:bg-[#0A0A0A] rounded-[1.25rem] md:rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] border border-slate-100 dark:border-white/5 p-2 sm:p-4 w-full mx-auto overflow-hidden relative isolate"
       >
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-4 px-1 gap-2 flex-wrap">
@@ -194,7 +194,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                 return (
                   <div
                     key={entry.id}
-                    className="flex flex-row items-stretch gap-2 p-1.5 rounded-[1.25rem] bg-[#FAFAFA] dark:bg-[#111] border border-slate-100 dark:border-white/5 hover:bg-white dark:hover:bg-[#1A1A1A] hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-slate-200/50 dark:hover:border-white/10 transition-all duration-300 group translate-z-0 [backface-visibility:hidden] will-change-transform isolate"
+                    className="flex flex-row items-stretch gap-2 p-1.5 rounded-[1.25rem] bg-[#FAFAFA] dark:bg-[#111] border border-slate-100 dark:border-white/5 hover:bg-white dark:hover:bg-[#1A1A1A] hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-slate-200/50 dark:hover:border-white/10 transition-[background-color,border-color,box-shadow] duration-200 group isolate"
                     role="row"
                     aria-label={`Банк ${bank.name}`}
                   >

@@ -11,6 +11,164 @@ import { BankLogo } from '../components/BankLogo';
 import { clsx } from 'clsx';
 import { motion, AnimatePresence } from 'motion/react';
 
+interface MonthAccordionProps {
+  month: MonthData;
+  isExpanded: boolean;
+  toggleMonth: (monthId: string) => void;
+  handleDeleteMonthClick: (monthId: string) => void;
+  customBanks: Bank[];
+  globalLogoShape: LogoShape;
+  handleExportImage: (monthId: string) => void;
+  handleExportExcel: (month: MonthData) => void;
+  handleExport: (monthId: string) => void;
+}
+
+const MonthAccordion: React.FC<MonthAccordionProps> = memo(({
+  month,
+  isExpanded,
+  toggleMonth,
+  handleDeleteMonthClick,
+  customBanks,
+  globalLogoShape,
+  handleExportImage,
+  handleExportExcel,
+  handleExport,
+}) => {
+  const containerCls = "bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] overflow-hidden transition-colors duration-300 translate-z-0 [backface-visibility:hidden] isolate relative";
+  const headerCls = "w-full flex items-center justify-between p-4 sm:p-5 hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors cursor-pointer relative z-10";
+  const expandWrapCls = "p-4 sm:p-5 pt-0 border-t border-slate-100 dark:border-white/5 bg-[#FAFAFA] dark:bg-[#111] translate-z-0 relative z-10";
+  const chipCls = "flex items-center gap-2.5 sm:gap-3.5 p-2.5 sm:p-3.5 bg-white dark:bg-[#1A1A1A] rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-[var(--accent-color)]/30 transition-[border-color,box-shadow,background-color] duration-200 group isolate";
+  const exportBoxCls = "flex p-1 gap-1 bg-white dark:bg-[#1A1A1A] rounded-[1.25rem] border border-slate-100 dark:border-white/5 shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] mb-4 translate-z-0";
+
+  return (
+    <div className={containerCls}>
+      <div
+        onClick={() => toggleMonth(month.monthId)}
+        className={headerCls}
+      >
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[var(--accent-color)]/10 dark:bg-[var(--accent-color)]/20 text-[var(--accent-color)] flex items-center justify-center font-bold text-base sm:text-lg shrink-0 shadow-sm">
+            {month.monthId.split('-')[1]}
+          </div>
+          <div className="text-left min-w-0">
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight truncate tracking-tight">
+              {capitalize(formatMonthId(month.monthId))}
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5 font-medium">{month.entries.length} {month.entries.length === 1 ? 'банк' : month.entries.length < 5 ? 'банка' : 'банков'}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-1 sm:gap-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDeleteMonthClick(month.monthId);
+            }}
+            className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/40 rounded-xl transition-all cursor-pointer active:scale-90"
+            title="Удалить месяц"
+          >
+            <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
+          </button>
+          <div className="p-1 text-slate-400">
+            <ChevronDown className={clsx("w-5 h-5 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]", isExpanded && "rotate-180")} />
+          </div>
+        </div>
+      </div>
+      
+      <div 
+        className={clsx(
+          "grid transition-[grid-template-rows,opacity,visibility] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]",
+          isExpanded 
+            ? "grid-rows-[1fr] opacity-100 pointer-events-auto visible" 
+            : "grid-rows-[0fr] opacity-0 pointer-events-none invisible"
+        )}
+      >
+        <div className="overflow-hidden">
+          <div className={expandWrapCls}>
+            {/* Compact banks list in Archive */}
+            <div className="flex flex-col gap-2 mb-4 sm:mb-6 mt-4 sm:mt-6">
+              <div className="px-1">
+                <h4 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none">Банки в этом месяце</h4>
+              </div>
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
+                {month.entries.map(entry => {
+                  const bank = getBankDetails(entry.bankId, entry.customBankName) || 
+                             (entry.bankId.startsWith('custom_') ? customBanks.find(b => b.id === entry.bankId) : null);
+                  
+                  if (!bank) return null;
+                  
+                  const logoShape = globalLogoShape || 'circle';
+                  
+                  return (
+                    <div 
+                      key={entry.id} 
+                      className={chipCls}
+                    >
+                      <div className="shrink-0">
+                        <BankLogo 
+                          bank={bank} 
+                          customLogo={entry.customLogo} 
+                          logoShape={logoShape} 
+                          size="sm"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate leading-tight group-hover:text-[var(--accent-color)] transition-colors" title={bank.name}>{bank.name}</h4>
+                        <p className="text-[8px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-0.5 truncate">
+                          {entry.categories.length} {pluralize(entry.categories.length, ['категория', 'категории', 'категорий'])}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className={exportBoxCls}>
+              <button 
+                onClick={() => handleExportImage(month.monthId)}
+                className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.02] hover:shadow-sm dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] border border-transparent dark:hover:border-white/5 transition-all group cursor-pointer active:scale-95"
+                title="Изображение (PNG)"
+              >
+                <ImageIcon className="w-4 h-4 text-blue-500 group-hover:scale-110 transition-transform mb-0.5" />
+                <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-none">PNG</span>
+              </button>
+
+              <button 
+                onClick={() => handleExportExcel(month)}
+                className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.02] hover:shadow-sm dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] border border-transparent dark:hover:border-white/5 transition-all group cursor-pointer active:scale-95"
+                title="Таблица (Excel)"
+              >
+                <FileSpreadsheet className="w-4 h-4 text-[var(--accent-color)] group-hover:scale-110 transition-transform mb-0.5" />
+                <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-none">Excel</span>
+              </button>
+
+              <button 
+                onClick={() => handleExport(month.monthId)}
+                className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.02] hover:shadow-sm dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] border border-transparent dark:hover:border-white/5 transition-all group cursor-pointer active:scale-95"
+                title="Документ (PDF)"
+              >
+                <FileText className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform mb-0.5" />
+                <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-none">PDF</span>
+              </button>
+            </div>
+            <CashbackTable 
+              id={`archive-table-${month.monthId}`} 
+              monthId={month.monthId} 
+              entries={month.entries} 
+              customBanks={customBanks}
+              globalLogoShape={globalLogoShape}
+              onExportPDF={() => handleExport(month.monthId)}
+              onExportExcel={() => handleExportExcel(month)}
+              onExportImage={() => handleExportImage(month.monthId)}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+});
+MonthAccordion.displayName = 'MonthAccordion';
+
 interface ArchiveProps {
   allData: MonthData[];
   customBanks: Bank[];
@@ -283,145 +441,20 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, cus
         </div>
       ) : (
         <div className="flex flex-col gap-3 sm:gap-4">
-          {filteredData.map((month) => {
-            const isExpanded = expandedMonths.has(month.monthId);
-            
-            const containerCls = "bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] overflow-hidden transition-all duration-500 translate-z-0 [backface-visibility:hidden] isolate relative";
-            const headerCls = "w-full flex items-center justify-between p-4 sm:p-5 hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors cursor-pointer relative z-10";
-            const expandWrapCls = "p-4 sm:p-5 pt-0 border-t border-slate-100 dark:border-white/5 bg-[#FAFAFA] dark:bg-[#111] translate-z-0 relative z-10";
-            const chipCls = "flex items-center gap-2.5 sm:gap-3.5 p-2.5 sm:p-3.5 bg-white dark:bg-[#1A1A1A] rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-[var(--accent-color)]/30 transition-all group translate-z-0 [backface-visibility:hidden] isolate";
-            const exportBoxCls = "flex p-1 gap-1 bg-white dark:bg-[#1A1A1A] rounded-[1.25rem] border border-slate-100 dark:border-white/5 shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] mb-4 translate-z-0";
-
-            return (
-              <div key={month.monthId} className={containerCls}>
-                <div
-                  onClick={() => toggleMonth(month.monthId)}
-                  className={headerCls}
-                >
-                  <div className="flex items-center gap-3 sm:gap-4">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[var(--accent-color)]/10 dark:bg-[var(--accent-color)]/20 text-[var(--accent-color)] flex items-center justify-center font-bold text-base sm:text-lg shrink-0 shadow-sm">
-                      {month.monthId.split('-')[1]}
-                    </div>
-                    <div className="text-left min-w-0">
-                      <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight truncate tracking-tight">
-                        {capitalize(formatMonthId(month.monthId))}
-                      </h3>
-                      <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5 font-medium">{month.entries.length} {month.entries.length === 1 ? 'банк' : month.entries.length < 5 ? 'банка' : 'банков'}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 sm:gap-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteMonthClick(month.monthId);
-                      }}
-                      className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/40 rounded-xl transition-all cursor-pointer active:scale-90"
-                      title="Удалить месяц"
-                    >
-                      <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </button>
-                    <div className="p-1 text-slate-400">
-                      {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-                    </div>
-                  </div>
-                </div>
-                
-                    <AnimatePresence>
-                      {isExpanded && (
-                        <motion.div 
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
-                          className="overflow-hidden translate-z-0 will-change-[height,opacity] isolate"
-                        >
-                          <div className={expandWrapCls}>
-                            {/* Compact banks list in Archive */}
-                            <div className="flex flex-col gap-2 mb-4 sm:mb-6 mt-4 sm:mt-6">
-                              <div className="px-1">
-                                <h4 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none">Банки в этом месяце</h4>
-                              </div>
-                              <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
-                                {month.entries.map(entry => {
-                                  const bank = getBankDetails(entry.bankId, entry.customBankName) || 
-                                             (entry.bankId.startsWith('custom_') ? customBanks.find(b => b.id === entry.bankId) : null);
-                                  
-                                  if (!bank) return null;
-                                  
-                                  const logoShape = globalLogoShape || 'circle';
-                                  
-                                  return (
-                                    <motion.div 
-                                      key={entry.id} 
-                                      initial={{ opacity: 0 }}
-                                      animate={{ opacity: 1 }}
-                                      className={chipCls}
-                                    >
-                                      <div className="shrink-0">
-                                        <BankLogo 
-                                          bank={bank} 
-                                          customLogo={entry.customLogo} 
-                                          logoShape={logoShape} 
-                                          size="sm"
-                                        />
-                                      </div>
-                                      <div className="min-w-0 flex-1">
-                                        <h4 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate leading-tight group-hover:text-[var(--accent-color)] transition-colors" title={bank.name}>{bank.name}</h4>
-                                        <p className="text-[8px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-0.5 truncate">
-                                          {entry.categories.length} {pluralize(entry.categories.length, ['категория', 'категории', 'категорий'])}
-                                        </p>
-                                      </div>
-                                    </motion.div>
-                                  );
-                                })}
-                              </div>
-                            </div>
-
-                            <div className={exportBoxCls}>
-                              <button 
-                                onClick={() => handleExportImage(month.monthId)}
-                                className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.02] hover:shadow-sm dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] border border-transparent dark:hover:border-white/5 transition-all group cursor-pointer active:scale-95"
-                                title="Изображение (PNG)"
-                              >
-                                <ImageIcon className="w-4 h-4 text-blue-500 group-hover:scale-110 transition-transform mb-0.5" />
-                                <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-none">PNG</span>
-                              </button>
-
-                              <button 
-                                onClick={() => handleExportExcel(month)}
-                                className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.02] hover:shadow-sm dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] border border-transparent dark:hover:border-white/5 transition-all group cursor-pointer active:scale-95"
-                                title="Таблица (Excel)"
-                              >
-                                <FileSpreadsheet className="w-4 h-4 text-[var(--accent-color)] group-hover:scale-110 transition-transform mb-0.5" />
-                                <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-none">Excel</span>
-                              </button>
-
-                              <button 
-                                onClick={() => handleExport(month.monthId)}
-                                className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.02] hover:shadow-sm dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] border border-transparent dark:hover:border-white/5 transition-all group cursor-pointer active:scale-95"
-                                title="Документ (PDF)"
-                              >
-                                <FileText className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform mb-0.5" />
-                                <span className="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-none">PDF</span>
-                              </button>
-                            </div>
-                            <CashbackTable 
-                              id={`archive-table-${month.monthId}`} 
-                              monthId={month.monthId} 
-                              entries={month.entries} 
-                              customBanks={customBanks}
-                              globalLogoShape={globalLogoShape}
-                              onExportPDF={() => handleExport(month.monthId)}
-                              onExportExcel={() => handleExportExcel(month)}
-                              onExportImage={() => handleExportImage(month.monthId)}
-                            />
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-              </div>
-            );
-          })}
+          {filteredData.map((month) => (
+            <MonthAccordion
+              key={month.monthId}
+              month={month}
+              isExpanded={expandedMonths.has(month.monthId)}
+              toggleMonth={toggleMonth}
+              handleDeleteMonthClick={handleDeleteMonthClick}
+              customBanks={customBanks}
+              globalLogoShape={globalLogoShape}
+              handleExportImage={handleExportImage}
+              handleExportExcel={handleExportExcel}
+              handleExport={handleExport}
+            />
+          ))}
         </div>
       )}
       {/* Delete Confirmation Modal */}
