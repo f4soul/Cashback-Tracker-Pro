@@ -61,15 +61,15 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             aria-hidden="true"
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            initial={{ opacity: 0, scale: 0.96, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
+            exit={{ opacity: 0, scale: 0.96, y: 10 }}
+            transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-title"
             aria-describedby="modal-description"
-            className="relative w-full max-w-[400px] bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-2xl rounded-[2rem] shadow-[0_20px_60px_rgb(0,0,0,0.1)] dark:shadow-[0_20px_60px_rgb(0,0,0,0.4)] overflow-hidden flex flex-col border border-slate-100 dark:border-white/5"
+            className="relative w-full max-w-[400px] bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-2xl rounded-[2rem] shadow-[0_20px_60px_rgb(0,0,0,0.1)] dark:shadow-[0_20px_60px_rgb(0,0,0,0.4)] overflow-hidden flex flex-col border border-slate-100 dark:border-white/5 transform translate-z-0 will-change-transform"
           >
             <div className="p-6 sm:p-8 flex flex-col items-center text-center">
               <div className={clsx(

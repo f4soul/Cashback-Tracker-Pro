@@ -29,15 +29,16 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] transform translate-z-0"
           />
           <motion.div
-            initial={{ opacity: 0, y: 100, scale: 0.95 }}
+            initial={{ opacity: 0, y: 20, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 100, scale: 0.95 }}
-            transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-            className="fixed inset-x-4 bottom-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-2xl rounded-[1.25rem] shadow-[0_20px_60px_rgb(0,0,0,0.1)] dark:shadow-[0_20px_60px_rgb(0,0,0,0.4)] border border-slate-100 dark:border-white/5 z-[70] overflow-hidden max-h-[85vh] flex flex-col md:w-[500px]"
+            exit={{ opacity: 0, y: 20, scale: 0.96 }}
+            transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
+            className="fixed inset-x-4 bottom-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-2xl rounded-[1.25rem] shadow-[0_20px_60px_rgb(0,0,0,0.1)] dark:shadow-[0_20px_60px_rgb(0,0,0,0.4)] border border-slate-100 dark:border-white/5 z-[70] overflow-hidden max-h-[85vh] flex flex-col md:w-[500px] transform translate-z-0 will-change-transform"
           >
             <div className="flex items-center justify-between p-3 sm:p-5 border-b border-slate-100 dark:border-white/5 bg-white dark:bg-[#0A0A0A]">
               <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white tracking-tight">{title}</h3>

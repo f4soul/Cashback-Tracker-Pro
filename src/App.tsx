@@ -37,7 +37,6 @@ import {
 
 import { Toaster } from 'sonner';
 import { ConfirmModal } from './components/ui/ConfirmModal';
-import { bankLogosSpriteData } from './components/bankLogosSpriteData';
 
 const AuthButton = ({
   user,
@@ -1135,8 +1134,6 @@ export default function App() {
           </button>
         </motion.nav>
       </div>
-
-      <div dangerouslySetInnerHTML={{ __html: bankLogosSpriteData }} />
     </div>
   );
 }

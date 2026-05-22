@@ -35,46 +35,29 @@ export const BankLogo: React.FC<BankLogoProps> = memo(({
     octagon: 'clip-octagon aspect-square'
   };
 
-  const shapePaddings = {
-    circle: 'p-[16%]',
-    square: 'p-[12%]',
-    rectangle: 'p-[10%]',
-    octagon: 'p-[15%]'
+  const shapeSizes = {
+    circle: 'w-[70%] h-[70%]',
+    square: 'w-[70%] h-[70%]',
+    rectangle: 'w-[70%] h-[70%]',
+    octagon: 'w-[70%] h-[70%]'
   };
 
   if (logoUrl && !error) {
-    const isSpriteLogo = logoUrl.startsWith('/logos/') && !logoUrl.endsWith('bank-icon.svg');
-    const spriteId = isSpriteLogo ? logoUrl.match(/\/logos\/([^/.]+)\.svg$/)?.[1] : null;
-
     return (
       <div
         className={clsx(
           "flex items-center justify-center shrink-0 border border-slate-200/50 dark:border-white/10 bg-transparent shadow-sm overflow-hidden",
           sizeClasses[size],
           shapeClasses[logoShape],
-          shapePaddings[logoShape],
           className
         )}
       >
-        {spriteId ? (
-          <svg 
-            className="w-full h-full select-none transform translate-z-0"
-            viewBox="0 0 600 600"
-            style={{ pointerEvents: 'none' }}
-          >
-            <use href={`#${spriteId}`} />
-          </svg>
-        ) : (
-          <img
-            src={logoUrl}
-            alt={bank.name}
-            onError={() => setError(true)}
-            className="w-full h-full object-contain object-center select-none"
-            style={{ 
-              imageRendering: '-webkit-optimize-contrast'
-            }}
-          />
-        )}
+        <img
+          src={logoUrl}
+          alt={bank.name}
+          onError={() => setError(true)}
+          className={clsx("object-contain object-center select-none", shapeSizes[logoShape])}
+        />
       </div>
     );
   }
