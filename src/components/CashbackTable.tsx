@@ -185,9 +185,14 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                   getBankDetails(entry.bankId, entry.customBankName) ||
                   (entry.bankId.startsWith('custom_')
                     ? customBanks.find((b) => b.id === entry.bankId)
-                    : null);
-
-                if (!bank) return null;
+                    : null) ||
+                  {
+                    id: entry.bankId,
+                    name: entry.customBankName || 'Удаленный банк',
+                    color: '#64748b',
+                    logoText: (entry.customBankName || 'Б').substring(0, 2).toUpperCase(),
+                    logoUrl: entry.customLogo
+                  };
 
                 const logoShape = globalLogoShape || 'circle';
 

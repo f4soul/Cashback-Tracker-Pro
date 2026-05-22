@@ -654,7 +654,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
               )}
             >
               <TableIcon className="w-3.5 h-3.5 shrink-0" />
-              <span className="leading-none mt-[1px]">Таблица</span>
+              <span className="leading-none flex items-center">Таблица</span>
             </button>
             <button
               onClick={() => setActiveSubTab('list')}
@@ -666,7 +666,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
               )}
             >
               <LayoutList className="w-3.5 h-3.5 shrink-0" />
-              <span className="leading-none mt-[1px]">Список банков</span>
+              <span className="leading-none flex items-center">Список банков</span>
             </button>
         </div>
 
