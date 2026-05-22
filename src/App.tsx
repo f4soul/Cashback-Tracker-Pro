@@ -139,6 +139,12 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<
     'current' | 'archive' | 'settings'
   >('current');
+
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent('app-tab-change', { detail: { activeTab } })
+    );
+  }, [activeTab]);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
@@ -918,6 +924,7 @@ export default function App() {
                 transition={{ duration: 0.2, ease: "easeOut" }}
               >
                 <CurrentMonth
+                  isExiting={activeTab !== 'current'}
                   data={currentMonthData}
                   selectedMonthId={selectedMonthId}
                   onMonthChange={setSelectedMonthId}

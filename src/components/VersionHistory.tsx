@@ -39,14 +39,26 @@ export const VersionHistory: React.FC = () => {
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="bg-white dark:bg-[#1A1A1A] border-t border-slate-100 dark:border-white/5"
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                className="bg-white dark:bg-[#1A1A1A] border-t border-slate-100 dark:border-white/5 overflow-hidden"
               >
-                <ul className="p-4 space-y-2 text-sm text-gray-600 dark:text-gray-300 list-disc list-inside">
-                  {v.changes.map((change, i) => (
-                    <li key={i} className="leading-snug">{change}</li>
-                  ))}
-                </ul>
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 6 }}
+                  transition={{
+                    delay: 0.2,
+                    duration: 0.15,
+                    ease: [0.16, 1, 0.3, 1]
+                  }}
+                  style={{ willChange: 'transform, opacity' }}
+                >
+                  <ul className="p-4 space-y-2 text-sm text-gray-600 dark:text-gray-300 list-disc list-inside">
+                    {v.changes.map((change, i) => (
+                      <li key={i} className="leading-snug">{change}</li>
+                    ))}
+                  </ul>
+                </motion.div>
               </motion.div>
             )}
           </AnimatePresence>

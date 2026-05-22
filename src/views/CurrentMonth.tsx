@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
+import { createPortal } from 'react-dom';
 import { MonthData, CashbackEntry, Bank, LogoShape } from '../types';
 import {
   getCurrentMonthId,
@@ -71,6 +72,7 @@ interface CurrentMonthProps {
   onAddCustomCategory: (category: string) => void;
   globalLogoShape: LogoShape;
   allMonthIds: string[];
+  isExiting?: boolean;
 }
 
 interface SortableBankCardProps {
@@ -251,6 +253,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     onAddCustomCategory,
     globalLogoShape,
     allMonthIds,
+    isExiting = false,
   }) => {
     const date = new Date().getDate();
     const isAfter25 = date >= 25;
@@ -266,6 +269,22 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
       : isBefore5th
         ? [prevMonthId, currentMonthId]
         : [currentMonthId];
+    const [mounted, setMounted] = useState(false);
+    const [currentTab, setCurrentTab] = useState('current');
+    useEffect(() => {
+      setMounted(true);
+      const handleTabChange = (e: Event) => {
+        const detail = (e as CustomEvent).detail;
+        if (detail && detail.activeTab) {
+          setCurrentTab(detail.activeTab);
+        }
+      };
+      window.addEventListener('app-tab-change', handleTabChange);
+      return () => {
+        window.removeEventListener('app-tab-change', handleTabChange);
+      };
+    }, []);
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingEntry, setEditingEntry] = useState<CashbackEntry | undefined>(
       undefined,
@@ -275,6 +294,9 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     const [activeSubTab, setActiveSubTab] = useState<'table' | 'list'>('table');
     const [activeDragId, setActiveDragId] = useState<string | null>(null);
     const [isFabHidden, setIsFabHidden] = useState(() => {
+      if (typeof window !== 'undefined' && window.innerWidth >= 1150) {
+        return false;
+      }
       const saved = localStorage.getItem('fab_hidden');
       return saved === 'true';
     });
@@ -303,7 +325,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
 
     useEffect(() => {
       const handleInteraction = (e: Event) => {
-        if (window.innerWidth >= 1280) return; // Don't hide FAB on Desktop (xl) only. Tablets and Mobile will hide.
+        if (window.innerWidth >= 1150) return; // Don't hide FAB on Desktop. Tablets and Mobile will hide.
         if (isDraggingFab.current || isDraggingRestore.current || isFabHidden)
           return;
 
@@ -338,6 +360,11 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
       const updateConstraints = () => {
         const isDesktop = window.innerWidth >= 768;
         const isWide = window.innerWidth >= 1280;
+
+        if (window.innerWidth >= 1150) {
+          setIsFabHidden(false);
+        }
+
         const fabSize = 56;
         const restoreHeight = 56;
         const sidebarWidth = isDesktop ? 280 : 0;
@@ -511,129 +538,137 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
 
     return (
       <div className="flex flex-col relative gap-1">
-        <AnimatePresence mode="wait">
-          {!isFabHidden ? (
-            <motion.div
-              key="fab-container"
-              id="fab-container"
-              drag="y"
-              dragConstraints={dragConstraints}
-              dragElastic={0.1}
-              dragMomentum={false}
-              initial={{ opacity: 0, scale: 0.8, x: 0, y: yOffset }}
-              animate={{
-                opacity: 1,
-                scale: 1,
-                x: 0,
-                y: yOffset,
-              }}
-              transition={{
-                duration: 0.4,
-                ease: [0.32, 0.72, 0, 1],
-              }}
-              exit={{
-                opacity: 0,
-                scale: 0.5,
-                transition: { duration: 0.15 },
-              }}
-              onDragStart={() => {
-                isDraggingFab.current = true;
-              }}
-              onDragEnd={(e, info) => {
-                setTimeout(() => {
-                  isDraggingFab.current = false;
-                }, 100);
-
-                const finalY = yOffset + info.offset.y;
-                // Snap to 3 positions: top, center, bottom
-                const top = dragConstraints.top;
-                const bottom = dragConstraints.bottom;
-                const center = (top + bottom) / 2;
-                const points = [top, center, bottom];
-
-                const snappedY = points.reduce((prev, curr) =>
-                  Math.abs(curr - finalY) < Math.abs(prev - finalY)
-                    ? curr
-                    : prev,
-                );
-                setYOffset(snappedY);
-              }}
-              className="fixed bottom-[110px] md:bottom-8 z-50 touch-none select-none"
-              style={{ right: rightPos, willChange: 'transform, opacity' }}
-            >
-              <button
-                onClick={(e) => {
-                  if (isDraggingFab.current) {
-                    e.preventDefault();
-                    return;
-                  }
-                  setEditingEntry(undefined);
-                  setIsModalOpen(true);
+        {mounted && currentTab === 'current' && !isExiting && createPortal(
+          <AnimatePresence mode="wait">
+            {!isFabHidden ? (
+              <motion.div
+                key="fab-container"
+                id="fab-container"
+                drag="y"
+                dragConstraints={dragConstraints}
+                dragElastic={0.1}
+                dragMomentum={false}
+                initial={{ opacity: 0, scale: 0.8, x: 0, y: yOffset }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                  x: 0,
+                  y: yOffset,
                 }}
-                title="Добавить банк"
-                className="w-14 h-14 bg-[var(--accent-color)] text-white rounded-2xl flex items-center justify-center shadow-lg shadow-[var(--accent-color)]/30 hover:shadow-[var(--accent-color)]/40 transition-all opacity-95 hover:opacity-100 cursor-pointer active:scale-95"
+                transition={{
+                  duration: 0.4,
+                  ease: [0.32, 0.72, 0, 1],
+                }}
+                exit={{
+                  opacity: 0,
+                  scale: 0.5,
+                  transition: { duration: 0.15 },
+                }}
+                onDragStart={() => {
+                  isDraggingFab.current = true;
+                }}
+                onDragEnd={(e, info) => {
+                  setTimeout(() => {
+                    isDraggingFab.current = false;
+                  }, 100);
+
+                  const finalY = yOffset + info.offset.y;
+                  // Snap to 3 positions: top, center, bottom
+                  const top = dragConstraints.top;
+                  const bottom = dragConstraints.bottom;
+                  const center = (top + bottom) / 2;
+                  const points = [top, center, bottom];
+
+                  const snappedY = points.reduce((prev, curr) =>
+                    Math.abs(curr - finalY) < Math.abs(prev - finalY)
+                      ? curr
+                      : prev,
+                  );
+                  setYOffset(snappedY);
+                }}
+                className="fixed bottom-[110px] md:bottom-8 z-50 touch-none select-none"
+                style={{ right: rightPos, willChange: 'transform, opacity' }}
               >
-                <Plus className="w-7 h-7" />
-              </button>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="fab-restore"
-              id="fab-restore"
-              drag="y"
-              dragConstraints={restoreConstraints}
-              dragElastic={0.1}
-              dragMomentum={false}
-              initial={{ opacity: 0, x: 20, y: yOffset }}
-              animate={{ opacity: 1, x: 0, y: yOffset }}
-              transition={{
-                duration: 0.4,
-                ease: [0.32, 0.72, 0, 1],
-              }}
-              whileTap={{ scale: 0.95 }}
-              exit={{
-                opacity: 0,
-                scale: 0.5,
-                transition: { duration: 0.15 },
-              }}
-              onClick={() => {
-                if (isDraggingRestore.current) return;
-                setIsFabHidden(false);
-              }}
-              onDragStart={() => {
-                isDraggingRestore.current = true;
-              }}
-              onDragEnd={(e, info) => {
-                setTimeout(() => {
-                  isDraggingRestore.current = false;
-                }, 100);
+                <button
+                  onClick={(e) => {
+                    if (isDraggingFab.current) {
+                      e.preventDefault();
+                      return;
+                    }
+                    setEditingEntry(undefined);
+                    setIsModalOpen(true);
+                  }}
+                  title="Добавить банк"
+                  className="w-14 h-14 bg-[var(--accent-color)] text-white rounded-2xl flex items-center justify-center shadow-lg shadow-[var(--accent-color)]/30 hover:shadow-[var(--accent-color)]/40 transition-all opacity-95 hover:opacity-100 cursor-pointer active:scale-95"
+                >
+                  <Plus className="w-7 h-7" />
+                </button>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="fab-restore"
+                id="fab-restore"
+                drag="y"
+                dragConstraints={restoreConstraints}
+                dragElastic={0.1}
+                dragMomentum={false}
+                initial={{ opacity: 0, x: 20, y: yOffset }}
+                animate={{ 
+                  opacity: 1, 
+                  scale: 1,
+                  x: 0, 
+                  y: yOffset 
+                }}
+                transition={{
+                  duration: 0.4,
+                  ease: [0.32, 0.72, 0, 1],
+                }}
+                whileTap={{ scale: 0.95 }}
+                exit={{
+                  opacity: 0,
+                  scale: 0.5,
+                  transition: { duration: 0.15 },
+                }}
+                onClick={() => {
+                  if (isDraggingRestore.current) return;
+                  setIsFabHidden(false);
+                }}
+                onDragStart={() => {
+                  isDraggingRestore.current = true;
+                }}
+                onDragEnd={(e, info) => {
+                  setTimeout(() => {
+                    isDraggingRestore.current = false;
+                  }, 100);
 
-                const finalY = yOffset + info.offset.y;
-                // Snap to 3 positions: top, center, bottom
-                const top = restoreConstraints.top;
-                const bottom = restoreConstraints.bottom;
-                const center = (top + bottom) / 2;
-                const points = [top, center, bottom];
+                  const finalY = yOffset + info.offset.y;
+                  // Snap to 3 positions: top, center, bottom
+                  const top = restoreConstraints.top;
+                  const bottom = restoreConstraints.bottom;
+                  const center = (top + bottom) / 2;
+                  const points = [top, center, bottom];
 
-                const snappedY = points.reduce((prev, curr) =>
-                  Math.abs(curr - finalY) < Math.abs(prev - finalY)
-                    ? curr
-                    : prev,
-                );
-                setYOffset(snappedY);
-              }}
-              className="fixed bottom-[110px] md:bottom-8 w-4 h-14 bg-[var(--accent-color)]/40 hover:bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-2xl transition-colors touch-none select-none backdrop-blur-md"
-              style={{ right: 0, willChange: 'transform, opacity' }}
-              title="Показать кнопку (перетащите вертикально)"
-            >
-              <div className="flex flex-col items-center gap-0.5 opacity-40 group-hover:opacity-100 transition-opacity">
-                <ChevronUp className="w-3 h-3" />
-                <Plus className="w-3 h-3" />
-                <ChevronDown className="w-3 h-3" />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                  const snappedY = points.reduce((prev, curr) =>
+                    Math.abs(curr - finalY) < Math.abs(prev - finalY)
+                      ? curr
+                      : prev,
+                  );
+                  setYOffset(snappedY);
+                }}
+                className="fixed bottom-[110px] md:bottom-8 w-4 h-14 bg-[var(--accent-color)]/40 hover:bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-2xl transition-colors touch-none select-none backdrop-blur-md"
+                style={{ right: 0, willChange: 'transform, opacity' }}
+                title="Показать кнопку (перетащите вертикально)"
+              >
+                <div className="flex flex-col items-center gap-0.5 opacity-40 group-hover:opacity-100 transition-opacity">
+                  <ChevronUp className="w-3 h-3" />
+                  <Plus className="w-3 h-3" />
+                  <ChevronDown className="w-3 h-3" />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body
+        )}
 
         {/* Table/Bank List Switcher - Simplified and Compact */}
         <div className="flex p-0.5 gap-0.5 relative bg-white dark:bg-[#1A1A1A] rounded-2xl border border-slate-100 dark:border-white/5 shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] w-full mb-2 translate-z-0 [backface-visibility:hidden] z-10">
