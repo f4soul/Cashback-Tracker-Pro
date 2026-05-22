@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import versionsData from '../../public/versions.json';
 
 interface Version {
   version: string;
@@ -8,20 +9,14 @@ interface Version {
   changes: string[];
 }
 
-export const VersionHistory: React.FC = () => {
-  const [versions, setVersions] = useState<Version[]>([]);
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
+const reversedVersions = [...versionsData].reverse() as Version[];
 
-  useEffect(() => {
-    fetch('/versions.json')
-      .then(res => res.json())
-      .then(data => setVersions(data.reverse()))
-      .catch(err => console.error('Failed to load versions:', err));
-  }, []);
+export const VersionHistory: React.FC = () => {
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
     <div className="space-y-4">
-      {versions.map((v, index) => (
+      {reversedVersions.map((v, index) => (
         <div key={v.version} className="border border-slate-100 dark:border-white/5 rounded-[1.25rem] overflow-hidden bg-[#FAFAFA] dark:bg-[#111]">
           <button
             onClick={() => setOpenIndex(openIndex === index ? null : index)}
@@ -39,7 +34,7 @@ export const VersionHistory: React.FC = () => {
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
                 className="bg-white dark:bg-[#1A1A1A] border-t border-slate-100 dark:border-white/5 overflow-hidden"
               >
                 <motion.div
@@ -47,8 +42,8 @@ export const VersionHistory: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 6 }}
                   transition={{
-                    delay: 0.2,
-                    duration: 0.15,
+                    delay: 0.1,
+                    duration: 0.26,
                     ease: [0.16, 1, 0.3, 1]
                   }}
                   style={{ willChange: 'transform, opacity' }}

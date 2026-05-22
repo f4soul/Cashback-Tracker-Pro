@@ -81,7 +81,7 @@ const MonthAccordion: React.FC<MonthAccordionProps> = memo(({
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{
-              duration: 0.5,
+              duration: 0.38,
               ease: [0.16, 1, 0.3, 1]
             }}
             className="overflow-hidden"
@@ -92,8 +92,8 @@ const MonthAccordion: React.FC<MonthAccordionProps> = memo(({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 6 }}
                 transition={{
-                  delay: 0.2,
-                  duration: 0.15,
+                  delay: 0.1,
+                  duration: 0.26,
                   ease: [0.16, 1, 0.3, 1]
                 }}
                 style={{ willChange: 'transform, opacity' }}
