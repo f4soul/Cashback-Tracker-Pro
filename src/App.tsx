@@ -230,7 +230,7 @@ export default function App() {
 
   // Sync month data from Firestore
   useEffect(() => {
-    if (!user || hasInitialSync) return;
+    if (!user) return;
 
     const monthsQuery = query(
       collection(db, 'months'),
@@ -239,7 +239,8 @@ export default function App() {
     const unsubscribe = onSnapshot(
       monthsQuery,
       (snapshot) => {
-        if (snapshot.empty && allData.length > 0) {
+        if (snapshot.empty && allData.length > 0 && !hasUploadedLocalRef.current) {
+          hasUploadedLocalRef.current = true;
           // First time user with local data - upload it
           allData.forEach((month) => {
             const monthDocId = `${user.uid}_${month.monthId}`;
@@ -259,7 +260,7 @@ export default function App() {
         } else if (!snapshot.empty) {
           const months: MonthData[] = snapshot.docs.map((doc) => ({
             monthId: doc.data().monthId,
-            entries: doc.data().entries,
+            entries: doc.data().entries || [],
           }));
           setAllData(months);
         }
@@ -269,7 +270,7 @@ export default function App() {
     );
 
     return () => unsubscribe();
-  }, [user, hasInitialSync, allData.length]);
+  }, [user]);
 
   // Helper to save data to Firestore
   const saveToFirestore = useCallback(
@@ -403,30 +404,27 @@ export default function App() {
   const currentMonthId = getCurrentMonthId();
   const nextMonthId = getNextMonthId();
   const [selectedMonthId, setSelectedMonthId] = useState(currentMonthId);
+  const hasUploadedLocalRef = useRef(false);
 
-  // Cleanup March from any legacy deleted/unrecognized custom banks
-  const marchCleanedRef = useRef(false);
+  // Cleanup all months from any legacy deleted/unrecognized custom banks
   useEffect(() => {
     if (user && !hasInitialSync) return;
-    if (marchCleanedRef.current) return;
     if (allData.length === 0) return;
 
     let hasChanges = false;
     const cleaned = allData.map((month) => {
-      if (month.monthId.includes('-03')) {
-        const filteredEntries = month.entries.filter((entry) => {
-          const isStandard = BANKS.some((b) => b.id === entry.bankId);
-          const isActiveCustom = customBanks.some((b) => b.id === entry.bankId);
-          if (entry.bankId === 'custom') return true;
-          const keep = isStandard || isActiveCustom;
-          if (!keep) {
-            hasChanges = true;
-          }
-          return keep;
-        });
-        if (filteredEntries.length !== month.entries.length) {
-          return { ...month, entries: filteredEntries };
+      const filteredEntries = month.entries.filter((entry) => {
+        const isStandard = BANKS.some((b) => b.id === entry.bankId);
+        const isActiveCustom = customBanks.some((b) => b.id === entry.bankId);
+        if (entry.bankId === 'custom') return true;
+        const keep = isStandard || isActiveCustom;
+        if (!keep) {
+          hasChanges = true;
         }
+        return keep;
+      });
+      if (filteredEntries.length !== month.entries.length) {
+        return { ...month, entries: filteredEntries };
       }
       return month;
     });
@@ -435,14 +433,25 @@ export default function App() {
       setAllData(cleaned);
       if (user) {
         cleaned.forEach((m) => {
-          if (m.monthId.includes('-03')) {
+          const original = allData.find((orig) => orig.monthId === m.monthId);
+          if (original && original.entries.length !== m.entries.length) {
             saveToFirestore('month', m);
           }
         });
       }
     }
-    marchCleanedRef.current = true;
   }, [hasInitialSync, user, customBanks, allData, setAllData, saveToFirestore]);
+
+  // Completely clear any remembered deleted custom banks once to start fresh as requested
+  useEffect(() => {
+    if (user && !hasInitialSync) return;
+    if (deletedCustomBanks.length > 0) {
+      setDeletedCustomBanks([]);
+      if (user) {
+        saveToFirestore('settings', { deletedCustomBanks: [] });
+      }
+    }
+  }, [hasInitialSync, user, deletedCustomBanks.length, setDeletedCustomBanks, saveToFirestore]);
 
   // Reset selectedMonthId if it's not current or next
   useEffect(() => {
