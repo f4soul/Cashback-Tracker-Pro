@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
+import React, { useState, useRef, useEffect, useCallback, memo, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { MonthData, CashbackEntry, Bank, LogoShape } from '../types';
 import {
@@ -64,6 +64,7 @@ interface CurrentMonthProps {
   selectedMonthId: string;
   onMonthChange: (monthId: string) => void;
   customBanks: Bank[];
+  deletedCustomBanks?: Bank[];
   customCategories: string[];
   onUpdate: (data: MonthData) => void;
   onDeleteEntry: (id: string) => void;
@@ -245,6 +246,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     selectedMonthId,
     onMonthChange,
     customBanks,
+    deletedCustomBanks = [],
     customCategories,
     onUpdate,
     onDeleteEntry,
@@ -255,6 +257,11 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     allMonthIds,
     isExiting = false,
   }) => {
+    const allCustomBanks = useMemo(
+      () => [...customBanks, ...deletedCustomBanks],
+      [customBanks, deletedCustomBanks],
+    );
+
     const date = new Date().getDate();
     const isAfter25 = date >= 25;
     const isBefore5th = date <= 5;
@@ -517,8 +524,8 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     }, [data.monthId]);
 
     const handleExportExcel = useCallback(() => {
-      exportToExcel(data, customBanks, `Кэшбек_${data.monthId}.xlsx`);
-    }, [data, customBanks]);
+      exportToExcel(data, allCustomBanks, `Кэшбек_${data.monthId}.xlsx`);
+    }, [data, allCustomBanks]);
 
     const handleExportImage = useCallback(() => {
       exportToImage('current-cashback-table', `Кэшбек_${data.monthId}.png`);
@@ -720,7 +727,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   id="current-cashback-table"
                   monthId={data.monthId}
                   entries={data.entries}
-                  customBanks={customBanks}
+                  customBanks={allCustomBanks}
                   globalLogoShape={globalLogoShape}
                   onExportPDF={handleExport}
                   onExportExcel={handleExportExcel}
@@ -773,7 +780,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                                 entry.customBankName,
                               ) ||
                               (entry.bankId.startsWith('custom_')
-                                ? customBanks.find((b) => b.id === entry.bankId)
+                                ? allCustomBanks.find((b) => b.id === entry.bankId)
                                 : null);
 
                             if (!bank) return null;
@@ -818,7 +825,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                                 entry.customBankName,
                               ) ||
                               (entry.bankId.startsWith('custom_')
-                                ? customBanks.find((b) => b.id === entry.bankId)
+                                ? allCustomBanks.find((b) => b.id === entry.bankId)
                                 : null);
                             if (!bank) return null;
 

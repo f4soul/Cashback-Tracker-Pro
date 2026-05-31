@@ -189,8 +189,8 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                   {
                     id: entry.bankId,
                     name: entry.customBankName || 'Удаленный банк',
-                    color: '#64748b',
-                    logoText: (entry.customBankName || 'Б').substring(0, 2).toUpperCase(),
+                    color: entry.customBankColor || '#64748b',
+                    logoText: entry.customBankLogoText || (entry.customBankName || 'Б').substring(0, 2).toUpperCase(),
                     logoUrl: entry.customLogo
                   };
 

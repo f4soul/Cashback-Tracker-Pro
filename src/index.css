@@ -20,6 +20,16 @@ html {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   scrollbar-gutter: stable;
+  /* Улучшает рендеринг и плавность прокрутки на дисплеях с высокой частотой обновления */
+  scroll-behavior: smooth;
+}
+
+/* Форсирование аппаратного ускорения (GPU Composite) во всех современных браузерах */
+.gpu-accelerated {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform, opacity;
 }
 
 * {

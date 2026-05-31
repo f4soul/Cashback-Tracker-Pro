@@ -18,6 +18,8 @@ export interface CashbackEntry {
   bankId: string;
   customBankName?: string;
   customLogo?: string;
+  customBankColor?: string;
+  customBankLogoText?: string;
   categories: CategoryItem[];
 }
 

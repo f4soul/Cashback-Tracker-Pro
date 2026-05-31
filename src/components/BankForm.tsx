@@ -150,26 +150,36 @@ export const BankForm: React.FC<BankFormProps> = memo(({
 
     if (isCustomBank && customBankName) {
       const newBankId = `custom_${Date.now()}`;
+      const bankColor = '#64748b';
+      const logoTxt = customBankName.charAt(0).toUpperCase();
+
       onAddCustomBank({
         id: newBankId,
         name: customBankName,
-        color: '#64748b',
-        logoText: customBankName.charAt(0).toUpperCase(),
+        color: bankColor,
+        logoText: logoTxt,
         logoUrl: '/logos/bank-icon.svg'
       });
       onSave({
         bankId: newBankId,
+        customBankName,
+        customBankColor: bankColor,
+        customBankLogoText: logoTxt,
         customLogo,
         categories: sortedCategories,
       });
     } else {
+      const activeBank = allBanks.find(b => b.id === selectedBankId);
       onSave({
         bankId: selectedBankId,
-        customLogo,
+        customBankName: activeBank?.name,
+        customBankColor: activeBank?.color,
+        customBankLogoText: activeBank?.logoText,
+        customLogo: customLogo || activeBank?.logoUrl,
         categories: sortedCategories,
       });
     }
-  }, [selectedBankId, isCustomBank, customBankName, onAddCustomBank, onSave, customLogo, selectedCategories]);
+  }, [selectedBankId, isCustomBank, customBankName, onAddCustomBank, onSave, customLogo, selectedCategories, allBanks]);
 
   const shapeClasses = {
     circle: 'w-10 h-10 rounded-full',

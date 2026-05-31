@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { MonthData, Bank, AppSettings } from './types';
 import { getCurrentMonthId, getNextMonthId } from './utils/date';
@@ -37,6 +37,7 @@ import {
 
 import { Toaster } from 'sonner';
 import { ConfirmModal } from './components/ui/ConfirmModal';
+import { BANKS } from './constants';
 
 const AuthButton = ({
   user,
@@ -160,6 +161,10 @@ export default function App() {
     'custom_banks',
     [],
   );
+  const [deletedCustomBanks, setDeletedCustomBanks] = useLocalStorage<Bank[]>(
+    'deleted_custom_banks',
+    [],
+  );
   const [customCategories, setCustomCategories] = useLocalStorage<string[]>(
     'custom_categories',
     [],
@@ -198,6 +203,7 @@ export default function App() {
           if (data.theme) setTheme(data.theme);
           if (data.customBanks) setCustomBanks(data.customBanks);
           if (data.customCategories) setCustomCategories(data.customCategories);
+          if (data.deletedCustomBanks) setDeletedCustomBanks(data.deletedCustomBanks);
         } else {
           // Initialize user document if it doesn't exist with local data
           const initialUserData = JSON.parse(
@@ -205,6 +211,7 @@ export default function App() {
               settings,
               theme,
               customBanks,
+              deletedCustomBanks,
               customCategories,
             }),
           );
@@ -304,6 +311,7 @@ export default function App() {
     const exportData = {
       allData,
       customBanks,
+      deletedCustomBanks,
       customCategories,
       settings,
       theme,
@@ -320,7 +328,7 @@ export default function App() {
     link.download = `cashback_backup_${new Date().toISOString().split('T')[0]}.json`;
     link.click();
     URL.revokeObjectURL(url);
-  }, [allData, customBanks, customCategories, settings, theme]);
+  }, [allData, customBanks, deletedCustomBanks, customCategories, settings, theme]);
 
   const handleImportAllData = useCallback(
     async (jsonData: any) => {
@@ -331,6 +339,7 @@ export default function App() {
 
         setAllData(jsonData.allData);
         if (jsonData.customBanks) setCustomBanks(jsonData.customBanks);
+        if (jsonData.deletedCustomBanks) setDeletedCustomBanks(jsonData.deletedCustomBanks);
         if (jsonData.customCategories)
           setCustomCategories(jsonData.customCategories);
         if (jsonData.settings) setSettings(jsonData.settings);
@@ -346,6 +355,7 @@ export default function App() {
               settings: jsonData.settings || settings,
               theme: jsonData.theme || theme,
               customBanks: jsonData.customBanks || customBanks,
+              deletedCustomBanks: jsonData.deletedCustomBanks || deletedCustomBanks,
               customCategories: jsonData.customCategories || customCategories,
               uid: user.uid,
             },
@@ -375,9 +385,11 @@ export default function App() {
       settings,
       theme,
       customBanks,
+      deletedCustomBanks,
       customCategories,
       setAllData,
       setCustomBanks,
+      setDeletedCustomBanks,
       setCustomCategories,
       setSettings,
       setTheme,
@@ -391,6 +403,46 @@ export default function App() {
   const currentMonthId = getCurrentMonthId();
   const nextMonthId = getNextMonthId();
   const [selectedMonthId, setSelectedMonthId] = useState(currentMonthId);
+
+  // Cleanup March from any legacy deleted/unrecognized custom banks
+  const marchCleanedRef = useRef(false);
+  useEffect(() => {
+    if (user && !hasInitialSync) return;
+    if (marchCleanedRef.current) return;
+    if (allData.length === 0) return;
+
+    let hasChanges = false;
+    const cleaned = allData.map((month) => {
+      if (month.monthId.includes('-03')) {
+        const filteredEntries = month.entries.filter((entry) => {
+          const isStandard = BANKS.some((b) => b.id === entry.bankId);
+          const isActiveCustom = customBanks.some((b) => b.id === entry.bankId);
+          if (entry.bankId === 'custom') return true;
+          const keep = isStandard || isActiveCustom;
+          if (!keep) {
+            hasChanges = true;
+          }
+          return keep;
+        });
+        if (filteredEntries.length !== month.entries.length) {
+          return { ...month, entries: filteredEntries };
+        }
+      }
+      return month;
+    });
+
+    if (hasChanges) {
+      setAllData(cleaned);
+      if (user) {
+        cleaned.forEach((m) => {
+          if (m.monthId.includes('-03')) {
+            saveToFirestore('month', m);
+          }
+        });
+      }
+    }
+    marchCleanedRef.current = true;
+  }, [hasInitialSync, user, customBanks, allData, setAllData, saveToFirestore]);
 
   // Reset selectedMonthId if it's not current or next
   useEffect(() => {
@@ -537,13 +589,24 @@ export default function App() {
 
   const handleDeleteCustomBank = useCallback(
     (bankId: string) => {
+      const bankToBackup = customBanks.find((b) => b.id === bankId);
       const newBanks = customBanks.filter((b) => b.id !== bankId);
       setCustomBanks(newBanks);
+
+      let nextDeleted = deletedCustomBanks;
+      if (bankToBackup && !deletedCustomBanks.some((b) => b.id === bankId)) {
+        nextDeleted = [...deletedCustomBanks, bankToBackup];
+        setDeletedCustomBanks(nextDeleted);
+      }
+
       if (user) {
-        saveToFirestore('settings', { customBanks: newBanks });
+        saveToFirestore('settings', { 
+          customBanks: newBanks,
+          deletedCustomBanks: nextDeleted
+        });
       }
     },
-    [customBanks, user, saveToFirestore],
+    [customBanks, deletedCustomBanks, user, saveToFirestore, setDeletedCustomBanks],
   );
 
   const handleAddCustomBank = useCallback(
@@ -933,6 +996,7 @@ export default function App() {
                     deleteMonthEntry(selectedMonthId, entryId)
                   }
                   customBanks={customBanks}
+                  deletedCustomBanks={deletedCustomBanks}
                   customCategories={customCategories}
                   onAddCustomBank={handleAddCustomBank}
                   onDeleteCustomBank={handleDeleteCustomBank}
@@ -952,6 +1016,7 @@ export default function App() {
                 <Archive
                   allData={archiveData}
                   customBanks={customBanks}
+                  deletedCustomBanks={deletedCustomBanks}
                   customCategories={customCategories}
                   onDeleteEntry={deleteMonthEntry}
                   onDeleteMonth={handleDeleteMonth}
