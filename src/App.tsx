@@ -894,13 +894,7 @@ export default function App() {
         }}
       />
       {/* Desktop Sidebar */}
-      <aside 
-        className="hidden md:flex flex-col w-[280px] h-full bg-white dark:bg-[#111] border-r border-slate-100 dark:border-white/5 z-40 shrink-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none"
-        style={{
-          paddingTop: 'env(safe-area-inset-top, 0px)',
-          paddingBottom: 'env(safe-area-inset-bottom, 0px)'
-        }}
-      >
+      <aside className="hidden md:flex flex-col w-[280px] h-full bg-white dark:bg-[#111] border-r border-slate-100 dark:border-white/5 z-40 shrink-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
         <div className="px-6 py-10 flex flex-col h-full">
           <div className="flex items-center mb-12 px-1">
             <div className="flex items-center gap-3 flex-1">
@@ -986,12 +980,9 @@ export default function App() {
       {/* Floating Header */}
       <header
         className={clsx(
-          'fixed top-0 left-0 right-0 z-40 transition-transform duration-300 px-3 pb-3 md:hidden',
+          'fixed top-0 left-0 right-0 z-40 transition-transform duration-300 p-3 md:hidden',
           !headerVisible && '-translate-y-full',
         )}
-        style={{
-          paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)'
-        }}
       >
         <div className="max-w-3xl mx-auto bg-white/95 dark:bg-[#1A1A1A]/95 backdrop-blur-2xl border border-slate-100 dark:border-white/5 rounded-[1.25rem] px-4 py-2.5 flex items-center justify-between shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)]">
           <div className="flex items-center gap-3">
@@ -1113,12 +1104,9 @@ export default function App() {
 
       <div
         className={clsx(
-          'md:hidden fixed left-0 right-0 z-50 px-3 flex justify-center transition-all duration-300',
-          !navVisible && navExpanded && 'translate-y-24',
+          'md:hidden fixed bottom-3 left-0 right-0 z-50 px-3 flex justify-center transition-all duration-300',
+          !navVisible && navExpanded && 'translate-y-20',
         )}
-        style={{
-          bottom: 'calc(env(safe-area-inset-bottom, 0px) + 0.75rem)'
-        }}
       >
         <motion.nav
           initial={false}
