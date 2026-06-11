@@ -50,7 +50,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <div className="p-3 sm:p-4 sm:pt-0 overflow-y-auto">
+              <div className="p-3 sm:p-4 overflow-y-auto">
                 {children}
               </div>
             </motion.div>

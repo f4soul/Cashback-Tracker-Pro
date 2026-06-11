@@ -169,3 +169,28 @@ h1, h2, h3, h4, h5, h6 {
 .dark .pdf-export-mode .dark\:border-gray-700\/60 {
   border-color: #374151 !important; /* gray-700 */
 }
+
+/* iOS PWA Safe Area Overrides */
+#main-scroll-container {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 5.25rem);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 7rem);
+  padding-left: calc(env(safe-area-inset-left, 0px) + 0.75rem);
+  padding-right: calc(env(safe-area-inset-right, 0px) + 0.75rem);
+}
+
+@media (min-width: 768px) {
+  #main-scroll-container {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 3rem); /* md:pt-12 */
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 3rem); /* md:pb-12 */
+    padding-left: calc(env(safe-area-inset-left, 0px) + 1.5rem); /* md:px-6 */
+    padding-right: calc(env(safe-area-inset-right, 0px) + 1.5rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  #main-scroll-container {
+    padding-left: calc(env(safe-area-inset-left, 0px) + 2rem); /* lg:px-8 */
+    padding-right: calc(env(safe-area-inset-right, 0px) + 2rem);
+  }
+}
+
