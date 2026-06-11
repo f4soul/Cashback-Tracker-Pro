@@ -146,8 +146,40 @@ export default function App() {
       new CustomEvent('app-tab-change', { detail: { activeTab } })
     );
   }, [activeTab]);
+
+  // Scroll to top instantly when active tab changes
+  useEffect(() => {
+    const mainElement = document.getElementById('main-scroll-container');
+    if (mainElement) {
+      mainElement.scrollTo({ top: 0, behavior: 'auto' });
+    }
+  }, [activeTab]);
+
+  // Handle tab clicks with scroll to top on double click
+  const handleTabClick = useCallback((tab: 'current' | 'archive' | 'settings') => {
+    if (activeTab === tab) {
+      const mainElement = document.getElementById('main-scroll-container');
+      if (mainElement) {
+        mainElement.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    } else {
+      setActiveTab(tab);
+    }
+  }, [activeTab]);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [user, setUser] = useState<any | null>(() => {
+    const lastKnown = localStorage.getItem('cashback_last_known_user');
+    if (lastKnown === 'true') {
+      return {
+        uid: localStorage.getItem('cashback_cached_uid') || 'cached',
+        displayName: localStorage.getItem('cashback_cached_name') || 'Пользователь',
+        email: localStorage.getItem('cashback_cached_email') || '',
+        photoURL: localStorage.getItem('cashback_cached_photo') || null,
+        isPlaceholder: true,
+      };
+    }
+    return null;
+  });
   const [isAuthReady, setIsAuthReady] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [hasInitialSync, setHasInitialSync] = useState(false);
@@ -182,16 +214,30 @@ export default function App() {
   // Auth listener
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (u) => {
-      setUser(u);
+      if (u) {
+        setUser(u);
+        localStorage.setItem('cashback_last_known_user', 'true');
+        localStorage.setItem('cashback_cached_uid', u.uid);
+        localStorage.setItem('cashback_cached_name', u.displayName || 'Пользователь');
+        localStorage.setItem('cashback_cached_email', u.email || '');
+        localStorage.setItem('cashback_cached_photo', u.photoURL || '');
+      } else {
+        setUser(null);
+        localStorage.removeItem('cashback_last_known_user');
+        localStorage.removeItem('cashback_cached_uid');
+        localStorage.removeItem('cashback_cached_name');
+        localStorage.removeItem('cashback_cached_email');
+        localStorage.removeItem('cashback_cached_photo');
+        setHasInitialSync(false);
+      }
       setIsAuthReady(true);
-      if (!u) setHasInitialSync(false);
     });
     return () => unsubscribe();
   }, []);
 
   // Sync settings and custom data from Firestore
   useEffect(() => {
-    if (!user) return;
+    if (!user || user.isPlaceholder) return;
 
     const userDocRef = doc(db, 'users', user.uid);
     const unsubscribe = onSnapshot(
@@ -230,7 +276,7 @@ export default function App() {
 
   // Sync month data from Firestore
   useEffect(() => {
-    if (!user) return;
+    if (!user || user.isPlaceholder) return;
 
     const monthsQuery = query(
       collection(db, 'months'),
@@ -275,7 +321,7 @@ export default function App() {
   // Helper to save data to Firestore
   const saveToFirestore = useCallback(
     async (type: 'settings' | 'month', payload: any) => {
-      if (!user) return;
+      if (!user || user.isPlaceholder) return;
       setIsSyncing(true);
       try {
         // Sanitize payload to remove undefined values which Firestore doesn't support
@@ -347,7 +393,7 @@ export default function App() {
         if (jsonData.theme) setTheme(jsonData.theme);
 
         // If logged in, sync to Firestore
-        if (user) {
+        if (user && !user.isPlaceholder) {
           setIsSyncing(true);
           const userDocRef = doc(db, 'users', user.uid);
           await setDoc(
@@ -883,7 +929,7 @@ export default function App() {
 
           <nav className="flex flex-col gap-2.5 flex-1">
             <button
-              onClick={() => setActiveTab('current')}
+              onClick={() => handleTabClick('current')}
               className={clsx(
                 'flex items-center gap-3 px-4 py-3.5 rounded-[1.25rem] transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
                 activeTab === 'current'
@@ -895,7 +941,7 @@ export default function App() {
               <span className="leading-none mt-[1px]">Кэшбек</span>
             </button>
             <button
-              onClick={() => setActiveTab('archive')}
+              onClick={() => handleTabClick('archive')}
               className={clsx(
                 'flex items-center gap-3 px-4 py-3.5 rounded-[1.25rem] transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
                 activeTab === 'archive'
@@ -907,7 +953,7 @@ export default function App() {
               <span className="leading-none mt-[1px]">Архив</span>
             </button>
             <button
-              onClick={() => setActiveTab('settings')}
+              onClick={() => handleTabClick('settings')}
               className={clsx(
                 'flex items-center gap-3 px-4 py-3.5 rounded-[1.25rem] transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
                 activeTab === 'settings'
@@ -1076,7 +1122,7 @@ export default function App() {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              setActiveTab('current');
+              handleTabClick('current');
             }}
             className={clsx(
               'flex-1 flex flex-col items-center justify-center h-full relative group cursor-pointer min-w-0',
@@ -1123,7 +1169,7 @@ export default function App() {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              setActiveTab('archive');
+              handleTabClick('archive');
             }}
             className={clsx(
               'flex-1 flex flex-col items-center justify-center h-full relative group cursor-pointer min-w-0',
@@ -1170,7 +1216,7 @@ export default function App() {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              setActiveTab('settings');
+              handleTabClick('settings');
             }}
             className={clsx(
               'flex-1 flex flex-col items-center justify-center h-full relative group cursor-pointer min-w-0',
