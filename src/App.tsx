@@ -547,6 +547,21 @@ export default function App() {
     root.style.setProperty('--percent-bg', settings.percentBlockBg);
     root.style.setProperty('--percent-text', settings.percentBlockText);
     root.style.setProperty('--app-font-color', settings.fontColor);
+
+    // Update meta theme-color dynamically to keep the system status bar, safe areas, and PWA borders fully in sync
+    const targetColor = theme === 'dark' ? '#0A0A0A' : '#FAFAFA';
+    const metaThemeTags = document.querySelectorAll('meta[name="theme-color"]');
+    if (metaThemeTags.length > 0) {
+      metaThemeTags.forEach((tag) => {
+        tag.removeAttribute('media'); // Override preference-based media query limits
+        tag.setAttribute('content', targetColor);
+      });
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = 'theme-color';
+      meta.content = targetColor;
+      document.head.appendChild(meta);
+    }
   }, [theme, settings]);
 
   const toggleTheme = () => {
@@ -946,7 +961,7 @@ export default function App() {
 
       <div
         className={clsx(
-          'md:hidden fixed left-0 right-0 z-50 px-3 flex justify-center transition-all duration-300 bottom-[calc(0.75rem+env(safe-area-inset-bottom))]',
+          'md:hidden fixed left-0 right-0 z-50 px-3 flex justify-center transition-all duration-300 bottom-[max(0.75rem,env(safe-area-inset-bottom))]',
           !navVisible && navExpanded && 'translate-y-[200%]',
         )}
       >
