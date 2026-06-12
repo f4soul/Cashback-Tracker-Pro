@@ -702,165 +702,8 @@ export default function App() {
     [settings, user, saveToFirestore],
   );
 
-  const handleAddTestData = useCallback(() => {
-    const testMonths = [
-      {
-        monthId: '2026-02-test',
-        entries: [
-          {
-            id: 'test-f-1',
-            bankId: 'tinkoff',
-            categories: [
-              { name: 'Супермаркеты', percent: '5' },
-              { name: 'Аптеки', percent: '5' },
-            ],
-          },
-          {
-            id: 'test-f-2',
-            bankId: 'alfa',
-            categories: [
-              { name: 'Продукты', percent: '5' },
-              { name: 'Кафе и рестораны', percent: '5' },
-            ],
-          },
-          {
-            id: 'test-f-3',
-            bankId: 'sber',
-            categories: [
-              { name: 'АЗС', percent: '10' },
-              { name: 'Дом и ремонт', percent: '5' },
-            ],
-          },
-          {
-            id: 'test-f-4',
-            bankId: 'vtb',
-            categories: [
-              { name: 'Транспорт', percent: '5' },
-              { name: 'Одежда', percent: '5' },
-            ],
-          },
-          {
-            id: 'test-f-5',
-            bankId: 'raiffeisen',
-            categories: [{ name: 'Все покупки', percent: '1.5' }],
-          },
-          {
-            id: 'test-f-6',
-            bankId: 'gazprom',
-            categories: [
-              { name: 'Спорттовары', percent: '5' },
-              { name: 'Развлечения', percent: '5' },
-            ],
-          },
-          {
-            id: 'test-f-7',
-            bankId: 'ozon',
-            categories: [
-              { name: 'Маркетплейсы', percent: '5' },
-              { name: 'Фастфуд', percent: '5' },
-            ],
-          },
-          {
-            id: 'test-f-8',
-            bankId: 'yandex',
-            categories: [
-              { name: 'Такси', percent: '10' },
-              { name: 'Доставка', percent: '5' },
-            ],
-          },
-        ],
-      },
-      {
-        monthId: '2026-01-test',
-        entries: [
-          {
-            id: 'test-j-1',
-            bankId: 'tinkoff',
-            categories: [
-              { name: 'Супермаркеты', percent: '5' },
-              { name: 'Аптеки', percent: '5' },
-            ],
-          },
-          {
-            id: 'test-j-2',
-            bankId: 'alfa',
-            categories: [
-              { name: 'Продукты', percent: '5' },
-              { name: 'Кафе и рестораны', percent: '5' },
-            ],
-          },
-          {
-            id: 'test-j-3',
-            bankId: 'sber',
-            categories: [
-              { name: 'АЗС', percent: '10' },
-              { name: 'Дом и ремонт', percent: '5' },
-            ],
-          },
-          {
-            id: 'test-j-4',
-            bankId: 'vtb',
-            categories: [
-              { name: 'Транспорт', percent: '5' },
-              { name: 'Одежда', percent: '5' },
-            ],
-          },
-          {
-            id: 'test-j-5',
-            bankId: 'raiffeisen',
-            categories: [{ name: 'Все покупки', percent: '1.5' }],
-          },
-          {
-            id: 'test-j-6',
-            bankId: 'gazprom',
-            categories: [
-              { name: 'Спорттовары', percent: '5' },
-              { name: 'Развлечения', percent: '5' },
-            ],
-          },
-          {
-            id: 'test-j-7',
-            bankId: 'ozon',
-            categories: [
-              { name: 'Маркетплейсы', percent: '5' },
-              { name: 'Фастфуд', percent: '5' },
-            ],
-          },
-          {
-            id: 'test-j-8',
-            bankId: 'yandex',
-            categories: [
-              { name: 'Такси', percent: '10' },
-              { name: 'Доставка', percent: '5' },
-            ],
-          },
-        ],
-      },
-    ];
-
-    setAllData((prev) => {
-      const newData = [...prev];
-      testMonths.forEach((testMonth) => {
-        const existingIndex = newData.findIndex(
-          (m) => m.monthId === testMonth.monthId,
-        );
-        if (existingIndex >= 0) {
-          newData[existingIndex] = testMonth;
-        } else {
-          newData.push(testMonth);
-        }
-      });
-      return newData;
-    });
-
-    if (user) {
-      testMonths.forEach((testMonth) => {
-        saveToFirestore('month', testMonth);
-      });
-    }
-  }, [user, saveToFirestore, setAllData]);
   return (
-    <div className="h-[100dvh] overflow-hidden bg-[#FAFAFA] dark:bg-[#0A0A0A] font-sans transition-colors duration-300 flex flex-col md:flex-row">
+    <div className="fixed inset-0 overflow-hidden bg-[#FAFAFA] dark:bg-[#0A0A0A] font-sans transition-colors duration-300 flex flex-col md:flex-row">
       <ConfirmModal
         isOpen={isLogoutModalOpen}
         onClose={() => setIsLogoutModalOpen(false)}
@@ -980,7 +823,7 @@ export default function App() {
       {/* Floating Header */}
       <header
         className={clsx(
-          'fixed top-0 left-0 right-0 z-40 transition-transform duration-300 p-3 md:hidden',
+          'fixed top-0 left-0 right-0 z-40 transition-transform duration-300 p-3 pt-[calc(0.75rem+env(safe-area-inset-top))] md:hidden',
           !headerVisible && '-translate-y-full',
         )}
       >
@@ -1029,7 +872,7 @@ export default function App() {
       {/* Main Content Area */}
       <main
         id="main-scroll-container"
-        className="flex-1 overflow-y-auto scrollbar-hide app-content-text pt-[5.25rem] pb-[7rem] md:pt-12 md:pb-12 relative"
+        className="flex-1 overflow-y-auto scrollbar-hide app-content-text pt-[calc(5.25rem+env(safe-area-inset-top))] pb-[calc(7rem+env(safe-area-inset-bottom))] md:pt-12 md:pb-12 relative"
       >
         <div className="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 pt-2 pb-3 lg:pt-0 lg:pb-8">
           <AnimatePresence mode="wait" initial={false}>
@@ -1091,7 +934,6 @@ export default function App() {
                   setSettings={handleUpdateSettings}
                   customBanks={customBanks}
                   currentMonthData={currentMonthData}
-                  onAddTestData={handleAddTestData}
                   userEmail={user?.email}
                   onExportJSON={handleExportAllData}
                   onImportJSON={handleImportAllData}
@@ -1104,8 +946,8 @@ export default function App() {
 
       <div
         className={clsx(
-          'md:hidden fixed bottom-3 left-0 right-0 z-50 px-3 flex justify-center transition-all duration-300',
-          !navVisible && navExpanded && 'translate-y-20',
+          'md:hidden fixed left-0 right-0 z-50 px-3 flex justify-center transition-all duration-300 bottom-[calc(0.75rem+env(safe-area-inset-bottom))]',
+          !navVisible && navExpanded && 'translate-y-[200%]',
         )}
       >
         <motion.nav

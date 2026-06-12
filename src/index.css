@@ -37,14 +37,14 @@ html {
 }
 
 body {
-  background-color: #f8fafc; /* slate-50 */
+  background-color: #FAFAFA;
   @apply text-slate-900;
   font-size: 1rem;
   line-height: 1.5;
 }
 
 .dark body {
-  background-color: #0f172a; /* slate-900 */
+  background-color: #0A0A0A;
   @apply text-white;
 }
 
@@ -99,10 +99,6 @@ h1, h2, h3, h4, h5, h6 {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
-
-.dark body {
-  background-color: #030712; /* gray-950 */
 }
 
 /* Styles applied only during PDF export */

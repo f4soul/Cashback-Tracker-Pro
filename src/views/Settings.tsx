@@ -261,8 +261,8 @@ export const Settings: React.FC<SettingsProps> = memo(({
         </div>
 
 
-        {/* Export Card - Full Width - Order 5 */}
-        <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] space-y-3 lg:col-span-2 order-5">
+        {/* Export Card - Order 5 or 6 */}
+        <div className={`bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] space-y-3 ${isAdmin ? 'order-6 lg:col-span-1' : 'order-5 lg:col-span-2'}`}>
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Download className="w-4 h-4 text-[var(--accent-color)]" />
@@ -325,45 +325,24 @@ export const Settings: React.FC<SettingsProps> = memo(({
           </div>
         </div>
 
-        {/* Admin Cards - Order 6 */}
+        {/* Admin Cards - Order 5 */}
         {isAdmin && (
-          <>
-            {/* Version History Card */}
-            <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] space-y-3 order-6">
-              <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
-                <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
-                  <FileText className="w-4 h-4 text-[var(--accent-color)]" />
-                </div>
-                <h2 className="text-sm border-transparent mt-[1px]">История версий</h2>
+          <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col justify-between min-h-full space-y-3 order-5">
+            <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
+              <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
+                <FileText className="w-4 h-4 text-[var(--accent-color)]" />
               </div>
-              
-              <button
-                onClick={() => setIsVersionHistoryOpen(true)}
-                className="w-full py-3.5 px-4 bg-[#FAFAFA] dark:bg-[#111] hover:bg-white dark:hover:bg-[#1A1A1A] border border-slate-100 dark:border-white/5 rounded-[1.25rem] text-sm font-bold text-gray-700 dark:text-gray-300 transition-all cursor-pointer flex items-center justify-center gap-2 hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] active:scale-95"
-              >
-                Посмотреть историю изменений
-              </button>
+              <h2 className="text-sm border-transparent mt-[1px]">История версий</h2>
             </div>
-
-            {/* Test Data Card */}
-            {onAddTestData && (
-              <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] space-y-3 order-6">
-                <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
-                  <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
-                    <RotateCcw className="w-4 h-4 text-[var(--accent-color)]" />
-                  </div>
-                  <h2 className="text-sm border-transparent mt-[1px]">Тестовые данные</h2>
-                </div>
-                
-                <button
-                  onClick={onAddTestData}
-                  className="w-full py-3.5 px-4 bg-[#FAFAFA] dark:bg-[#111] hover:bg-white dark:hover:bg-[#1A1A1A] border border-slate-100 dark:border-white/5 rounded-[1.25rem] text-sm font-bold text-gray-700 dark:text-gray-300 transition-all cursor-pointer flex items-center justify-center gap-2 hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] active:scale-95"
-                >
-                  Добавить тестовые данные в архив
-                </button>
-              </div>
-            )}
-          </>
+            
+            <button
+              onClick={() => setIsVersionHistoryOpen(true)}
+              className="w-full mt-auto py-3.5 px-4 bg-[#FAFAFA] dark:bg-[#111] hover:bg-white dark:hover:bg-[#1A1A1A] border border-slate-100 dark:border-white/5 rounded-[1.25rem] text-[10px] font-black text-[var(--accent-color)] uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-none hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] active:scale-95"
+            >
+              <FileText className="w-3.5 h-3.5 shrink-0" />
+              <span className="leading-none mt-[1px]">Посмотреть обновления</span>
+            </button>
+          </div>
         )}
       </div>
 

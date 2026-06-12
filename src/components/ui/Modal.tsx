@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -6,10 +6,22 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
+  headerContent?: React.ReactNode;
   children: React.ReactNode;
+  isBottomSheet?: boolean; // Force bottom sheet on all devices
+  isFixedHeight?: boolean; // Force fixed height to prevent jumping
 }
 
-export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
+export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, headerContent, children, isBottomSheet = false, isFixedHeight = false }) => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -20,6 +32,21 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
+
+  const mobileVariants = {
+    hidden: { y: '100%', x: '-50%', left: '50%' },
+    visible: { y: 0, x: '-50%', left: '50%' },
+    exit: { y: '100%', x: '-50%', left: '50%' }
+  };
+
+  const desktopVariants = {
+    hidden: { opacity: 0, y: 24, scale: 0.96 },
+    visible: { opacity: 1, y: 0, scale: 1 },
+    exit: { opacity: 0, y: 16, scale: 0.96 }
+  };
+
+  const useBottomSheet = isMobile || isBottomSheet;
+  const variants = useBottomSheet ? mobileVariants : desktopVariants;
 
   return (
     <AnimatePresence>
@@ -33,24 +60,29 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
             onClick={onClose}
             className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] transform translate-z-0"
           />
-          <div className="fixed inset-0 flex items-end md:items-center justify-center p-4 z-[70] pointer-events-none">
+          <div className="fixed inset-0 flex items-end md:items-center justify-center p-0 md:p-4 z-[70] pointer-events-none">
             <motion.div
-              initial={{ opacity: 0, y: 24, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 16, scale: 0.96 }}
-              transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-2xl rounded-[1.25rem] shadow-[0_20px_60px_rgb(0,0,0,0.1)] dark:shadow-[0_20px_60px_rgb(0,0,0,0.4)] border border-slate-100 dark:border-white/5 overflow-hidden max-h-[85vh] flex flex-col w-full md:w-[500px] pointer-events-auto transform translate-z-0 will-change-transform"
+              initial={variants.hidden}
+              animate={variants.visible}
+              exit={variants.exit}
+              transition={useBottomSheet ? { duration: 0.4, ease: [0.32, 0.72, 0, 1] } : { duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+              className={`bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-2xl shadow-[0_-20px_60px_rgb(0,0,0,0.1)] dark:shadow-[0_-20px_60px_rgb(0,0,0,0.4)] md:shadow-[0_20px_60px_rgb(0,0,0,0.1)] dark:md:shadow-[0_20px_60px_rgb(0,0,0,0.4)] border-t md:border border-slate-100 dark:border-white/5 overflow-hidden flex flex-col w-full pointer-events-auto transform translate-z-0 will-change-transform pb-[env(safe-area-inset-bottom)] md:pb-0 ${
+                useBottomSheet 
+                  ? 'fixed bottom-0 rounded-t-[1.5rem] rounded-b-none max-w-[700px]' 
+                  : 'relative rounded-[1.25rem] max-w-[500px]'
+              } ${isFixedHeight ? 'h-[90vh] md:h-[85vh]' : 'max-h-[90vh] md:max-h-[85vh]'}`}
             >
-              <div className="flex items-center justify-between p-3 sm:p-5 border-b border-slate-100 dark:border-white/5 bg-white dark:bg-[#0A0A0A]">
-                <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white tracking-tight">{title}</h3>
+              <div className="flex items-center justify-between p-4 sm:p-5 border-b border-slate-100 dark:border-white/5 bg-transparent shrink-0">
+                <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white tracking-tight uppercase">{title}</h3>
                 <button
                   onClick={onClose}
-                  className="p-1.5 -mr-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+                  className="w-8 h-8 -mr-1 rounded-xl bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/20 transition-all cursor-pointer active:scale-95 shrink-0"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <div className="p-3 sm:p-4 overflow-y-auto">
+              {headerContent}
+              <div className="p-3 sm:p-4 overflow-y-auto w-full flex-1 min-h-0">
                 {children}
               </div>
             </motion.div>
