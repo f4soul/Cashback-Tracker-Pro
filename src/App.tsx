@@ -551,15 +551,19 @@ export default function App() {
     // Update meta theme-color dynamically to keep the system status bar, safe areas, and PWA borders fully in sync
     const targetColor = theme === 'dark' ? '#0A0A0A' : '#FAFAFA';
     
-    // Remove existing meta theme-color tags
-    const existingMetaThemeTags = document.querySelectorAll('meta[name="theme-color"]');
-    existingMetaThemeTags.forEach(tag => tag.remove());
-    
-    // Create and append a single, authoritative meta theme-color tag
-    const meta = document.createElement('meta');
-    meta.name = 'theme-color';
-    meta.content = targetColor;
-    document.head.appendChild(meta);
+    // Also style the root document element background to match, preventing white/black flash during rubber-banding elastic scroll
+    root.style.backgroundColor = targetColor;
+
+    let meta = document.getElementById('theme-color-meta') || document.querySelector('meta[name="theme-color"]');
+    if (meta) {
+      meta.setAttribute('content', targetColor);
+    } else {
+      meta = document.createElement('meta');
+      meta.setAttribute('id', 'theme-color-meta');
+      meta.setAttribute('name', 'theme-color');
+      meta.setAttribute('content', targetColor);
+      document.head.appendChild(meta);
+    }
   }, [theme, settings]);
 
   const toggleTheme = () => {

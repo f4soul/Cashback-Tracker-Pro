@@ -3,13 +3,49 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover" />
-    <meta name="theme-color" content="#FAFAFA" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" id="theme-color-meta" content="#FAFAFA" />
     <meta name="description" content="Умный трекер кэшбека и банковских карт. Отслеживайте свои категории и оптимизируйте расходы." />
     
     <!-- PWA / iOS Support -->
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Cashback Pro">
+
+    <!-- Inline script to apply theme during early load (prevents status bar flashing in PWA) -->
+    <script>
+      (function() {
+        var theme = 'light';
+        try {
+          var savedTheme = localStorage.getItem('theme');
+          if (savedTheme) {
+            if (savedTheme.indexOf('dark') !== -1) {
+              theme = 'dark';
+            } else if (savedTheme.indexOf('light') !== -1) {
+              theme = 'light';
+            }
+          } else {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+              theme = 'dark';
+            }
+          }
+        } catch (e) {}
+
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+
+        var targetColor = theme === 'dark' ? '#0A0A0A' : '#FAFAFA';
+        document.documentElement.style.backgroundColor = targetColor;
+        document.addEventListener('DOMContentLoaded', function() {
+          var meta = document.getElementById('theme-color-meta');
+          if (meta) {
+            meta.setAttribute('content', targetColor);
+          }
+        });
+      })();
+    </script>
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />

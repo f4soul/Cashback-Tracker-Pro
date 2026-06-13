@@ -1,17 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
 import { Modal } from './ui/Modal';
-
-interface MccDirectoryProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-interface MccItemType {
-  code: string;
-  name: string;
-  group: string;
-}
+import { MCC_DATA, MccItemType } from '../utils/mccData';
 
 const MccItem: React.FC<{ item: MccItemType }> = ({ item }) => {
   return (
@@ -33,9 +23,13 @@ const MccItem: React.FC<{ item: MccItemType }> = ({ item }) => {
   );
 };
 
+interface MccDirectoryProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
 export const MccDirectory: React.FC<MccDirectoryProps> = ({ isOpen, onClose }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [mccData, setMccData] = useState<MccItemType[]>([]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -43,26 +37,17 @@ export const MccDirectory: React.FC<MccDirectoryProps> = ({ isOpen, onClose }) =
     }
   }, [isOpen]);
 
-  useEffect(() => {
-    fetch('/mcc.json?t=' + Date.now())
-      .then(response => response.json())
-      .then(data => {
-        setMccData(data);
-      })
-      .catch(error => console.error('Error fetching MCC data:', error));
-  }, []);
-
   const filteredMcc = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
-    if (!query) return mccData;
+    if (!query) return MCC_DATA;
 
-    return mccData.filter(
+    return MCC_DATA.filter(
       (item) =>
         item.code.includes(query) ||
         item.name.toLowerCase().includes(query) ||
         item.group.toLowerCase().includes(query)
     );
-  }, [searchQuery, mccData]);
+  }, [searchQuery]);
 
   const searchHeader = (
     <div className="px-4 py-3 border-b border-slate-100 dark:border-white/5 shrink-0 bg-transparent">
