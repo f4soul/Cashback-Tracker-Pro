@@ -20,8 +20,12 @@ html {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   scrollbar-gutter: stable;
-  /* Улучшает рендеринг и плавность прокрутки на дисплеях с высокой частотой обновления */
   scroll-behavior: smooth;
+  background-color: #FAFAFA;
+}
+
+html.dark {
+  background-color: #0A0A0A;
 }
 
 /* Форсирование аппаратного ускорения (GPU Composite) во всех современных браузерах */
