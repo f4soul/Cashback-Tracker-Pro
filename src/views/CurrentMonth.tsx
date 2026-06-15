@@ -847,6 +847,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           title={editingEntry ? 'Редактировать банк' : 'Добавить банк'}
+          isFixedHeight={true}
         >
           <BankForm
             initialEntry={editingEntry}

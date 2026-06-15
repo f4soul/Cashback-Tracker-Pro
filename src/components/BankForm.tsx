@@ -421,10 +421,10 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                 key={cat}
                 onClick={() => toggleCategory(cat)}
                 className={clsx(
-                  "px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center cursor-pointer",
+                  "px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center cursor-pointer border",
                   isSelected
-                    ? "bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20"
-                    : "bg-[#FAFAFA] dark:bg-[#111] text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-[#1A1A1A] border border-slate-100 dark:border-white/5 shadow-sm"
+                    ? "bg-[var(--accent-color)] text-white border-transparent shadow-md shadow-[var(--accent-color)]/20"
+                    : "bg-[#FAFAFA] dark:bg-[#111] text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-[#1A1A1A] border-slate-100 dark:border-white/5 shadow-sm"
                 )}
               >
                 {cat}
@@ -435,7 +435,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
              <button
              key={cat.name}
              onClick={() => toggleCategory(cat.name)}
-             className="px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 cursor-pointer"
+             className="px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center bg-[var(--accent-color)] text-white border border-transparent shadow-md shadow-[var(--accent-color)]/20 cursor-pointer"
            >
              {cat.name}
            </button>
@@ -474,34 +474,52 @@ export const BankForm: React.FC<BankFormProps> = memo(({
         </form>
 
         {/* Percentages Input */}
-        {selectedCategories.length > 0 && (
-          <div className="mt-4 space-y-1.5 pt-3 border-t border-gray-200 dark:border-gray-800">
-            <label className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 block">Процент кэшбека (необязательно)</label>
-            {selectedCategories.map(cat => (
-              <div key={cat.name} className="flex items-center justify-between p-2 bg-[#FAFAFA] dark:bg-[#111] rounded-[1.25rem] border border-slate-100 dark:border-white/5 shadow-sm">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => toggleCategory(cat.name)}
-                    className="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
+        <AnimatePresence initial={false}>
+          {selectedCategories.length > 0 && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="mt-4 space-y-1.5 pt-3 border-t border-gray-200 dark:border-gray-800 overflow-hidden"
+            >
+              <label className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 block">Процент кэшбека (необязательно)</label>
+              <div className="space-y-1.5">
+                {selectedCategories.map(cat => (
+                  <motion.div 
+                    key={cat.name} 
+                    initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                    transition={{ duration: 0.15 }}
+                    className="flex items-center justify-between p-2 bg-[#FAFAFA] dark:bg-[#111] rounded-[1.25rem] border border-slate-100 dark:border-white/5 shadow-sm"
                   >
-                    <X className="w-4 h-4" />
-                  </button>
-                  <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{cat.name}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    placeholder="0"
-                    value={cat.percent}
-                    onChange={(e) => updateCategoryPercent(cat.name, e.target.value)}
-                    className="w-14 px-2 py-1 text-right bg-white dark:bg-[#1A1A1A] border border-slate-100 dark:border-white/5 shadow-inner rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white"
-                  />
-                  <span className="text-gray-500 dark:text-gray-400 text-xs font-medium">%</span>
-                </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => toggleCategory(cat.name)}
+                        className="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                      <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{cat.name}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        placeholder="0"
+                        value={cat.percent}
+                        onChange={(e) => updateCategoryPercent(cat.name, e.target.value)}
+                        className="w-14 px-2 py-1 text-right bg-white dark:bg-[#1A1A1A] border border-slate-100 dark:border-white/5 shadow-inner rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white"
+                      />
+                      <span className="text-gray-500 dark:text-gray-400 text-xs font-medium">%</span>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Actions */}
