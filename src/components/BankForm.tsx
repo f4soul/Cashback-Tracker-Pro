@@ -273,8 +273,20 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                 placeholder="Поиск банка..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 bg-[#FAFAFA] dark:bg-[#111] border border-slate-200/50 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all shadow-inner"
+                className={clsx(
+                  "w-full pl-9 py-2.5 bg-[#FAFAFA] dark:bg-[#111] border border-slate-200/50 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all shadow-inner",
+                  searchQuery ? "pr-10" : "pr-4"
+                )}
               />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
             </div>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-64 overflow-y-auto p-1 scrollbar-hide">
               <AnimatePresence mode="popLayout">
@@ -385,8 +397,20 @@ export const BankForm: React.FC<BankFormProps> = memo(({
             placeholder="Поиск категорий..."
             value={categorySearchQuery}
             onChange={(e) => setCategorySearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 bg-[#FAFAFA] dark:bg-[#111] border border-slate-200/50 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all shadow-inner"
+            className={clsx(
+              "w-full pl-9 py-2.5 bg-[#FAFAFA] dark:bg-[#111] border border-slate-200/50 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all shadow-inner",
+              categorySearchQuery ? "pr-10" : "pr-4"
+            )}
           />
+          {categorySearchQuery && (
+            <button
+              type="button"
+              onClick={() => setCategorySearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
         
         <div className="flex flex-wrap gap-1.5 sm:gap-2 max-h-64 overflow-y-auto p-1 scrollbar-hide">
@@ -397,13 +421,12 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                 key={cat}
                 onClick={() => toggleCategory(cat)}
                 className={clsx(
-                  "px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 cursor-pointer",
+                  "px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center cursor-pointer",
                   isSelected
                     ? "bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20"
                     : "bg-[#FAFAFA] dark:bg-[#111] text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-[#1A1A1A] border border-slate-100 dark:border-white/5 shadow-sm"
                 )}
               >
-                {isSelected && <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
                 {cat}
               </button>
             );
@@ -412,22 +435,35 @@ export const BankForm: React.FC<BankFormProps> = memo(({
              <button
              key={cat.name}
              onClick={() => toggleCategory(cat.name)}
-             className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 cursor-pointer"
+             className="px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 cursor-pointer"
            >
-             <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
              {cat.name}
            </button>
           ))}
         </div>
 
         <form onSubmit={handleAddCustom} className="flex gap-2 pt-1">
-          <input
-            type="text"
-            placeholder="Своя категория..."
-            value={customCategory}
-            onChange={(e) => setCustomCategory(e.target.value)}
-            className="flex-1 min-w-0 px-4 py-2.5 bg-[#FAFAFA] dark:bg-[#111] border border-slate-200/50 dark:border-white/10 shadow-inner rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all"
-          />
+          <div className="relative flex-1 min-w-0">
+            <input
+              type="text"
+              placeholder="Своя категория..."
+              value={customCategory}
+              onChange={(e) => setCustomCategory(e.target.value)}
+              className={clsx(
+                "w-full py-2.5 bg-[#FAFAFA] dark:bg-[#111] border border-slate-200/50 dark:border-white/10 shadow-inner rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all",
+                customCategory ? "pl-4 pr-10" : "px-4"
+              )}
+            />
+            {customCategory && (
+              <button
+                type="button"
+                onClick={() => setCustomCategory('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
           <button
             type="submit"
             disabled={!customCategory.trim()}

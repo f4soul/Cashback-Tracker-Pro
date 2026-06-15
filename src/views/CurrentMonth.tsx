@@ -351,15 +351,9 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
 
       // Use capture phase to ensure we catch events even if they are stopped elsewhere
       window.addEventListener('scroll', handleInteraction, true);
-      window.addEventListener('touchmove', handleInteraction, true);
-      window.addEventListener('mousedown', handleInteraction, true);
-      window.addEventListener('touchstart', handleInteraction, true);
 
       return () => {
         window.removeEventListener('scroll', handleInteraction, true);
-        window.removeEventListener('touchmove', handleInteraction, true);
-        window.removeEventListener('mousedown', handleInteraction, true);
-        window.removeEventListener('touchstart', handleInteraction, true);
       };
     }, [isFabHidden]);
 
