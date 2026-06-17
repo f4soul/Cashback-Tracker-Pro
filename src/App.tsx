@@ -163,19 +163,13 @@ export default function App() {
 
   // Scroll to top instantly when active tab changes
   useEffect(() => {
-    const mainElement = document.getElementById('main-scroll-container');
-    if (mainElement) {
-      mainElement.scrollTo({ top: 0, behavior: 'auto' });
-    }
+    window.scrollTo({ top: 0, behavior: 'auto' });
   }, [activeTab]);
 
   // Handle tab clicks with scroll to top on double click
   const handleTabClick = useCallback((tab: 'current' | 'archive' | 'settings') => {
     if (activeTab === tab) {
-      const mainElement = document.getElementById('main-scroll-container');
-      if (mainElement) {
-        mainElement.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       setActiveTab(tab);
     }
@@ -520,13 +514,10 @@ export default function App() {
 
   // Handle header and nav visibility on scroll
   useEffect(() => {
-    const mainElement = document.getElementById('main-scroll-container');
-    if (!mainElement) return;
-
-    let lastScrollY = mainElement.scrollTop;
+    let lastScrollY = window.scrollY;
 
     const handleScroll = () => {
-      const currentScrollY = mainElement.scrollTop;
+      const currentScrollY = window.scrollY;
       const isScrollingDown = currentScrollY > lastScrollY;
 
       if (currentScrollY > 100) {
@@ -543,8 +534,8 @@ export default function App() {
       lastScrollY = currentScrollY;
     };
 
-    mainElement.addEventListener('scroll', handleScroll, { passive: true });
-    return () => mainElement.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Apply theme and custom styles to document
@@ -739,7 +730,7 @@ export default function App() {
   );
 
   return (
-    <div className="fixed inset-0 overflow-hidden bg-[#FAFAFA] dark:bg-[#0A0A0A] font-sans transition-colors duration-300 flex flex-col md:flex-row">
+    <div className="min-h-[100dvh] bg-[#FAFAFA] dark:bg-[#0A0A0A] font-sans transition-colors duration-300 flex flex-col md:flex-row">
       <ConfirmModal
         isOpen={isLogoutModalOpen}
         onClose={() => setIsLogoutModalOpen(false)}
@@ -773,7 +764,7 @@ export default function App() {
         }}
       />
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-[280px] h-full bg-white dark:bg-[#111] border-r border-slate-100 dark:border-white/5 z-40 shrink-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
+      <aside className="hidden md:flex flex-col w-[280px] h-[100dvh] sticky top-0 bg-white dark:bg-[#111] border-r border-slate-100 dark:border-white/5 z-40 shrink-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
         <div className="px-6 py-10 flex flex-col h-full">
           <div className="flex items-center mb-12 px-1">
             <div className="flex items-center gap-3 flex-1">
@@ -908,7 +899,7 @@ export default function App() {
       {/* Main Content Area */}
       <main
         id="main-scroll-container"
-        className="flex-1 overflow-y-auto scrollbar-hide app-content-text pt-[calc(5.25rem+env(safe-area-inset-top))] pb-[calc(7rem+env(safe-area-inset-bottom))] md:pt-12 md:pb-12 relative"
+        className="flex-1 scrollbar-hide app-content-text pt-[calc(5.25rem+env(safe-area-inset-top))] pb-[calc(7rem+env(safe-area-inset-bottom))] md:pt-12 md:pb-12 relative"
       >
         <div className="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 pt-2 pb-3 lg:pt-0 lg:pb-8">
           <AnimatePresence mode="wait" initial={false}>

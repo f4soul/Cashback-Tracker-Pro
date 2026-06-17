@@ -5,7 +5,7 @@ import {
   signInWithPopup,
   signOut,
 } from 'firebase/auth';
-import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, doc, getDocFromServer } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 // Firebase конфигурация из .env / Vercel
@@ -30,7 +30,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const db = initializeFirestore(app, {
+  experimentalForceLongPolling: true,
+});
 export const storage = getStorage(app);
 export const googleProvider = new GoogleAuthProvider();
 

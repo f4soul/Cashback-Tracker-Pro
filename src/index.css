@@ -190,8 +190,8 @@ html.dark {
 
 /* Safe area для iPhone с notch */
 @supports (padding: env(safe-area-inset-top)) {
-  .safe-top { padding-top: env(safe-area-inset-top); }
-  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  .safe-top, .pt-safe { padding-top: env(safe-area-inset-top); }
+  .safe-bottom, .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
 }
 
 .backdrop-blur-md {
