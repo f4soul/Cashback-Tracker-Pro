@@ -27,8 +27,9 @@
           root.style.setProperty('background-color', color, 'important');
           
           // Force update meta
-          const metas = document.querySelectorAll('meta[name="theme-color"]');
-          metas.forEach(m => m.setAttribute('content', color));
+          document.querySelectorAll('meta[name="theme-color"][media]').forEach(m => m.remove());
+          const meta = document.querySelector('meta[name="theme-color"]:not([media])');
+          if (meta) meta.setAttribute('content', color);
         } catch(e) {}
       })();
     </script>
@@ -38,26 +39,26 @@
     <meta property="og:url" content="https://cashback-tracker.pro/" />
     <meta property="og:title" content="Cashback Tracker Pro" />
     <meta property="og:description" content="Умный трекер кэшбека." />
-    <meta property="og:image" content="https://cashback-tracker.pro/icon.svg" />
+    <meta property="og:image" content="https://cashback-tracker.pro/icon.svg?v=4" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:title" content="Cashback Tracker Pro" />
     <meta property="twitter:description" content="Умный трекер кэшбека." />
-    <meta property="twitter:image" content="https://cashback-tracker.pro/icon.svg" />
+    <meta property="twitter:image" content="https://cashback-tracker.pro/icon.svg?v=4" />
 
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-96x96.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-96x96.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png" />
-    <link rel="icon" type="image/png" sizes="512x512" href="/pwa-512x512.png" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png" />
-    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon.png" />
-    <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json?v=4" />
+    <link rel="shortcut icon" href="/favicon.ico?v=4" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=4" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-96x96.png?v=4" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-96x96.png?v=4" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png?v=4" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/pwa-512x512.png?v=4" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=4" />
+    <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png?v=4" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon.png?v=4" />
+    <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon.png?v=4" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=4" />
     <title>Cashback Tracker Pro</title>
   </head>
   <body>

@@ -566,13 +566,20 @@ export default function App() {
 
     const targetColor = isDark ? '#0A0A0A' : '#FAFAFA';
     
+    // Remove any meta theme-color tags with 'media' attribute to prevent Safari conflicts
+    document.querySelectorAll('meta[name="theme-color"][media]').forEach(el => el.remove());
+
+    // Update or create the main theme-color meta tag
+    let metaThemeColor = document.querySelector('meta[name="theme-color"]:not([media])');
+    if (!metaThemeColor) {
+      metaThemeColor = document.createElement('meta');
+      metaThemeColor.setAttribute('name', 'theme-color');
+      document.head.appendChild(metaThemeColor);
+    }
+    metaThemeColor.setAttribute('content', targetColor);
+
     // Also style the root document element background to match, preventing white/black flash during rubber-banding elastic scroll
     root.style.backgroundColor = targetColor;
-
-    // Обновляем ВСЕ meta theme-color (Safari иногда требует)
-    document.querySelectorAll('meta[name="theme-color"]').forEach(meta => {
-      meta.setAttribute('content', targetColor);
-    });
 
     // Дополнительно - force repaint
     document.documentElement.style.setProperty('--theme-color', targetColor);
