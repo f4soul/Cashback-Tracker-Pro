@@ -587,7 +587,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   );
                   setYOffset(snappedY);
                 }}
-                className="fixed bottom-[110px] md:bottom-8 z-50 touch-none select-none"
+                className="fixed pwa-fab-bottom z-50 touch-none select-none"
                 style={{ right: rightPos, willChange: 'transform, opacity' }}
               >
                 <button
@@ -656,7 +656,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   );
                   setYOffset(snappedY);
                 }}
-                className="fixed bottom-[110px] md:bottom-8 w-4 h-14 bg-[var(--accent-color)]/40 hover:bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-2xl transition-colors touch-none select-none backdrop-blur-md"
+                className="fixed pwa-fab-bottom w-4 h-14 bg-[var(--accent-color)]/40 hover:bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-2xl transition-colors touch-none select-none backdrop-blur-md"
                 style={{ right: 0, willChange: 'transform, opacity' }}
                 title="Показать кнопку (перетащите вертикально)"
               >

@@ -169,3 +169,42 @@ h1, h2, h3, h4, h5, h6 {
 .dark .pdf-export-mode .dark\:border-gray-700\/60 {
   border-color: #374151 !important; /* gray-700 */
 }
+
+:root {
+  color-scheme: light dark;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: #FAFAFA;
+}
+
+html.dark body,
+html.dark {
+  background-color: #0A0A0A;
+}
+
+/* Safe area для iPhone с notch */
+@supports (padding: env(safe-area-inset-top)) {
+  .safe-top { padding-top: env(safe-area-inset-top); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+}
+
+.backdrop-blur-md {
+  -webkit-backdrop-filter: blur(12px); /* Safari */
+}
+
+/* Custom highly optimized bottom positioning for FAB that respects safe areas and PWA bottom bars */
+.pwa-fab-bottom {
+  bottom: calc(110px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+@media (min-width: 768px) {
+  .pwa-fab-bottom {
+    bottom: 2rem !important;
+  }
+}

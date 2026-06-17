@@ -6,7 +6,6 @@ import { CurrentMonth } from './views/CurrentMonth';
 import { Archive } from './views/Archive';
 import { Settings } from './views/Settings';
 import {
-  Wallet,
   History,
   Settings as SettingsIcon,
   Moon,
@@ -38,6 +37,21 @@ import {
 import { Toaster } from 'sonner';
 import { ConfirmModal } from './components/ui/ConfirmModal';
 import { BANKS } from './constants';
+
+const WalletIcon = ({ className = 'w-6 h-6' }: { className?: string }) => {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 512 512"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M95.5,104h320a87.73,87.73,0,0,1,11.18.71,66,66,0,0,0-77.51-55.56L86,94.08l-.3,0a66,66,0,0,0-41.07,26.13A87.57,87.57,0,0,1,95.5,104Z" />
+      <path d="M415.5,128H95.5a64.07,64.07,0,0,0-64,64V384a64.07,64.07,0,0,0,64,64h320a64.07,64.07,0,0,0,64-64V192A64.07,64.07,0,0,0,415.5,128ZM368,320a32,32,0,1,1,32-32A32,32,0,0,1,368,320Z" />
+      <path d="M32,259.5V160c0-21.67,12-58,53.65-65.87C121,87.5,156,87.5,156,87.5s23,16,4,16S141.5,128,160,128s0,23.5,0,23.5L85.5,236Z" />
+    </svg>
+  );
+};
 
 const AuthButton = ({
   user,
@@ -536,7 +550,9 @@ export default function App() {
   // Apply theme and custom styles to document
   useEffect(() => {
     const root = document.documentElement;
-    if (theme === 'dark') {
+    const isDark = theme === 'dark';
+
+    if (isDark) {
       root.classList.add('dark');
     } else {
       root.classList.remove('dark');
@@ -548,22 +564,18 @@ export default function App() {
     root.style.setProperty('--percent-text', settings.percentBlockText);
     root.style.setProperty('--app-font-color', settings.fontColor);
 
-    // Update meta theme-color dynamically to keep the system status bar, safe areas, and PWA borders fully in sync
-    const targetColor = theme === 'dark' ? '#0A0A0A' : '#FAFAFA';
+    const targetColor = isDark ? '#0A0A0A' : '#FAFAFA';
     
     // Also style the root document element background to match, preventing white/black flash during rubber-banding elastic scroll
     root.style.backgroundColor = targetColor;
 
-    let meta = document.getElementById('theme-color-meta') || document.querySelector('meta[name="theme-color"]');
-    if (meta) {
+    // Обновляем ВСЕ meta theme-color (Safari иногда требует)
+    document.querySelectorAll('meta[name="theme-color"]').forEach(meta => {
       meta.setAttribute('content', targetColor);
-    } else {
-      meta = document.createElement('meta');
-      meta.setAttribute('id', 'theme-color-meta');
-      meta.setAttribute('name', 'theme-color');
-      meta.setAttribute('content', targetColor);
-      document.head.appendChild(meta);
-    }
+    });
+
+    // Дополнительно - force repaint
+    document.documentElement.style.setProperty('--theme-color', targetColor);
   }, [theme, settings]);
 
   const toggleTheme = () => {
@@ -759,7 +771,7 @@ export default function App() {
           <div className="flex items-center mb-12 px-1">
             <div className="flex items-center gap-3 flex-1">
               <div className="w-11 h-11 bg-[var(--accent-color)] opacity-90 rounded-[22%] flex items-center justify-center shadow-sm">
-                <Wallet className="w-6 h-6 text-white" />
+                <WalletIcon className="w-7 h-7 text-white" />
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight leading-none">
@@ -797,7 +809,7 @@ export default function App() {
                   : 'text-slate-500 dark:text-slate-400 hover:bg-white/80 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white hover:border-[var(--accent-color)]/30 border border-transparent',
               )}
             >
-              <Wallet className="w-5 h-5 shrink-0" />
+              <WalletIcon className="w-5 h-5 shrink-0" />
               <span className="leading-none mt-[1px]">Кэшбек</span>
             </button>
             <button
@@ -847,7 +859,7 @@ export default function App() {
         <div className="max-w-3xl mx-auto bg-white/95 dark:bg-[#1A1A1A]/95 backdrop-blur-2xl border border-slate-100 dark:border-white/5 rounded-[1.25rem] px-4 py-2.5 flex items-center justify-between shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[var(--accent-color)] opacity-90 rounded-[22%] flex items-center justify-center shadow-sm">
-              <Wallet className="w-6 h-6 text-white" />
+              <WalletIcon className="w-7 h-7 text-white" />
             </div>
             <div>
               <h1 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight leading-none">
@@ -1005,7 +1017,7 @@ export default function App() {
                 animate={{ scale: navExpanded ? 1 : 0.85 }}
                 transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
               >
-                <Wallet className="w-6 h-6" />
+                <WalletIcon className="w-6 h-6" />
               </motion.div>
             </motion.div>
             <motion.div

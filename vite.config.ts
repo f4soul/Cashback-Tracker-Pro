@@ -56,14 +56,16 @@ export default defineConfig(({ mode }) => {
 
         manifest: {
           name: 'Cashback Tracker Pro',
-          short_name: 'Cashback',
+          short_name: 'Cashback Pro',
           description: 'Умный трекер кэшбэка',
           theme_color: '#10b981',
-          background_color: '#f9fafb',
+          background_color: '#FAFAFA',
           display: 'standalone',
+          display_override: ['standalone'],
           orientation: 'portrait',
           categories: ['finance', 'utilities'],
           start_url: '/',
+          scope: '/',
           id: 'cashback-tracker-pro',
 
           icons: [
