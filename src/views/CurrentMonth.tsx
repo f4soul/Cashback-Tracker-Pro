@@ -384,7 +384,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
             setRightPos(16);
           }
         } else {
-          setRightPos(16);
+          setRightPos(20);
         }
 
         const margin = 24;
@@ -526,7 +526,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     }, [data.monthId]);
 
     const sidebarWidth = window.innerWidth >= 768 ? 260 : 0;
-    const initialRight = window.innerWidth >= 768 ? 32 : 16;
+    const initialRight = window.innerWidth >= 768 ? 32 : 20;
     const fabSize = 56;
     const margin = 16;
     const visibleLeftLimit = -(
