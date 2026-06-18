@@ -538,7 +538,7 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Apply theme and custom styles to document
+  // Apply theme and custom styles to document with extra robustness for iOS Safari / PWA status bar
   useEffect(() => {
     const root = document.documentElement;
     const isDark = theme === 'dark';
@@ -549,32 +549,62 @@ export default function App() {
       root.classList.remove('dark');
     }
 
-    // Apply custom colors
+    // Apply custom CSS variables
     root.style.setProperty('--accent-color', settings.accentColor);
     root.style.setProperty('--percent-bg', settings.percentBlockBg);
     root.style.setProperty('--percent-text', settings.percentBlockText);
     root.style.setProperty('--app-font-color', settings.fontColor);
 
     const targetColor = isDark ? '#0A0A0A' : '#FAFAFA';
-    
-    // Remove any meta theme-color tags with 'media' attribute to prevent Safari conflicts
-    document.querySelectorAll('meta[name="theme-color"][media]').forEach(el => el.remove());
 
-    // Update or create the main theme-color meta tag
-    let metaThemeColor = document.querySelector('meta[name="theme-color"]:not([media])');
-    if (!metaThemeColor) {
-      metaThemeColor = document.createElement('meta');
-      metaThemeColor.setAttribute('name', 'theme-color');
-      document.head.appendChild(metaThemeColor);
-    }
-    metaThemeColor.setAttribute('content', targetColor);
+    const syncColorsAndMetaTags = () => {
+      // Style both root document and body elements to prevent unstyled body backgrounds on iOS elastic scrolls
+      root.style.backgroundColor = targetColor;
+      if (document.body) {
+        document.body.style.backgroundColor = targetColor;
+      }
 
-    // Also style the root document element background to match, preventing white/black flash during rubber-banding elastic scroll
-    root.style.backgroundColor = targetColor;
+      // Remove any meta theme-color tags with 'media' attribute to prevent Safari conflicts
+      document.querySelectorAll('meta[name="theme-color"][media]').forEach(el => el.remove());
 
-    // Дополнительно - force repaint
-    document.documentElement.style.setProperty('--theme-color', targetColor);
-  }, [theme, settings]);
+      // Update or create the main theme-color meta tag
+      let metaThemeColor = document.querySelector('meta[name="theme-color"]:not([media])');
+      if (!metaThemeColor) {
+        metaThemeColor = document.createElement('meta');
+        metaThemeColor.setAttribute('name', 'theme-color');
+        document.head.appendChild(metaThemeColor);
+      }
+      metaThemeColor.setAttribute('content', targetColor);
+
+      // Force apple-mobile-web-app-status-bar-style metadata refresh
+      let metaAppleStyle = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+      if (!metaAppleStyle) {
+        metaAppleStyle = document.createElement('meta');
+        metaAppleStyle.setAttribute('name', 'apple-mobile-web-app-status-bar-style');
+        document.head.appendChild(metaAppleStyle);
+      }
+      metaAppleStyle.setAttribute('content', 'default');
+
+      // Set helper CSS variable
+      root.style.setProperty('--theme-color', targetColor);
+    };
+
+    // Run immediately on active tab switch or theme change
+    syncColorsAndMetaTags();
+
+    // Run again on next frame when React components finish layout mount and paint
+    const rAF = requestAnimationFrame(syncColorsAndMetaTags);
+
+    // Schedule delayed syncs to handle component mounting, modal popups, scroll-bar hidden layouts, or Framer Motion enter animations completing
+    const timer100 = setTimeout(syncColorsAndMetaTags, 100);
+    const timer300 = setTimeout(syncColorsAndMetaTags, 300);
+
+    return () => {
+      cancelAnimationFrame(rAF);
+      clearTimeout(timer100);
+      clearTimeout(timer300);
+    };
+  }, [theme, settings, activeTab]);
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
