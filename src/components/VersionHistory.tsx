@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import versionsData from '../../public/versions.json';
+import versionsData from '../versions.json';
 import { clsx } from 'clsx';
 
 interface Version {
@@ -19,10 +19,10 @@ export const VersionHistory: React.FC = () => {
       {reversedVersions.map((v, index) => {
         const isOpen = openIndex === index;
         return (
-          <div key={v.version} className="border border-slate-100 dark:border-white/5 rounded-[1.25rem] overflow-hidden bg-[#FAFAFA] dark:bg-[#111] transition-all duration-300">
+          <div key={v.version} className="border border-[var(--border-hairline)] rounded-[var(--radius-app)] overflow-hidden bg-[var(--surface-1)] dark:bg-[var(--surface-1)] transition-all duration-300">
             <button
               onClick={() => setOpenIndex(isOpen ? null : index)}
-              className="w-full flex items-center justify-between p-4 hover:bg-white dark:hover:bg-[#1A1A1A] transition-colors cursor-pointer active:scale-[0.98]"
+              className="w-full flex items-center justify-between p-4 hover:bg-[var(--surface-2)]/30 dark:hover:bg-[var(--surface-2)]/30 transition-colors cursor-pointer"
             >
               <div className="flex flex-col items-start gap-1">
                 <span className="font-bold text-sm text-gray-900 dark:text-white leading-none">Версия {v.version}</span>
@@ -31,19 +31,21 @@ export const VersionHistory: React.FC = () => {
               <ChevronDown className={clsx("w-5 h-5 text-gray-400 shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]", isOpen && "rotate-180")} />
             </button>
             <div className={clsx(
-              "grid transition-[grid-template-rows] duration-[380ms] ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden bg-white dark:bg-[#1A1A1A] border-slate-100 dark:border-white/5",
-              isOpen ? "grid-rows-[1fr] border-t" : "grid-rows-[0fr]"
+              "grid transition-[grid-template-rows] duration-[380ms] ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden",
+              isOpen ? "grid-rows-[1fr] border-t border-[var(--border-hairline)]" : "grid-rows-[0fr]"
             )}>
               <div className="overflow-hidden min-h-0">
                 <div className={clsx(
-                  "transition-all duration-[300ms] ease-[cubic-bezier(0.16,1,0.3,1)] gpu-accelerated origin-top p-4",
+                  "transition-all duration-[300ms] ease-[cubic-bezier(0.16,1,0.3,1)] gpu-accelerated origin-top p-3",
                   isOpen ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-2 scale-[0.98] pointer-events-none"
                 )}>
-                  <ul className="space-y-2 text-sm text-gray-600 dark:text-[var(--text-secondary)] list-disc list-inside">
-                    {v.changes.map((change, i) => (
-                      <li key={i} className="leading-snug">{change}</li>
-                    ))}
-                  </ul>
+                  <div className="p-4 bg-[var(--surface-2)] dark:bg-[var(--surface-2)] border border-[var(--border-hairline)] rounded-xl">
+                    <ul className="space-y-2.5 text-sm text-gray-600 dark:text-[var(--text-secondary)] list-disc list-inside">
+                      {v.changes.map((change, i) => (
+                        <li key={i} className="leading-snug">{change}</li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
