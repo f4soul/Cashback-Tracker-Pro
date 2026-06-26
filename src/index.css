@@ -105,22 +105,24 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Hide scrollbar completely on mobile */
 @media (max-width: 767px) {
-  html, body {
+  html, body, *, ::-webkit-scrollbar {
     -ms-overflow-style: none !important;
     scrollbar-width: none !important;
   }
-  html::-webkit-scrollbar, body::-webkit-scrollbar {
+  ::-webkit-scrollbar {
     display: none !important;
+    width: 0 !important;
+    height: 0 !important;
   }
 }
 
 /* Hide scrollbar for specific elements if needed */
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;
+  display: none !important;
 }
 .scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 }
 
 /* Styles applied only during PDF export */
@@ -143,11 +145,11 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: none !important;
   border-radius: 0 !important;
   padding: 32px !important; /* More generous padding for export */
-  background-color: white !important;
+  background-color: var(--surface-1) !important;
 }
 
 .dark .pdf-export-mode {
-  background-color: #111827 !important; /* gray-900 */
+  background-color: var(--surface-1) !important;
 }
 
 .pdf-export-mode .shadow-sm,
@@ -190,6 +192,27 @@ h1, h2, h3, h4, h5, h6 {
 
 :root {
   color-scheme: light dark;
+  --surface-0: #FAFAFA;
+  --surface-1: #FFFFFF;
+  --surface-2: #F1F5F9;
+  --border-hairline: rgba(0, 0, 0, 0.05);
+  --border-strong: rgba(0, 0, 0, 0.1);
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-tertiary: #94A3B8;
+  --elevation-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
+}
+
+.dark {
+  --surface-0: #0A0A0A;
+  --surface-1: #111111;
+  --surface-2: #1A1A1A;
+  --border-hairline: rgba(255, 255, 255, 0.05);
+  --border-strong: rgba(255, 255, 255, 0.1);
+  --text-primary: #FFFFFF;
+  --text-secondary: #94A3B8;
+  --text-tertiary: #64748B;
+  --elevation-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
 }
 
 html {

@@ -45,6 +45,8 @@ import {
   DragStartEvent,
   DragOverlay,
   defaultDropAnimationSideEffects,
+  DraggableAttributes,
+  DraggableSyntheticListeners,
 } from '@dnd-kit/core';
 import {
   restrictToVerticalAxis,
@@ -92,8 +94,8 @@ interface BankCardProps {
   onDelete: () => void;
   isDragging?: boolean;
   isOverlay?: boolean;
-  attributes?: any;
-  listeners?: any;
+  attributes?: DraggableAttributes;
+  listeners?: DraggableSyntheticListeners;
   style?: any;
 }
 
@@ -118,7 +120,7 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
         ref={ref}
         style={style}
         className={clsx(
-          'flex items-center justify-between p-3 bg-white dark:bg-[#1A1A1A] rounded-[1.25rem] border border-slate-100 dark:border-white/5 shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] group/card select-none hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-slate-200/50 dark:hover:border-white/10 transition-all translate-z-0 [backface-visibility:hidden] will-change-[transform]',
+          'flex items-center justify-between p-3 bg-white dark:bg-[#1A1A1A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] group/card select-none hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-slate-200/50 dark:hover:border-white/10 transition-all translate-z-0 [backface-visibility:hidden] will-change-[transform]',
           isDragging && !isOverlay && 'opacity-30',
           isOverlay &&
             'border-[var(--accent-color)] shadow-2xl scale-105 z-50 ring-2 ring-[var(--accent-color)]/50 cursor-grabbing bg-white dark:bg-[#1A1A1A]',
@@ -600,7 +602,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                     setIsModalOpen(true);
                   }}
                   title="Добавить банк"
-                  className="w-14 h-14 bg-[var(--accent-color)] text-white rounded-2xl flex items-center justify-center shadow-lg shadow-[var(--accent-color)]/30 hover:shadow-[var(--accent-color)]/40 transition-all opacity-95 hover:opacity-100 cursor-pointer active:scale-95"
+                  className="w-14 h-14 bg-[var(--accent-color)] text-white rounded-[var(--radius-app)] flex items-center justify-center shadow-lg shadow-[var(--accent-color)]/30 hover:shadow-[var(--accent-color)]/40 transition-all opacity-95 hover:opacity-100 cursor-pointer active:scale-95"
                 >
                   <Plus className="w-7 h-7" />
                 </button>
@@ -672,7 +674,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
         )}
 
         {/* Table/Bank List Switcher - Simplified and Compact */}
-        <div className="flex p-0.5 gap-0.5 relative bg-white dark:bg-[#1A1A1A] rounded-2xl border border-slate-100 dark:border-white/5 shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] w-full mb-2 translate-z-0 [backface-visibility:hidden] z-10">
+        <div className="flex p-0.5 gap-0.5 relative bg-white dark:bg-[#1A1A1A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] w-full mb-2 translate-z-0 [backface-visibility:hidden] z-10">
             <div
               className="absolute inset-y-0.5 rounded-[0.85rem] bg-slate-50 dark:bg-white/[0.05] shadow-sm z-0 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]"
               style={{
@@ -746,7 +748,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                       setEditingEntry(undefined);
                       setIsModalOpen(true);
                     }}
-                    className="flex flex-col items-center justify-center p-8 text-center bg-[#FAFAFA] dark:bg-[#111] rounded-[1.25rem] border border-dashed border-slate-200 dark:border-white/10 hover:bg-white dark:hover:bg-[#1A1A1A] transition-colors group w-full cursor-pointer"
+                    className="flex flex-col items-center justify-center p-8 text-center bg-[#FAFAFA] dark:bg-[#111] rounded-[var(--radius-app)] border border-dashed border-slate-200 dark:border-white/10 hover:bg-white dark:hover:bg-[#1A1A1A] transition-colors group w-full cursor-pointer"
                   >
                     <Plus className="w-8 h-8 text-slate-300 dark:text-slate-600 mb-2 group-hover:text-[var(--accent-color)] dark:group-hover:text-[var(--accent-color)] transition-colors" />
                     <p className="text-xs text-slate-500">

@@ -202,7 +202,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
             <X className="w-5 h-5" />
           </button>
         </div>
-        <div className="relative w-full h-64 bg-gray-100 dark:bg-gray-900 rounded-2xl overflow-hidden">
+        <div className="relative w-full h-64 bg-gray-100 dark:bg-[var(--surface-0)] rounded-2xl overflow-hidden">
           <Cropper
             image={imageSrc}
             crop={crop}
@@ -230,7 +230,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
               step={0.1}
               aria-labelledby="Zoom"
               onChange={(e) => setZoom(Number(e.target.value))}
-              className="flex-1 h-1 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[var(--accent-color)]"
+              className="flex-1 h-1 bg-gray-200 dark:bg-[var(--surface-2)] rounded-lg appearance-none cursor-pointer accent-[var(--accent-color)]"
             />
           </div>
           <button
@@ -243,7 +243,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
         <div className="flex gap-3 pt-2">
           <button
             onClick={() => setShowCropper(false)}
-            className="flex-1 px-4 py-2.5 rounded-xl font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+            className="flex-1 px-4 py-2.5 rounded-xl font-medium text-gray-700 dark:text-[var(--text-secondary)] bg-gray-100 dark:bg-[var(--surface-2)] hover:bg-gray-200 dark:hover:bg-[var(--surface-1)] transition-colors cursor-pointer"
           >
             Отмена
           </button>
@@ -263,7 +263,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
     <div className="flex flex-col gap-4">
       {/* Bank Selection */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Выберите банк</label>
+        <label className="text-sm font-medium text-gray-700 dark:text-[var(--text-secondary)]">Выберите банк</label>
         {!selectedBankId ? (
           <>
             <div className="relative">
@@ -304,7 +304,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                     >
                       <div
                         onClick={() => setSelectedBankId(bank.id)}
-                        className="w-full aspect-square flex flex-col items-center justify-center gap-1 p-1.5 rounded-[1.25rem] border border-slate-100 dark:border-white/5 hover:border-[var(--accent-color)]/50 hover:bg-[var(--percent-bg)]/30 transition-all cursor-pointer group shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] hover:shadow-md"
+                        className="w-full aspect-square flex flex-col items-center justify-center gap-1 p-1.5 rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 hover:border-[var(--accent-color)]/50 hover:bg-[var(--percent-bg)]/30 transition-all cursor-pointer group shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] hover:shadow-md"
                       >
                         <BankLogo 
                           bank={bank} 
@@ -312,7 +312,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                           size="md"
                         />
                         <div className="flex items-center justify-center w-full px-0.5">
-                          <span className="text-[9px] sm:text-[10px] font-bold text-center text-gray-600 dark:text-gray-400 uppercase tracking-tight group-hover:text-gray-900 dark:group-hover:text-white transition-colors break-words leading-tight line-clamp-2" title={bank.name}>{bank.name}</span>
+                          <span className="text-[9px] sm:text-[10px] font-bold text-center text-gray-600 dark:text-[var(--text-secondary)] uppercase tracking-tight group-hover:text-gray-900 dark:group-hover:text-white transition-colors break-words leading-tight line-clamp-2" title={bank.name}>{bank.name}</span>
                         </div>
                       </div>
                       {isCustom && (
@@ -386,8 +386,8 @@ export const BankForm: React.FC<BankFormProps> = memo(({
       {/* Category Selection */}
       <div className={clsx("space-y-3 transition-opacity duration-300", !selectedBankId && "opacity-50 pointer-events-none")}>
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Категории кэшбека</label>
-          <span className="text-xs text-gray-500 dark:text-gray-400">{selectedCategories.length} выбрано</span>
+          <label className="text-sm font-medium text-gray-700 dark:text-[var(--text-secondary)]">Категории кэшбека</label>
+          <span className="text-xs text-gray-500 dark:text-[var(--text-tertiary)]">{selectedCategories.length} выбрано</span>
         </div>
         
         <div className="relative">
@@ -481,9 +481,9 @@ export const BankForm: React.FC<BankFormProps> = memo(({
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.2 }}
-              className="mt-4 space-y-1.5 pt-3 border-t border-gray-200 dark:border-gray-800 overflow-hidden"
+              className="mt-4 space-y-1.5 pt-3 border-t border-gray-200 dark:border-[var(--border-hairline)] overflow-hidden"
             >
-              <label className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 block">Процент кэшбека (необязательно)</label>
+              <label className="text-[10px] font-bold text-gray-400 dark:text-[var(--text-tertiary)] uppercase tracking-wider mb-2 block">Процент кэшбека (необязательно)</label>
               <div className="space-y-1.5">
                 {selectedCategories.map(cat => (
                   <motion.div 
@@ -492,7 +492,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: -4 }}
                     transition={{ duration: 0.15 }}
-                    className="flex items-center justify-between p-2 bg-[#FAFAFA] dark:bg-[#111] rounded-[1.25rem] border border-slate-100 dark:border-white/5 shadow-sm"
+                    className="flex items-center justify-between p-2 bg-[#FAFAFA] dark:bg-[#111] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 shadow-sm"
                   >
                     <div className="flex items-center gap-2">
                       <button
@@ -502,7 +502,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                       >
                         <X className="w-4 h-4" />
                       </button>
-                      <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{cat.name}</span>
+                      <span className="text-xs font-medium text-gray-700 dark:text-[var(--text-secondary)]">{cat.name}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <input
@@ -512,7 +512,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                         onChange={(e) => updateCategoryPercent(cat.name, e.target.value)}
                         className="w-14 px-2 py-1 text-right bg-white dark:bg-[#1A1A1A] border border-slate-100 dark:border-white/5 shadow-inner rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white"
                       />
-                      <span className="text-gray-500 dark:text-gray-400 text-xs font-medium">%</span>
+                      <span className="text-gray-500 dark:text-[var(--text-secondary)] text-xs font-medium">%</span>
                     </div>
                   </motion.div>
                 ))}

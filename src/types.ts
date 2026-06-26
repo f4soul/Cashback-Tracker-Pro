@@ -13,6 +13,14 @@ export interface Bank {
 
 export type LogoShape = 'circle' | 'square' | 'rectangle';
 
+export interface PlaceholderUser {
+  uid: string;
+  displayName: string | null;
+  email: string | null;
+  photoURL: string | null;
+  isPlaceholder: true;
+}
+
 export interface CashbackEntry {
   id: string;
   bankId: string;
@@ -29,6 +37,7 @@ export interface AppSettings {
   percentBlockBg: string;
   percentBlockText: string;
   fontColor: string;
+  radius: number;
 }
 
 export interface MonthData {

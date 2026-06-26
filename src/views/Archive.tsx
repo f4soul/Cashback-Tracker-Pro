@@ -9,7 +9,7 @@ import { Download, FileSpreadsheet, FileText, Image as ImageIcon, Search, Filter
 import { BANKS, COMMON_CATEGORIES, getBankDetails } from '../constants';
 import { BankLogo } from '../components/BankLogo';
 import { clsx } from 'clsx';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
 
 interface MonthAccordionProps {
   month: MonthData;
@@ -34,14 +34,16 @@ const MonthAccordion: React.FC<MonthAccordionProps> = memo(({
   handleExportExcel,
   handleExport,
 }) => {
-  const containerCls = "bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] overflow-hidden transition-colors duration-300 translate-z-0 [backface-visibility:hidden] isolate relative";
+  const containerCls = "bg-white dark:bg-[#0A0A0A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] overflow-hidden transition-colors duration-300 translate-z-0 [backface-visibility:hidden] isolate relative";
   const headerCls = "w-full flex items-center justify-between p-4 sm:p-5 hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors cursor-pointer relative z-10";
   const expandWrapCls = "p-4 sm:p-5 pt-0 border-t border-slate-100 dark:border-white/5 bg-[#FAFAFA] dark:bg-[#111] translate-z-0 relative z-10";
-  const chipCls = "flex items-center gap-2.5 sm:gap-3.5 p-2.5 sm:p-3.5 bg-white dark:bg-[#1A1A1A] rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-[var(--accent-color)]/30 transition-[border-color,box-shadow,background-color] duration-200 group isolate";
-  const exportBoxCls = "flex p-1 gap-1 bg-white dark:bg-[#1A1A1A] rounded-[1.25rem] border border-slate-100 dark:border-white/5 shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] mb-4 translate-z-0";
+  const chipCls = "flex items-center gap-2.5 sm:gap-3.5 p-2.5 sm:p-3.5 bg-white dark:bg-[#1A1A1A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 shadow-sm hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-[var(--accent-color)]/30 transition-[border-color,box-shadow,background-color] duration-200 group isolate";
+  const exportBoxCls = "flex p-1 gap-1 bg-white dark:bg-[#1A1A1A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] mb-4 translate-z-0";
+
+  const transition = { duration: 0.35, ease: [0.32, 0.72, 0, 1] as const };
 
   return (
-    <div className={containerCls}>
+    <motion.div layout="position" className={containerCls}>
       <div
         onClick={() => toggleMonth(month.monthId)}
         className={headerCls}
@@ -69,21 +71,26 @@ const MonthAccordion: React.FC<MonthAccordionProps> = memo(({
             <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
           <div className="p-1 text-slate-400">
-            <ChevronDown className={clsx("w-5 h-5 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]", isExpanded && "rotate-180")} />
+            <motion.div
+              animate={{ rotate: isExpanded ? 180 : 0 }}
+              transition={transition}
+            >
+              <ChevronDown className="w-5 h-5" />
+            </motion.div>
           </div>
         </div>
       </div>
       
-      <div className={clsx(
-        "grid transition-[grid-template-rows] duration-[380ms] ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden",
-        isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-      )}>
-        <div className="overflow-hidden min-h-0">
-          <div className={expandWrapCls}>
-            <div className={clsx(
-              "transition-all duration-[300ms] ease-[cubic-bezier(0.16,1,0.3,1)] gpu-accelerated origin-top",
-              isExpanded ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-2 scale-[0.98] pointer-events-none"
-            )}>
+      <AnimatePresence initial={false}>
+        {isExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={transition}
+            style={{ overflow: 'hidden' }}
+          >
+            <div className={expandWrapCls}>
               {/* Compact banks list in Archive */}
               <div className="flex flex-col gap-2 mb-4 sm:mb-6 mt-4 sm:mt-6">
                 <div className="px-1">
@@ -167,10 +174,10 @@ const MonthAccordion: React.FC<MonthAccordionProps> = memo(({
                 onExportImage={() => handleExportImage(month.monthId)}
               />
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 });
 MonthAccordion.displayName = 'MonthAccordion';
@@ -296,7 +303,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, del
   return (
     <div className="flex flex-col gap-3">
       {/* Filters Section */}
-      <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] p-3 sm:p-4 flex flex-col gap-3 sm:gap-4">
+      <div className="bg-white dark:bg-[#0A0A0A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] p-3 sm:p-4 flex flex-col gap-3 sm:gap-4">
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -305,13 +312,13 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, del
               placeholder="Поиск по банку или категории..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 bg-[#FAFAFA] dark:bg-[#111] border border-slate-100 dark:border-white/5 rounded-[1.25rem] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all shadow-inner"
+              className="w-full pl-9 pr-4 py-2.5 bg-[#FAFAFA] dark:bg-[#111] border border-slate-100 dark:border-white/5 rounded-[var(--radius-app)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all shadow-inner"
             />
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={clsx(
-              "p-2.5 rounded-[1.25rem] border transition-all flex items-center justify-center cursor-pointer active:scale-95",
+              "p-2.5 rounded-[var(--radius-app)] border transition-all flex items-center justify-center cursor-pointer active:scale-95",
               showFilters || selectedBankFilter || selectedCategoryFilter
                 ? "bg-[var(--accent-color)] border-[var(--accent-color)] shadow-md shadow-[var(--accent-color)]/20 text-white"
                 : "bg-[#FAFAFA] dark:bg-[#111] border border-slate-100 dark:border-white/5 text-slate-500 dark:text-slate-400 hover:bg-white dark:hover:bg-[#1A1A1A] shadow-sm"
@@ -331,7 +338,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, del
                   setOpenBankDropdown(!openBankDropdown);
                   setOpenCategoryDropdown(false);
                 }}
-                className="w-full flex items-center justify-between px-3 py-2.5 bg-[#FAFAFA] dark:bg-[#111] border border-slate-100 dark:border-white/5 rounded-[1.25rem] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all cursor-pointer shadow-none hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] hover:bg-white dark:hover:bg-[#1A1A1A]"
+                className="w-full flex items-center justify-between px-3 py-2.5 bg-[#FAFAFA] dark:bg-[#111] border border-slate-100 dark:border-white/5 rounded-[var(--radius-app)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all cursor-pointer shadow-none hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] hover:bg-white dark:hover:bg-[#1A1A1A]"
               >
                 <div className="flex items-center gap-2 overflow-hidden">
                   {selectedBankFilter ? (
@@ -358,7 +365,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, del
                       initial={{ opacity: 0, y: 4, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 4, scale: 0.95 }}
-                      className="absolute top-full left-0 right-0 mt-2 z-20 bg-white/95 dark:bg-[#1A1A1A]/95 border border-slate-100 dark:border-white/5 backdrop-blur-2xl rounded-[1.25rem] shadow-[0_8px_30px_rgb(0,0,0,0.12)] max-h-64 overflow-y-auto scrollbar-hide p-1.5"
+                      className="absolute top-full left-0 right-0 mt-2 z-20 bg-white/95 dark:bg-[var(--surface-2)]/95 border border-[var(--border-hairline)] backdrop-blur-2xl rounded-[var(--radius-app)] shadow-[var(--elevation-highlight),0_8px_30px_rgba(0,0,0,0.12)] max-h-64 overflow-y-auto scrollbar-hide p-1.5"
                     >
                       <button
                         onClick={() => { setSelectedBankFilter(''); setOpenBankDropdown(false); }}
@@ -403,7 +410,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, del
                   setOpenCategoryDropdown(!openCategoryDropdown);
                   setOpenBankDropdown(false);
                 }}
-                className="w-full flex items-center justify-between px-3 py-2.5 bg-[#FAFAFA] dark:bg-[#111] border border-slate-100 dark:border-white/5 rounded-[1.25rem] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all cursor-pointer shadow-none hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] hover:bg-white dark:hover:bg-[#1A1A1A]"
+                className="w-full flex items-center justify-between px-3 py-2.5 bg-[#FAFAFA] dark:bg-[#111] border border-slate-100 dark:border-white/5 rounded-[var(--radius-app)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all cursor-pointer shadow-none hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] hover:bg-white dark:hover:bg-[#1A1A1A]"
               >
                 <span className={clsx("truncate", !selectedCategoryFilter && "text-gray-400")}>
                   {selectedCategoryFilter || "Все категории"}
@@ -419,7 +426,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, del
                       initial={{ opacity: 0, y: 4, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 4, scale: 0.95 }}
-                      className="absolute top-full left-0 right-0 mt-2 z-20 bg-white/95 dark:bg-[#1A1A1A]/95 border border-slate-100 dark:border-white/5 backdrop-blur-2xl rounded-[1.25rem] shadow-[0_8px_30px_rgb(0,0,0,0.12)] max-h-64 overflow-y-auto scrollbar-hide p-1.5"
+                      className="absolute top-full left-0 right-0 mt-2 z-20 bg-white/95 dark:bg-[var(--surface-2)]/95 border border-[var(--border-hairline)] backdrop-blur-2xl rounded-[var(--radius-app)] shadow-[var(--elevation-highlight),0_8px_30px_rgba(0,0,0,0.12)] max-h-64 overflow-y-auto scrollbar-hide p-1.5"
                     >
                       <button
                         onClick={() => { setSelectedCategoryFilter(''); setOpenCategoryDropdown(false); }}
@@ -461,22 +468,24 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, del
           <p className="text-sm text-slate-500 dark:text-slate-400">Попробуйте изменить параметры поиска или фильтры</p>
         </div>
       ) : (
-        <div className="flex flex-col gap-3 sm:gap-4">
-          {filteredData.map((month) => (
-            <MonthAccordion
-              key={month.monthId}
-              month={month}
-              isExpanded={expandedMonths.has(month.monthId)}
-              toggleMonth={toggleMonth}
-              handleDeleteMonthClick={handleDeleteMonthClick}
-              customBanks={allCustomBanks}
-              globalLogoShape={globalLogoShape}
-              handleExportImage={handleExportImage}
-              handleExportExcel={handleExportExcel}
-              handleExport={handleExport}
-            />
-          ))}
-        </div>
+        <LayoutGroup>
+          <div className="flex flex-col gap-3 sm:gap-4">
+            {filteredData.map((month) => (
+              <MonthAccordion
+                key={month.monthId}
+                month={month}
+                isExpanded={expandedMonths.has(month.monthId)}
+                toggleMonth={toggleMonth}
+                handleDeleteMonthClick={handleDeleteMonthClick}
+                customBanks={allCustomBanks}
+                globalLogoShape={globalLogoShape}
+                handleExportImage={handleExportImage}
+                handleExportExcel={handleExportExcel}
+                handleExport={handleExport}
+              />
+            ))}
+          </div>
+        </LayoutGroup>
       )}
       {/* Delete Confirmation Modal */}
       <ConfirmModal

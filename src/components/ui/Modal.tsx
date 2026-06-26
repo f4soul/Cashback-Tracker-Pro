@@ -25,11 +25,14 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, headerCont
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
     }
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
     };
   }, [isOpen]);
 
@@ -58,7 +61,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, headerCont
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] transform translate-z-0"
+            className="fixed inset-0 bg-black/40 dark:bg-black/65 backdrop-blur-sm z-[60] transform translate-z-0"
           />
           <div className="fixed inset-0 flex items-end md:items-center justify-center p-0 md:p-4 z-[70] pointer-events-none">
             <motion.div
@@ -66,13 +69,13 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, headerCont
               animate={variants.visible}
               exit={variants.exit}
               transition={useBottomSheet ? { duration: 0.4, ease: [0.32, 0.72, 0, 1] } : { duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
-              className={`bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-2xl shadow-[0_-20px_60px_rgb(0,0,0,0.1)] dark:shadow-[0_-20px_60px_rgb(0,0,0,0.4)] md:shadow-[0_20px_60px_rgb(0,0,0,0.1)] dark:md:shadow-[0_20px_60px_rgb(0,0,0,0.4)] border-t md:border border-slate-100 dark:border-white/5 overflow-hidden flex flex-col w-full pointer-events-auto transform translate-z-0 will-change-transform pb-[env(safe-area-inset-bottom)] md:pb-0 ${
+              className={`bg-white/95 dark:bg-[var(--surface-2)]/95 backdrop-blur-2xl shadow-[var(--elevation-highlight),0_-20px_60px_rgba(0,0,0,0.1)] dark:shadow-[var(--elevation-highlight),0_-20px_60px_rgba(0,0,0,0.4)] md:shadow-[var(--elevation-highlight),0_20px_60px_rgba(0,0,0,0.1)] dark:md:shadow-[var(--elevation-highlight),0_20px_60px_rgba(0,0,0,0.4)] border-t md:border border-[var(--border-hairline)] overflow-hidden flex flex-col w-full pointer-events-auto transform translate-z-0 will-change-transform pb-[env(safe-area-inset-bottom)] md:pb-0 ${
                 useBottomSheet 
-                  ? 'fixed bottom-0 rounded-t-[1.5rem] rounded-b-none max-w-[700px]' 
-                  : 'relative rounded-[1.25rem] max-w-[500px]'
+                  ? 'fixed bottom-0 rounded-t-[var(--radius-app)] rounded-b-none max-w-[700px]' 
+                  : 'relative rounded-[var(--radius-app)] max-w-[500px]'
               } ${isFixedHeight ? 'h-[90vh] md:h-[85vh]' : 'max-h-[90vh] md:max-h-[85vh]'}`}
             >
-              <div className="flex items-center justify-between p-4 sm:p-5 border-b border-slate-100 dark:border-white/5 bg-transparent shrink-0">
+              <div className="flex items-center justify-between p-4 sm:p-5 border-b border-[var(--border-hairline)] bg-transparent shrink-0">
                 <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white tracking-tight uppercase">{title}</h3>
                 <button
                   onClick={onClose}
@@ -82,7 +85,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, headerCont
                 </button>
               </div>
               {headerContent}
-              <div className="p-3 sm:p-4 overflow-y-auto w-full flex-1 min-h-0">
+              <div className="p-3 sm:p-4 overflow-y-auto w-full flex-1 min-h-0 scrollbar-hide">
                 {children}
               </div>
             </motion.div>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { useLocalStorage } from './hooks/useLocalStorage';
-import { MonthData, Bank, AppSettings } from './types';
+import { MonthData, Bank, AppSettings, PlaceholderUser } from './types';
 import { getCurrentMonthId, getNextMonthId } from './utils/date';
 import { CurrentMonth } from './views/CurrentMonth';
 import { Archive } from './views/Archive';
@@ -38,6 +37,12 @@ import { Toaster } from 'sonner';
 import { ConfirmModal } from './components/ui/ConfirmModal';
 import { BANKS } from './constants';
 
+import { useAuth } from './hooks/useAuth';
+import { useThemeSync } from './hooks/useThemeSync';
+import { useScrollVisibility } from './hooks/useScrollVisibility';
+import { useCashbackData } from './hooks/useCashbackData';
+import { useCloudSync } from './hooks/useCloudSync';
+
 const WalletIcon = ({ className = 'w-6 h-6' }: { className?: string }) => {
   return (
     <svg
@@ -60,7 +65,7 @@ const AuthButton = ({
   onLogoutClick,
   theme,
 }: {
-  user: FirebaseUser | null;
+  user: FirebaseUser | PlaceholderUser | null;
   isMobile?: boolean;
   isSyncing: boolean;
   onLogoutClick: () => void;
@@ -175,295 +180,68 @@ export default function App() {
     }
   }, [activeTab]);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  const [user, setUser] = useState<any | null>(() => {
-    const lastKnown = localStorage.getItem('cashback_last_known_user');
-    if (lastKnown === 'true') {
-      return {
-        uid: localStorage.getItem('cashback_cached_uid') || 'cached',
-        displayName: localStorage.getItem('cashback_cached_name') || 'Пользователь',
-        email: localStorage.getItem('cashback_cached_email') || '',
-        photoURL: localStorage.getItem('cashback_cached_photo') || null,
-        isPlaceholder: true,
-      };
-    }
-    return null;
+
+  // Custom Hooks calls
+  const { user, isAuthReady } = useAuth();
+  const { theme, setTheme, settings, setSettings } = useThemeSync(activeTab);
+
+  const saveToFirestoreRef = useRef<(type: 'settings' | 'month', payload: any) => void>(undefined);
+
+  const {
+    selectedMonthId,
+    setSelectedMonthId,
+    allData,
+    setAllData,
+    customBanks,
+    setCustomBanks,
+    deletedCustomBanks,
+    setDeletedCustomBanks,
+    customCategories,
+    setCustomCategories,
+    currentMonthData,
+    archiveData,
+    handleUpdateCurrentMonth,
+    deleteMonthEntry,
+    handleDeleteMonth,
+    handleDeleteCustomBank,
+    handleAddCustomBank,
+    handleAddCustomCategory,
+  } = useCashbackData(user, () => hasInitialSync, (type, payload) => saveToFirestoreRef.current?.(type, payload));
+
+  const {
+    saveToFirestore,
+    isSyncing,
+    hasInitialSync,
+    handleImportAllData,
+    handleExportAllData,
+  } = useCloudSync({
+    user,
+    theme,
+    setTheme,
+    settings,
+    setSettings,
+    allData,
+    setAllData,
+    customBanks,
+    setCustomBanks,
+    deletedCustomBanks,
+    setDeletedCustomBanks,
+    customCategories,
+    setCustomCategories,
   });
-  const [isAuthReady, setIsAuthReady] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [hasInitialSync, setHasInitialSync] = useState(false);
 
-  // Local storage as fallback/initial state
-  const [allData, setAllData] = useLocalStorage<MonthData[]>(
-    'cashback_data',
-    [],
-  );
-  const [customBanks, setCustomBanks] = useLocalStorage<Bank[]>(
-    'custom_banks',
-    [],
-  );
-  const [deletedCustomBanks, setDeletedCustomBanks] = useLocalStorage<Bank[]>(
-    'deleted_custom_banks',
-    [],
-  );
-  const [customCategories, setCustomCategories] = useLocalStorage<string[]>(
-    'custom_categories',
-    [],
-  );
-  const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('theme', 'light');
+  // Assign the ref for useCashbackData to invoke it
+  saveToFirestoreRef.current = saveToFirestore;
 
-  const [settings, setSettings] = useLocalStorage<AppSettings>('app_settings', {
-    logoShape: 'circle',
-    accentColor: '#10b981', // emerald-500
-    percentBlockBg: '#ecfdf5', // emerald-50
-    percentBlockText: '#047857', // emerald-700
-    fontColor: '#6b7280', // gray-500
-  });
-
-  // Auth listener
+  // Cleanup all months from legacy/deleted custom banks exactly once after hasInitialSync
+  const hasCleanedUpRef = useRef(false);
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
-      if (u) {
-        setUser(u);
-        localStorage.setItem('cashback_last_known_user', 'true');
-        localStorage.setItem('cashback_cached_uid', u.uid);
-        localStorage.setItem('cashback_cached_name', u.displayName || 'Пользователь');
-        localStorage.setItem('cashback_cached_email', u.email || '');
-        localStorage.setItem('cashback_cached_photo', u.photoURL || '');
-      } else {
-        setUser(null);
-        localStorage.removeItem('cashback_last_known_user');
-        localStorage.removeItem('cashback_cached_uid');
-        localStorage.removeItem('cashback_cached_name');
-        localStorage.removeItem('cashback_cached_email');
-        localStorage.removeItem('cashback_cached_photo');
-        setHasInitialSync(false);
-      }
-      setIsAuthReady(true);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  // Sync settings and custom data from Firestore
-  useEffect(() => {
-    if (!user || user.isPlaceholder) return;
-
-    const userDocRef = doc(db, 'users', user.uid);
-    const unsubscribe = onSnapshot(
-      userDocRef,
-      (snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.data();
-          if (data.settings) setSettings(data.settings);
-          if (data.theme) setTheme(data.theme);
-          if (data.customBanks) setCustomBanks(data.customBanks);
-          if (data.customCategories) setCustomCategories(data.customCategories);
-          if (data.deletedCustomBanks) setDeletedCustomBanks(data.deletedCustomBanks);
-        } else {
-          // Initialize user document if it doesn't exist with local data
-          const initialUserData = JSON.parse(
-            JSON.stringify({
-              settings,
-              theme,
-              customBanks,
-              deletedCustomBanks,
-              customCategories,
-            }),
-          );
-
-          setDoc(userDocRef, initialUserData).catch((err) =>
-            handleFirestoreError(err, OperationType.WRITE, `users/${user.uid}`),
-          );
-        }
-      },
-      (err) =>
-        handleFirestoreError(err, OperationType.GET, `users/${user.uid}`),
-    );
-
-    return () => unsubscribe();
-  }, [user]);
-
-  // Sync month data from Firestore
-  useEffect(() => {
-    if (!user || user.isPlaceholder) return;
-
-    const monthsQuery = query(
-      collection(db, 'months'),
-      where('uid', '==', user.uid),
-    );
-    const unsubscribe = onSnapshot(
-      monthsQuery,
-      (snapshot) => {
-        if (snapshot.empty && allData.length > 0 && !hasUploadedLocalRef.current) {
-          hasUploadedLocalRef.current = true;
-          // First time user with local data - upload it
-          allData.forEach((month) => {
-            const monthDocId = `${user.uid}_${month.monthId}`;
-            // Sanitize entries to remove undefined values
-            const sanitizedEntries = JSON.parse(
-              JSON.stringify(month.entries || []),
-            );
-
-            setDoc(doc(db, 'months', monthDocId), {
-              monthId: month.monthId,
-              entries: sanitizedEntries,
-              uid: user.uid,
-            }).catch((err) =>
-              handleFirestoreError(err, OperationType.WRITE, 'months'),
-            );
-          });
-        } else if (!snapshot.empty) {
-          const months: MonthData[] = snapshot.docs.map((doc) => ({
-            monthId: doc.data().monthId,
-            entries: doc.data().entries || [],
-          }));
-          setAllData(months);
-        }
-        setHasInitialSync(true);
-      },
-      (err) => handleFirestoreError(err, OperationType.GET, 'months'),
-    );
-
-    return () => unsubscribe();
-  }, [user]);
-
-  // Helper to save data to Firestore
-  const saveToFirestore = useCallback(
-    async (type: 'settings' | 'month', payload: any) => {
-      if (!user || user.isPlaceholder) return;
-      setIsSyncing(true);
-      try {
-        // Sanitize payload to remove undefined values which Firestore doesn't support
-        const sanitizedPayload = JSON.parse(JSON.stringify(payload));
-
-        if (type === 'settings') {
-          await setDoc(doc(db, 'users', user.uid), sanitizedPayload, {
-            merge: true,
-          });
-        } else if (type === 'month') {
-          const monthDocId = `${user.uid}_${payload.monthId}`;
-          await setDoc(doc(db, 'months', monthDocId), {
-            monthId: payload.monthId,
-            entries: sanitizedPayload.entries || [],
-            uid: user.uid,
-          });
-        }
-        // Keep sync indicator visible for at least 800ms for user feedback
-        await new Promise((resolve) => setTimeout(resolve, 800));
-      } catch (err) {
-        handleFirestoreError(
-          err,
-          OperationType.WRITE,
-          type === 'settings' ? `users/${user.uid}` : 'months',
-        );
-      } finally {
-        setIsSyncing(false);
-      }
-    },
-    [user],
-  );
-
-  const handleExportAllData = useCallback(() => {
-    const exportData = {
-      allData,
-      customBanks,
-      deletedCustomBanks,
-      customCategories,
-      settings,
-      theme,
-      version: '1.0',
-      exportDate: new Date().toISOString(),
-    };
-
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-      type: 'application/json',
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `cashback_backup_${new Date().toISOString().split('T')[0]}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
-  }, [allData, customBanks, deletedCustomBanks, customCategories, settings, theme]);
-
-  const handleImportAllData = useCallback(
-    async (jsonData: any) => {
-      try {
-        if (!jsonData.allData || !Array.isArray(jsonData.allData)) {
-          throw new Error('Invalid backup format');
-        }
-
-        setAllData(jsonData.allData);
-        if (jsonData.customBanks) setCustomBanks(jsonData.customBanks);
-        if (jsonData.deletedCustomBanks) setDeletedCustomBanks(jsonData.deletedCustomBanks);
-        if (jsonData.customCategories)
-          setCustomCategories(jsonData.customCategories);
-        if (jsonData.settings) setSettings(jsonData.settings);
-        if (jsonData.theme) setTheme(jsonData.theme);
-
-        // If logged in, sync to Firestore
-        if (user && !user.isPlaceholder) {
-          setIsSyncing(true);
-          const userDocRef = doc(db, 'users', user.uid);
-          await setDoc(
-            userDocRef,
-            {
-              settings: jsonData.settings || settings,
-              theme: jsonData.theme || theme,
-              customBanks: jsonData.customBanks || customBanks,
-              deletedCustomBanks: jsonData.deletedCustomBanks || deletedCustomBanks,
-              customCategories: jsonData.customCategories || customCategories,
-              uid: user.uid,
-            },
-            { merge: true },
-          );
-
-          // Sync months
-          for (const month of jsonData.allData) {
-            const monthDocId = `${user.uid}_${month.monthId}`;
-            await setDoc(doc(db, 'months', monthDocId), {
-              monthId: month.monthId,
-              entries: month.entries,
-              uid: user.uid,
-            });
-          }
-          setIsSyncing(false);
-        }
-        return true;
-      } catch (error) {
-        console.error('Import error:', error);
-        setIsSyncing(false);
-        throw error;
-      }
-    },
-    [
-      user,
-      settings,
-      theme,
-      customBanks,
-      deletedCustomBanks,
-      customCategories,
-      setAllData,
-      setCustomBanks,
-      setDeletedCustomBanks,
-      setCustomCategories,
-      setSettings,
-      setTheme,
-    ],
-  );
-
-  const [headerVisible, setHeaderVisible] = useState(true);
-  const [navVisible, setNavVisible] = useState(true);
-  const [navExpanded, setNavExpanded] = useState(true);
-
-  const currentMonthId = getCurrentMonthId();
-  const nextMonthId = getNextMonthId();
-  const [selectedMonthId, setSelectedMonthId] = useState(currentMonthId);
-  const hasUploadedLocalRef = useRef(false);
-
-  // Cleanup all months from any legacy deleted/unrecognized custom banks
-  useEffect(() => {
-    if (user && !hasInitialSync) return;
+    const canClean = !user || hasInitialSync;
+    if (!canClean) return;
+    if (hasCleanedUpRef.current) return;
     if (allData.length === 0) return;
+
+    hasCleanedUpRef.current = true;
 
     let hasChanges = false;
     const cleaned = allData.map((month) => {
@@ -489,122 +267,21 @@ export default function App() {
         cleaned.forEach((m) => {
           const original = allData.find((orig) => orig.monthId === m.monthId);
           if (original && original.entries.length !== m.entries.length) {
-            saveToFirestore('month', m);
+            saveToFirestore?.('month', m);
           }
         });
       }
     }
-  }, [hasInitialSync, user, customBanks, allData, setAllData, saveToFirestore]);
+  }, [user, hasInitialSync, allData, customBanks, setAllData, saveToFirestore]);
 
-  // Completely clear any remembered deleted custom banks once to start fresh as requested
-  useEffect(() => {
-    if (user && !hasInitialSync) return;
-    if (deletedCustomBanks.length > 0) {
-      setDeletedCustomBanks([]);
-      if (user) {
-        saveToFirestore('settings', { deletedCustomBanks: [] });
-      }
-    }
-  }, [hasInitialSync, user, deletedCustomBanks.length, setDeletedCustomBanks, saveToFirestore]);
+  const {
+    headerVisible,
+    navVisible,
+    navExpanded,
+    setNavExpanded,
+  } = useScrollVisibility();
 
-  // Reset selectedMonthId if it's not current or next
-  useEffect(() => {
-    // Removed restriction to allow switching anytime
-  }, [currentMonthId, selectedMonthId]);
-
-  // Handle header and nav visibility on scroll
-  useEffect(() => {
-    let lastScrollY = window.scrollY;
-
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const isScrollingDown = currentScrollY > lastScrollY;
-
-      if (currentScrollY > 100) {
-        setHeaderVisible(!isScrollingDown);
-        setNavVisible(!isScrollingDown);
-        if (isScrollingDown) {
-          setNavExpanded(false);
-        }
-      } else {
-        setHeaderVisible(true);
-        setNavVisible(true);
-        setNavExpanded(true);
-      }
-      lastScrollY = currentScrollY;
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Apply theme and custom styles to document with extra robustness for iOS Safari / PWA status bar
-  useEffect(() => {
-    const root = document.documentElement;
-    const isDark = theme === 'dark';
-
-    if (isDark) {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-
-    // Apply custom CSS variables
-    root.style.setProperty('--accent-color', settings.accentColor);
-    root.style.setProperty('--percent-bg', settings.percentBlockBg);
-    root.style.setProperty('--percent-text', settings.percentBlockText);
-    root.style.setProperty('--app-font-color', settings.fontColor);
-
-    const targetColor = isDark ? '#0A0A0A' : '#FAFAFA';
-
-    const syncColorsAndMetaTags = () => {
-      // Style both root document and body elements to prevent unstyled body backgrounds on iOS elastic scrolls
-      root.style.backgroundColor = targetColor;
-      if (document.body) {
-        document.body.style.backgroundColor = targetColor;
-      }
-
-      // Remove any meta theme-color tags with 'media' attribute to prevent Safari conflicts
-      document.querySelectorAll('meta[name="theme-color"][media]').forEach(el => el.remove());
-
-      // Update or create the main theme-color meta tag
-      let metaThemeColor = document.querySelector('meta[name="theme-color"]:not([media])');
-      if (!metaThemeColor) {
-        metaThemeColor = document.createElement('meta');
-        metaThemeColor.setAttribute('name', 'theme-color');
-        document.head.appendChild(metaThemeColor);
-      }
-      metaThemeColor.setAttribute('content', targetColor);
-
-      // Force apple-mobile-web-app-status-bar-style metadata refresh
-      let metaAppleStyle = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
-      if (!metaAppleStyle) {
-        metaAppleStyle = document.createElement('meta');
-        metaAppleStyle.setAttribute('name', 'apple-mobile-web-app-status-bar-style');
-        document.head.appendChild(metaAppleStyle);
-      }
-      metaAppleStyle.setAttribute('content', 'default');
-
-      // Set helper CSS variable
-      root.style.setProperty('--theme-color', targetColor);
-    };
-
-    // Run immediately on active tab switch or theme change
-    syncColorsAndMetaTags();
-
-    // Run again on next frame when React components finish layout mount and paint
-    const rAF = requestAnimationFrame(syncColorsAndMetaTags);
-
-    // Schedule delayed syncs to handle component mounting, modal popups, scroll-bar hidden layouts, or Framer Motion enter animations completing
-    const timer100 = setTimeout(syncColorsAndMetaTags, 100);
-    const timer300 = setTimeout(syncColorsAndMetaTags, 300);
-
-    return () => {
-      cancelAnimationFrame(rAF);
-      clearTimeout(timer100);
-      clearTimeout(timer300);
-    };
-  }, [theme, settings, activeTab]);
+  const currentMonthId = getCurrentMonthId();
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
@@ -613,139 +290,6 @@ export default function App() {
       saveToFirestore('settings', { theme: newTheme });
     }
   };
-
-  useEffect(() => {
-    if (!allData.find((d) => d.monthId === selectedMonthId)) {
-      setAllData((prev) => [
-        ...prev,
-        { monthId: selectedMonthId, entries: [] },
-      ]);
-    }
-  }, [selectedMonthId, allData, setAllData]);
-
-  const currentMonthData = useMemo(
-    () =>
-      allData.find((d) => d.monthId === selectedMonthId) || {
-        monthId: selectedMonthId,
-        entries: [],
-      },
-    [allData, selectedMonthId],
-  );
-
-  const archiveData = useMemo(
-    () =>
-      allData
-        .filter((d) => d.monthId !== currentMonthId)
-        .sort((a, b) => b.monthId.localeCompare(a.monthId)),
-    [allData, currentMonthId],
-  );
-
-  const handleUpdateCurrentMonth = useCallback(
-    (updatedData: MonthData) => {
-      setAllData((prev) => {
-        const exists = prev.find((d) => d.monthId === updatedData.monthId);
-        if (exists) {
-          return prev.map((d) =>
-            d.monthId === updatedData.monthId ? updatedData : d,
-          );
-        } else {
-          return [...prev, updatedData];
-        }
-      });
-      if (user) {
-        saveToFirestore('month', updatedData);
-      }
-    },
-    [user, saveToFirestore],
-  );
-
-  const deleteMonthEntry = useCallback(
-    (monthId: string, entryId: string) => {
-      const updatedMonth = allData.find((m) => m.monthId === monthId);
-      if (!updatedMonth) return;
-
-      const newEntries = updatedMonth.entries.filter((e) => e.id !== entryId);
-      const newMonthData = { ...updatedMonth, entries: newEntries };
-
-      setAllData((prev) =>
-        prev.map((month) => (month.monthId === monthId ? newMonthData : month)),
-      );
-
-      if (user) {
-        saveToFirestore('month', newMonthData);
-      }
-    },
-    [allData, user, saveToFirestore],
-  );
-
-  const handleDeleteMonth = useCallback(
-    (monthId: string) => {
-      setAllData((prev) => prev.filter((m) => m.monthId !== monthId));
-
-      if (user) {
-        // In Firestore, we delete the document
-        const monthDocId = `${user.uid}_${monthId}`;
-        import('firebase/firestore').then(({ deleteDoc, doc }) => {
-          deleteDoc(doc(db, 'months', monthDocId)).catch((err) =>
-            handleFirestoreError(
-              err,
-              OperationType.DELETE,
-              `months/${monthDocId}`,
-            ),
-          );
-        });
-      }
-    },
-    [user],
-  );
-
-  const handleDeleteCustomBank = useCallback(
-    (bankId: string) => {
-      const bankToBackup = customBanks.find((b) => b.id === bankId);
-      const newBanks = customBanks.filter((b) => b.id !== bankId);
-      setCustomBanks(newBanks);
-
-      let nextDeleted = deletedCustomBanks;
-      if (bankToBackup && !deletedCustomBanks.some((b) => b.id === bankId)) {
-        nextDeleted = [...deletedCustomBanks, bankToBackup];
-        setDeletedCustomBanks(nextDeleted);
-      }
-
-      if (user) {
-        saveToFirestore('settings', { 
-          customBanks: newBanks,
-          deletedCustomBanks: nextDeleted
-        });
-      }
-    },
-    [customBanks, deletedCustomBanks, user, saveToFirestore, setDeletedCustomBanks],
-  );
-
-  const handleAddCustomBank = useCallback(
-    (bank: Bank) => {
-      if (!customBanks.find((b) => b.id === bank.id)) {
-        const newBanks = [...customBanks, bank];
-        setCustomBanks(newBanks);
-        if (user) {
-          saveToFirestore('settings', { customBanks: newBanks });
-        }
-      }
-    },
-    [customBanks, user, saveToFirestore],
-  );
-
-  const handleAddCustomCategory = useCallback(
-    (category: string) => {
-      if (!customCategories.includes(category)) {
-        const newCategories = [...customCategories, category];
-        setCustomCategories(newCategories);
-        if (user) {
-          saveToFirestore('settings', { customCategories: newCategories });
-        }
-      }
-    },
-    [customCategories, user, saveToFirestore],
-  );
 
   const handleUpdateSettings = useCallback(
     (newSettings: AppSettings | ((prev: AppSettings) => AppSettings)) => {
@@ -756,7 +300,7 @@ export default function App() {
         saveToFirestore('settings', { settings: nextSettings });
       }
     },
-    [settings, user, saveToFirestore],
+    [settings, user, saveToFirestore, setSettings],
   );
 
   return (
@@ -790,7 +334,7 @@ export default function App() {
             backdropFilter: 'blur(32px)',
           },
           className:
-            'bg-white/70 dark:bg-[#1c1c1e]/70 border-gray-200/50 dark:border-white/10 text-gray-900 dark:text-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)]',
+            'bg-white/70 dark:bg-[var(--surface-2)]/70 border-gray-200/50 dark:border-[var(--border-hairline)] text-gray-900 dark:text-white shadow-[var(--elevation-highlight),0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)]',
         }}
       />
       {/* Desktop Sidebar */}

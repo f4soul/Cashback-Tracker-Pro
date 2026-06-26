@@ -56,6 +56,8 @@ export const BankLogo: React.FC<BankLogoProps> = memo(({
           src={logoUrl}
           alt={bank.name}
           onError={() => setError(true)}
+          loading="lazy"
+          decoding="async"
           className={clsx("object-contain object-center select-none", shapeSizes[logoShape])}
         />
       </div>

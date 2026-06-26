@@ -39,7 +39,7 @@ export const VersionHistory: React.FC = () => {
                   "transition-all duration-[300ms] ease-[cubic-bezier(0.16,1,0.3,1)] gpu-accelerated origin-top p-4",
                   isOpen ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-2 scale-[0.98] pointer-events-none"
                 )}>
-                  <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300 list-disc list-inside">
+                  <ul className="space-y-2 text-sm text-gray-600 dark:text-[var(--text-secondary)] list-disc list-inside">
                     {v.changes.map((change, i) => (
                       <li key={i} className="leading-snug">{change}</li>
                     ))}

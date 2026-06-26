@@ -114,7 +114,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
     <div className="flex flex-col gap-4 pb-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* MCC Directory Card - Order 1 */}
-        <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-1">
+        <div className="bg-white dark:bg-[#0A0A0A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-1">
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Search className="w-4 h-4 text-[var(--accent-color)]" />
@@ -134,7 +134,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
         </div>
 
         {/* Accent Color Card - Order 3 on mobile, 2 on desktop */}
-        <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-3 lg:order-2">
+        <div className="bg-white dark:bg-[#0A0A0A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-3 lg:order-2">
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Palette className="w-4 h-4 text-[var(--accent-color)]" />
@@ -169,7 +169,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
                 </button>
               ))}
 
-              <div className="relative aspect-square rounded-xl overflow-hidden transition-all hover:scale-105 flex items-center justify-center bg-gray-50 dark:bg-gray-900/50 cursor-pointer group shrink-0">
+              <div className="relative aspect-square rounded-xl overflow-hidden transition-all hover:scale-105 flex items-center justify-center bg-gray-50 dark:bg-[var(--surface-0)] cursor-pointer group shrink-0">
                 <div className="absolute inset-0 transition-opacity group-hover:opacity-80" style={{ backgroundColor: settings.accentColor }} />
                 <Palette className="w-4 h-4 text-gray-400 group-hover:text-white mix-blend-difference z-10" />
                 <input
@@ -184,7 +184,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
         </div>
 
         {/* Logo Shape Card - Order 2 on mobile, 3 on desktop */}
-        <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-2 lg:order-3">
+        <div className="bg-white dark:bg-[#0A0A0A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-2 lg:order-3">
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Circle className="w-4 h-4 text-[var(--accent-color)]" />
@@ -218,7 +218,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
         </div>
 
         {/* Text Color Card - Order 4 */}
-        <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-4">
+        <div className="bg-white dark:bg-[#0A0A0A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-4">
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Type className="w-4 h-4 text-[var(--accent-color)]" />
@@ -238,7 +238,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
                     settings.fontColor === color.value
                       ? "scale-95 shadow-md ring-2 ring-inset ring-white/40 dark:ring-white/20"
                       : "hover:scale-105 opacity-90 hover:opacity-100",
-                    color.value === '#ffffff' && "border-gray-300 dark:border-gray-600 shadow-sm"
+                    color.value === '#ffffff' && "border-gray-300 dark:border-[var(--border-hairline)] shadow-sm"
                   )}
                   style={{ backgroundColor: color.value }}
                 >
@@ -246,7 +246,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
                 </button>
               ))}
               
-              <div className="relative aspect-square rounded-full overflow-hidden transition-all hover:scale-105 flex items-center justify-center bg-gray-50 dark:bg-gray-900/50 cursor-pointer shrink-0 group">
+              <div className="relative aspect-square rounded-full overflow-hidden transition-all hover:scale-105 flex items-center justify-center bg-gray-50 dark:bg-[var(--surface-0)] cursor-pointer shrink-0 group">
                 <div className="absolute inset-0" style={{ backgroundColor: settings.fontColor }} />
                 <Palette className="w-4 h-4 text-white mix-blend-difference z-10 opacity-50 group-hover:opacity-100 transition-opacity" />
                 <input
@@ -261,8 +261,35 @@ export const Settings: React.FC<SettingsProps> = memo(({
         </div>
 
 
-        {/* Export Card - Order 5 or 6 */}
-        <div className={`bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] space-y-3 ${isAdmin ? 'order-6 lg:col-span-1' : 'order-5 lg:col-span-2'}`}>
+        {/* Border Radius Card - Order 5 */}
+        <div className="bg-white dark:bg-[#0A0A0A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-5">
+          <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
+            <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
+              <RotateCcw className="w-4 h-4 text-[var(--accent-color)] rotate-90" />
+            </div>
+            <h2 className="text-sm">Скругление углов</h2>
+          </div>
+
+          <div className="flex-1 flex flex-col justify-center gap-2">
+            <div className="flex items-center justify-between text-xs font-bold text-gray-500 dark:text-[var(--text-secondary)]">
+              <span>8px</span>
+              <span className="text-[var(--accent-color)] font-mono">{settings.radius ?? 20}px</span>
+              <span>28px</span>
+            </div>
+            <input
+              type="range"
+              min="8"
+              max="28"
+              step="1"
+              value={settings.radius ?? 20}
+              onChange={(e) => updateSetting('radius', parseInt(e.target.value, 10))}
+              className="w-full h-1 bg-gray-200 dark:bg-[var(--surface-2)] rounded-lg appearance-none cursor-pointer accent-[var(--accent-color)]"
+            />
+          </div>
+        </div>
+
+        {/* Export Card - Order 6 */}
+        <div className={`bg-white dark:bg-[#0A0A0A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] space-y-3 ${isAdmin ? 'order-7 lg:col-span-1' : 'order-6 lg:col-span-2'}`}>
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Download className="w-4 h-4 text-[var(--accent-color)]" />
@@ -270,14 +297,14 @@ export const Settings: React.FC<SettingsProps> = memo(({
             <h2 className="text-sm border-transparent mt-[1px]">Экспорт данных</h2>
           </div>
           
-          <div className="flex p-1 gap-1 bg-white dark:bg-[#1A1A1A] rounded-[1.25rem] border border-slate-100 dark:border-white/5 shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)]">
+          <div className="flex p-1 gap-1 bg-white dark:bg-[#1A1A1A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)]">
             <button 
               onClick={handleExportImage}
               className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.02] hover:shadow-sm dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] border border-transparent dark:hover:border-white/5 transition-all group cursor-pointer active:scale-95"
               title="Изображение (PNG)"
             >
               <ImageIcon className="w-5 h-5 text-blue-500 group-hover:scale-110 transition-transform mb-1 shrink-0" />
-              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight leading-none mt-0.5">PNG</span>
+              <span className="text-[10px] font-bold text-gray-500 dark:text-[var(--text-secondary)] uppercase tracking-tight leading-none mt-0.5">PNG</span>
             </button>
 
             <button 
@@ -286,7 +313,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
               title="Таблица (Excel)"
             >
               <FileSpreadsheet className="w-5 h-5 text-[var(--accent-color)] group-hover:scale-110 transition-transform mb-1 shrink-0" />
-              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight leading-none mt-0.5">Excel</span>
+              <span className="text-[10px] font-bold text-gray-500 dark:text-[var(--text-secondary)] uppercase tracking-tight leading-none mt-0.5">Excel</span>
             </button>
 
             <button 
@@ -295,7 +322,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
               title="Документ (PDF)"
             >
               <FileText className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform mb-1 shrink-0" />
-              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight leading-none mt-0.5">PDF</span>
+              <span className="text-[10px] font-bold text-gray-500 dark:text-[var(--text-secondary)] uppercase tracking-tight leading-none mt-0.5">PDF</span>
             </button>
 
             <button 
@@ -304,7 +331,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
               title="Экспорт JSON (Backup)"
             >
               <Database className="w-5 h-5 text-indigo-500 group-hover:scale-110 transition-transform mb-1 shrink-0" />
-              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight leading-none mt-0.5">JSON</span>
+              <span className="text-[10px] font-bold text-gray-500 dark:text-[var(--text-secondary)] uppercase tracking-tight leading-none mt-0.5">JSON</span>
             </button>
 
             <button 
@@ -313,7 +340,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
               title="Импорт JSON"
             >
               <Upload className="w-5 h-5 text-amber-500 group-hover:scale-110 transition-transform mb-1 shrink-0" />
-              <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight leading-none mt-0.5">Импорт</span>
+              <span className="text-[10px] font-bold text-gray-500 dark:text-[var(--text-secondary)] uppercase tracking-tight leading-none mt-0.5">Импорт</span>
               <input 
                 type="file" 
                 ref={fileInputRef} 
@@ -325,9 +352,9 @@ export const Settings: React.FC<SettingsProps> = memo(({
           </div>
         </div>
 
-        {/* Admin Cards - Order 5 */}
+        {/* Admin Cards - Order 6 */}
         {isAdmin && (
-          <div className="bg-white dark:bg-[#0A0A0A] rounded-[2rem] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col justify-between min-h-full space-y-3 order-5">
+          <div className="bg-white dark:bg-[#0A0A0A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col justify-between min-h-full space-y-3 order-6">
             <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
               <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
                 <FileText className="w-4 h-4 text-[var(--accent-color)]" />
@@ -367,6 +394,8 @@ export const Settings: React.FC<SettingsProps> = memo(({
         isOpen={isVersionHistoryOpen}
         onClose={() => setIsVersionHistoryOpen(false)}
         title="История обновлений"
+        isBottomSheet={true}
+        isFixedHeight={true}
       >
         <VersionHistory />
       </Modal>

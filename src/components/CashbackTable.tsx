@@ -76,14 +76,14 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
     return (
       <div
         id={id}
-        className="bg-white dark:bg-[#0A0A0A] rounded-[1.25rem] md:rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] border border-slate-100 dark:border-white/5 p-2 sm:p-4 w-full mx-auto overflow-hidden relative isolate"
+        className="bg-white dark:bg-[#0A0A0A] rounded-[var(--radius-app)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] border border-slate-100 dark:border-white/5 p-2 sm:p-4 w-full mx-auto overflow-hidden relative isolate"
       >
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-4 px-1 gap-2 flex-wrap">
             <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
               {isAfter25 && allMonthIds.length > 1 ? (
                 <>
-                  <div className="flex bg-[#FAFAFA] dark:bg-[#111] rounded-2xl p-0.5 shrink-0 [.pdf-export-mode_&]:hidden border border-slate-100 dark:border-white/5 shadow-sm translate-z-0 [backface-visibility:hidden]">
+                  <div className="flex bg-[#FAFAFA] dark:bg-[#111] rounded-[var(--radius-app)] p-0.5 shrink-0 [.pdf-export-mode_&]:hidden border border-slate-100 dark:border-white/5 shadow-sm translate-z-0 [backface-visibility:hidden]">
                     {allMonthIds.map((mId) => (
                       <button
                         key={mId}
@@ -167,8 +167,8 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
           </div>
 
           {entries.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-8 text-center bg-[#FAFAFA] dark:bg-[#111] rounded-[1.25rem] border border-dashed border-slate-200 dark:border-white/10">
-              <div className="w-16 h-16 bg-white/60 dark:bg-white/5 backdrop-blur-xl rounded-[1.25rem] border border-slate-200/50 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] flex items-center justify-center mb-4">
+            <div className="flex flex-col items-center justify-center p-8 text-center bg-[#FAFAFA] dark:bg-[#111] rounded-[var(--radius-app)] border border-dashed border-slate-200 dark:border-white/10">
+              <div className="w-16 h-16 bg-white/60 dark:bg-white/5 backdrop-blur-xl rounded-[var(--radius-app)] border border-slate-200/50 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] flex items-center justify-center mb-4">
                 <span className="text-3xl drop-shadow-sm opacity-90">🏦</span>
               </div>
               <h3 className="text-base font-black text-slate-900 dark:text-white uppercase tracking-tight mb-1">
@@ -199,7 +199,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                 return (
                   <div
                     key={entry.id}
-                    className="flex flex-row items-stretch gap-2 p-1.5 rounded-[1.25rem] bg-[#FAFAFA] dark:bg-[#111] border border-slate-100 dark:border-white/5 hover:bg-white dark:hover:bg-[#1A1A1A] hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-slate-200/50 dark:hover:border-white/10 transition-[background-color,border-color,box-shadow] duration-200 group isolate"
+                    className="flex flex-row items-stretch gap-2 p-1.5 rounded-[var(--radius-app)] bg-[#FAFAFA] dark:bg-[#111] border border-slate-100 dark:border-white/5 hover:bg-white dark:hover:bg-[#1A1A1A] hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-slate-200/50 dark:hover:border-white/10 transition-[background-color,border-color,box-shadow] duration-200 group isolate"
                     role="row"
                     aria-label={`Банк ${bank.name}`}
                   >
@@ -250,7 +250,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
             </div>
           )}
 
-          <div className="hidden [.pdf-export-mode_&]:flex mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 justify-between items-center text-[9px] text-gray-400 dark:text-gray-500">
+          <div className="hidden [.pdf-export-mode_&]:flex mt-4 pt-3 border-t border-gray-100 dark:border-[var(--border-hairline)] justify-between items-center text-[9px] text-gray-400 dark:text-[var(--text-tertiary)]">
             <span>Сгенерировано в приложении Cashback Tracker</span>
             <span>{new Date().toLocaleDateString('ru-RU')}</span>
           </div>

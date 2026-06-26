@@ -176,6 +176,8 @@ export const COMMON_CATEGORIES = [
   'Маркетплейсы',
 ];
 
+export const BANKS_MAP = new Map<string, Bank>(BANKS.map(b => [b.id, b]));
+
 export const getBankDetails = (
   bankId: string,
   customName?: string,
@@ -189,5 +191,5 @@ export const getBankDetails = (
       logoUrl: '/logos/bank-icon.svg',
     };
   }
-  return BANKS.find((b) => b.id === bankId);
+  return BANKS_MAP.get(bankId);
 };

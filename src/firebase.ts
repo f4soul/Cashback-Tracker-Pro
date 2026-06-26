@@ -5,7 +5,7 @@ import {
   signInWithPopup,
   signOut,
 } from 'firebase/auth';
-import { getFirestore, initializeFirestore, doc, getDocFromServer } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, doc } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 // Firebase конфигурация из .env / Vercel
@@ -31,7 +31,7 @@ const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 export const db = initializeFirestore(app, {
-  experimentalForceLongPolling: true,
+  experimentalAutoDetectLongPolling: true,
 });
 export const storage = getStorage(app);
 export const googleProvider = new GoogleAuthProvider();
@@ -111,23 +111,5 @@ export const loginWithGoogle = async () => {
 };
 
 export const logout = () => signOut(auth);
-
-// Connection test
-async function testConnection() {
-  if (!isFirebaseConfigured) return;
-  
-  try {
-    await getDocFromServer(doc(db, 'test', 'connection'));
-  } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message.includes('the client is offline')
-    ) {
-      console.error('Please check your Firebase configuration.');
-    }
-  }
-}
-
-testConnection();
 
 export default app;
