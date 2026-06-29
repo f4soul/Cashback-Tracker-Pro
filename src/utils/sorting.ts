@@ -10,6 +10,12 @@ export const getCategoryPercent = (cat: string | CategoryItem): number => {
 
 export const sortCategoriesAsc = (categories: (string | CategoryItem)[]): (string | CategoryItem)[] => {
   return [...categories].sort((a, b) => {
+    const nameA = typeof a === 'string' ? a : a.name;
+    const nameB = typeof b === 'string' ? b : b.name;
+
+    if (nameA === 'Все покупки' && nameB !== 'Все покупки') return -1;
+    if (nameB === 'Все покупки' && nameA !== 'Все покупки') return 1;
+
     const pA = getCategoryPercent(a);
     const pB = getCategoryPercent(b);
     
@@ -18,8 +24,6 @@ export const sortCategoriesAsc = (categories: (string | CategoryItem)[]): (strin
     }
     
     // If percentages are equal, sort alphabetically by name
-    const nameA = typeof a === 'string' ? a : a.name;
-    const nameB = typeof b === 'string' ? b : b.name;
     return nameA.localeCompare(nameB);
   });
 };

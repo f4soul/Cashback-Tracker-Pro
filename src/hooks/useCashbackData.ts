@@ -54,7 +54,7 @@ export function useCashbackData(
   const archiveData = useMemo(
     () =>
       allData
-        .filter((d) => d.monthId !== currentMonthId)
+        .filter((d) => d.monthId < currentMonthId)
         .sort((a, b) => b.monthId.localeCompare(a.monthId)),
     [allData, currentMonthId],
   );
