@@ -9,6 +9,7 @@ import { MccDirectory } from '../components/MccDirectory';
 import { VersionHistory } from '../components/VersionHistory';
 import { Modal } from '../components/ui/Modal';
 import { toast } from 'sonner';
+import { motion } from 'motion/react';
 
 interface SettingsProps {
   settings: AppSettings;
@@ -112,9 +113,20 @@ export const Settings: React.FC<SettingsProps> = memo(({
 
   return (
     <div className="flex flex-col gap-4 pb-8">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <motion.div className="grid grid-cols-1 lg:grid-cols-2 gap-4"
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1 }
+          }
+        }}>
         {/* MCC Directory Card - Order 1 */}
-        <div className="bg-white dark:bg-[#0A0A0A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-1">
+        <motion.div
+          variants={{ hidden: { opacity: 0, y: 15 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.32, 0.72, 0, 1] } } }}
+          className="bg-white dark:bg-[var(--surface-0)] rounded-3xl border border-slate-100 dark:border-[var(--border-hairline)] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-1">
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Search className="w-4 h-4 text-[var(--accent-color)]" />
@@ -125,16 +137,18 @@ export const Settings: React.FC<SettingsProps> = memo(({
           <div className="flex-1 flex items-center">
             <button
               onClick={() => setIsMccDirectoryOpen(true)}
-              className="w-full py-3.5 px-4 bg-[#FAFAFA] dark:bg-[#111] hover:bg-white dark:hover:bg-[#1A1A1A] border border-slate-100 dark:border-white/5 rounded-[1.25rem] text-[10px] font-black text-[var(--accent-color)] uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-none hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] active:scale-95"
+              className="w-full py-3.5 px-4 bg-[var(--surface-0)] dark:bg-[var(--surface-1)] hover:bg-white dark:hover:bg-[var(--surface-2)] border border-slate-100 dark:border-[var(--border-hairline)] rounded-3xl text-[10px] font-black text-[var(--accent-color)] uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-none hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] active:scale-95"
             >
               <Search className="w-3.5 h-3.5 shrink-0" />
               <span className="leading-none mt-[1px]">Открыть справочник</span>
             </button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Accent Color Card - Order 3 on mobile, 2 on desktop */}
-        <div className="bg-white dark:bg-[#0A0A0A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-3 lg:order-2">
+        <motion.div
+          variants={{ hidden: { opacity: 0, y: 15 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.32, 0.72, 0, 1] } } }}
+          className="bg-white dark:bg-[var(--surface-0)] rounded-3xl border border-slate-100 dark:border-[var(--border-hairline)] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-3 lg:order-2">
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Palette className="w-4 h-4 text-[var(--accent-color)]" />
@@ -181,10 +195,12 @@ export const Settings: React.FC<SettingsProps> = memo(({
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Logo Shape Card - Order 2 on mobile, 3 on desktop */}
-        <div className="bg-white dark:bg-[#0A0A0A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-2 lg:order-3">
+        <motion.div
+          variants={{ hidden: { opacity: 0, y: 15 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.32, 0.72, 0, 1] } } }}
+          className="bg-white dark:bg-[var(--surface-0)] rounded-3xl border border-slate-100 dark:border-[var(--border-hairline)] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-2 lg:order-3">
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Circle className="w-4 h-4 text-[var(--accent-color)]" />
@@ -193,7 +209,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
           </div>
           
           <div className="flex-1 flex items-center">
-            <div className="flex p-1 bg-white dark:bg-[#1A1A1A] rounded-[1.25rem] border border-slate-100 dark:border-white/5 shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] w-full">
+            <div className="flex p-1 bg-white dark:bg-[var(--surface-2)] rounded-2xl border border-slate-100 dark:border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] w-full">
               {(['circle', 'square', 'rectangle'] as LogoShape[]).map((shape) => (
                 <button
                   key={shape}
@@ -202,7 +218,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
                     "flex-1 flex items-center justify-center py-2.5 rounded-xl transition-all cursor-pointer active:scale-95",
                     settings.logoShape === shape
                       ? "bg-slate-50 dark:bg-white/[0.05] shadow-sm border border-slate-100 dark:border-transparent text-[var(--accent-color)]"
-                      : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 border border-transparent"
+                      : "text-slate-400 hover:text-slate-600 dark:hover:text-[var(--text-primary)] border border-transparent"
                   )}
                 >
                   <div className={clsx(
@@ -215,10 +231,12 @@ export const Settings: React.FC<SettingsProps> = memo(({
               ))}
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Text Color Card - Order 4 */}
-        <div className="bg-white dark:bg-[#0A0A0A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-4">
+        <motion.div
+          variants={{ hidden: { opacity: 0, y: 15 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.32, 0.72, 0, 1] } } }}
+          className="bg-white dark:bg-[var(--surface-0)] rounded-3xl border border-slate-100 dark:border-[var(--border-hairline)] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-4">
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Type className="w-4 h-4 text-[var(--accent-color)]" />
@@ -234,7 +252,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
                   type="button"
                   onClick={() => updateSetting('fontColor', color.value)}
                   className={clsx(
-                    "aspect-square rounded-full transition-all flex items-center justify-center relative border border-gray-100 dark:border-white/10 cursor-pointer shrink-0",
+                    "aspect-square rounded-full transition-all flex items-center justify-center relative border border-gray-100 dark:border-[var(--border-strong)] cursor-pointer shrink-0",
                     settings.fontColor === color.value
                       ? "scale-95 shadow-md ring-2 ring-inset ring-white/40 dark:ring-white/20"
                       : "hover:scale-105 opacity-90 hover:opacity-100",
@@ -258,38 +276,13 @@ export const Settings: React.FC<SettingsProps> = memo(({
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
 
-        {/* Border Radius Card - Order 5 */}
-        <div className="bg-white dark:bg-[#0A0A0A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col gap-3 order-5">
-          <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
-            <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
-              <RotateCcw className="w-4 h-4 text-[var(--accent-color)] rotate-90" />
-            </div>
-            <h2 className="text-sm">Скругление углов</h2>
-          </div>
-
-          <div className="flex-1 flex flex-col justify-center gap-2">
-            <div className="flex items-center justify-between text-xs font-bold text-gray-500 dark:text-[var(--text-secondary)]">
-              <span>8px</span>
-              <span className="text-[var(--accent-color)] font-mono">{settings.radius ?? 20}px</span>
-              <span>28px</span>
-            </div>
-            <input
-              type="range"
-              min="8"
-              max="28"
-              step="1"
-              value={settings.radius ?? 20}
-              onChange={(e) => updateSetting('radius', parseInt(e.target.value, 10))}
-              className="w-full h-1 bg-gray-200 dark:bg-[var(--surface-2)] rounded-lg appearance-none cursor-pointer accent-[var(--accent-color)]"
-            />
-          </div>
-        </div>
-
-        {/* Export Card - Order 6 */}
-        <div className={`bg-white dark:bg-[#0A0A0A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] space-y-3 ${isAdmin ? 'order-7 lg:col-span-1' : 'order-6 lg:col-span-2'}`}>
+        {/* Export Card - Order 5 */}
+        <motion.div 
+          variants={{ hidden: { opacity: 0, y: 15 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.32, 0.72, 0, 1] } } }}
+          className={`bg-white dark:bg-[var(--surface-0)] rounded-3xl border border-slate-100 dark:border-[var(--border-hairline)] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] space-y-3 ${isAdmin ? 'order-6 lg:col-span-1' : 'order-5 lg:col-span-2'}`}>
           <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
             <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
               <Download className="w-4 h-4 text-[var(--accent-color)]" />
@@ -297,7 +290,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
             <h2 className="text-sm border-transparent mt-[1px]">Экспорт данных</h2>
           </div>
           
-          <div className="flex p-1 gap-1 bg-white dark:bg-[#1A1A1A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)]">
+          <div className="flex p-1 gap-1 bg-white dark:bg-[var(--surface-2)] rounded-2xl border border-slate-100 dark:border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)]">
             <button 
               onClick={handleExportImage}
               className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.02] hover:shadow-sm dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] border border-transparent dark:hover:border-white/5 transition-all group cursor-pointer active:scale-95"
@@ -350,11 +343,13 @@ export const Settings: React.FC<SettingsProps> = memo(({
               />
             </button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Admin Cards - Order 6 */}
         {isAdmin && (
-          <div className="bg-white dark:bg-[#0A0A0A] rounded-[var(--radius-app)] border border-slate-100 dark:border-white/5 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col justify-between min-h-full space-y-3 order-6">
+          <motion.div
+          variants={{ hidden: { opacity: 0, y: 15 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.32, 0.72, 0, 1] } } }}
+          className="bg-white dark:bg-[var(--surface-0)] rounded-3xl border border-slate-100 dark:border-[var(--border-hairline)] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] flex flex-col justify-between min-h-full space-y-3 order-6">
             <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black uppercase tracking-tight">
               <div className="w-8 h-8 rounded-xl bg-[var(--accent-color)]/10 flex items-center justify-center">
                 <FileText className="w-4 h-4 text-[var(--accent-color)]" />
@@ -364,14 +359,14 @@ export const Settings: React.FC<SettingsProps> = memo(({
             
             <button
               onClick={() => setIsVersionHistoryOpen(true)}
-              className="w-full mt-auto py-3.5 px-4 bg-[#FAFAFA] dark:bg-[#111] hover:bg-white dark:hover:bg-[#1A1A1A] border border-slate-100 dark:border-white/5 rounded-[1.25rem] text-[10px] font-black text-[var(--accent-color)] uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-none hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] active:scale-95"
+              className="w-full mt-auto py-3.5 px-4 bg-[var(--surface-0)] dark:bg-[var(--surface-1)] hover:bg-white dark:hover:bg-[var(--surface-2)] border border-slate-100 dark:border-[var(--border-hairline)] rounded-3xl text-[10px] font-black text-[var(--accent-color)] uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-none hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] active:scale-95"
             >
               <FileText className="w-3.5 h-3.5 shrink-0" />
               <span className="leading-none mt-[1px]">Посмотреть обновления</span>
             </button>
-          </div>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
 
 
       {/* Hidden table for export */}

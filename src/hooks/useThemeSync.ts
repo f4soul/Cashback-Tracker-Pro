@@ -11,7 +11,6 @@ export function useThemeSync(activeTab: 'current' | 'archive' | 'settings') {
     percentBlockBg: '#ecfdf5', // emerald-50
     percentBlockText: '#047857', // emerald-700
     fontColor: '#6b7280', // gray-500
-    radius: 20,
   });
 
   // Apply theme and custom styles to document with extra robustness for iOS Safari / PWA status bar
@@ -35,9 +34,8 @@ export function useThemeSync(activeTab: 'current' | 'archive' | 'settings') {
       root.style.setProperty('--percent-text', settings.percentBlockText);
     }
     root.style.setProperty('--app-font-color', settings.fontColor);
-    root.style.setProperty('--radius-app', (settings.radius ?? 20) + 'px');
 
-    const targetColor = isDark ? '#0A0A0A' : '#FAFAFA';
+    const targetColor = isDark ? '#000000' : '#FAFAFA';
 
     const syncColorsAndMetaTags = () => {
       // Style both root document and body elements to prevent unstyled body backgrounds on iOS elastic scrolls

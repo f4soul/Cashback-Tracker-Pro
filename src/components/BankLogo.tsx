@@ -46,7 +46,7 @@ export const BankLogo: React.FC<BankLogoProps> = memo(({
     return (
       <div
         className={clsx(
-          "flex items-center justify-center shrink-0 border border-slate-200/50 dark:border-white/10 bg-transparent shadow-sm overflow-hidden",
+          "flex items-center justify-center shrink-0 border border-slate-200/50 dark:border-[var(--border-strong)] bg-transparent shadow-sm overflow-hidden",
           sizeClasses[size],
           shapeClasses[logoShape],
           className
@@ -67,7 +67,7 @@ export const BankLogo: React.FC<BankLogoProps> = memo(({
   return (
     <div
       className={clsx(
-        "flex items-center justify-center text-white font-bold shadow-sm shrink-0 border border-slate-200/50 dark:border-white/10 overflow-hidden",
+        "flex items-center justify-center text-white font-bold shadow-sm shrink-0 border border-slate-200/50 dark:border-[var(--border-strong)] overflow-hidden",
         sizeClasses[size],
         shapeClasses[logoShape],
         className

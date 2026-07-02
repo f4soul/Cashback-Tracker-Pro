@@ -79,8 +79,8 @@ const AuthButton = ({
           className={clsx(
             'flex items-center group transition-all',
             isMobile
-              ? 'relative w-9 h-9 justify-center bg-slate-50 dark:bg-[#111] border border-slate-100 dark:border-white/5 rounded-full cursor-pointer shadow-sm hover:bg-slate-100 dark:hover:bg-white/10 active:scale-95'
-              : 'px-4 py-3 bg-gray-100/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/5 w-full gap-3 rounded-2xl',
+              ? 'relative w-9 h-9 justify-center bg-slate-50 dark:bg-[var(--surface-1)] border border-slate-100 dark:border-[var(--border-hairline)] rounded-full cursor-pointer shadow-sm hover:bg-slate-100 dark:hover:bg-white/10 active:scale-95'
+              : 'px-4 py-3 bg-gray-100/50 dark:bg-white/5 border border-gray-200/50 dark:border-[var(--border-hairline)] w-full gap-3 rounded-2xl',
           )}
         >
           {isSyncing && isMobile && (
@@ -304,7 +304,7 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-[100dvh] bg-[#FAFAFA] dark:bg-[#0A0A0A] font-sans transition-colors duration-300 flex flex-col md:flex-row">
+    <div className="min-h-[100dvh] bg-[var(--surface-0)] dark:bg-[var(--surface-0)] font-sans transition-colors duration-300 flex flex-col md:flex-row">
       <ConfirmModal
         isOpen={isLogoutModalOpen}
         onClose={() => setIsLogoutModalOpen(false)}
@@ -338,7 +338,7 @@ export default function App() {
         }}
       />
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-[280px] h-[100dvh] sticky top-0 bg-white dark:bg-[#111] border-r border-slate-100 dark:border-white/5 z-40 shrink-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
+      <aside className="hidden md:flex flex-col w-[280px] h-[100dvh] sticky top-0 bg-white dark:bg-[var(--surface-1)] border-r border-slate-100 dark:border-[var(--border-hairline)] z-40 shrink-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
         <div className="px-6 py-10 flex flex-col h-full">
           <div className="flex items-center mb-12 px-1">
             <div className="flex items-center gap-3 flex-1">
@@ -356,7 +356,7 @@ export default function App() {
             </div>
             <button
               onClick={toggleTheme}
-              className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-[#1A1A1A] border border-slate-100 dark:border-white/5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 transition-all active:scale-95 cursor-pointer flex items-center justify-center shadow-sm"
+              className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-[var(--surface-2)] border border-slate-100 dark:border-[var(--border-hairline)] text-slate-500 dark:text-[var(--text-secondary)] hover:bg-slate-100 dark:hover:bg-white/10 transition-all active:scale-95 cursor-pointer flex items-center justify-center shadow-sm"
               title={
                 theme === 'light'
                   ? 'Включить темную тему'
@@ -378,7 +378,7 @@ export default function App() {
                 'flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
                 activeTab === 'current'
                   ? 'bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 border border-transparent'
-                  : 'text-slate-500 dark:text-slate-400 hover:bg-white/80 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white hover:border-[var(--accent-color)]/30 border border-transparent',
+                  : 'text-slate-500 dark:text-[var(--text-secondary)] hover:bg-white/80 dark:hover:bg-[var(--surface-2)]/50 hover:text-slate-900 dark:hover:text-[var(--text-primary)] hover:border-[var(--accent-color)]/30 border border-transparent',
               )}
             >
               <WalletIcon className="w-5 h-5 shrink-0" />
@@ -390,7 +390,7 @@ export default function App() {
                 'flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
                 activeTab === 'archive'
                   ? 'bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 border border-transparent'
-                  : 'text-slate-500 dark:text-slate-400 hover:bg-white/80 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white hover:border-[var(--accent-color)]/30 border border-transparent',
+                  : 'text-slate-500 dark:text-[var(--text-secondary)] hover:bg-white/80 dark:hover:bg-[var(--surface-2)]/50 hover:text-slate-900 dark:hover:text-[var(--text-primary)] hover:border-[var(--accent-color)]/30 border border-transparent',
               )}
             >
               <History className="w-5 h-5 shrink-0" />
@@ -402,7 +402,7 @@ export default function App() {
                 'flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
                 activeTab === 'settings'
                   ? 'bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 border border-transparent'
-                  : 'text-slate-500 dark:text-slate-400 hover:bg-white/80 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white hover:border-[var(--accent-color)]/30 border border-transparent',
+                  : 'text-slate-500 dark:text-[var(--text-secondary)] hover:bg-white/80 dark:hover:bg-[var(--surface-2)]/50 hover:text-slate-900 dark:hover:text-[var(--text-primary)] hover:border-[var(--accent-color)]/30 border border-transparent',
               )}
             >
               <SettingsIcon className="w-5 h-5 shrink-0" />
@@ -428,7 +428,7 @@ export default function App() {
           !headerVisible && '-translate-y-full',
         )}
       >
-        <div className="max-w-3xl mx-auto bg-white/95 dark:bg-[#1A1A1A]/95 backdrop-blur-2xl border border-slate-100 dark:border-white/5 rounded-2xl px-4 py-2.5 flex items-center justify-between shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)]">
+        <div className="max-w-3xl mx-auto bg-white/95 dark:bg-[var(--surface-2)]/95 backdrop-blur-2xl border border-slate-100 dark:border-[var(--border-hairline)] rounded-2xl px-4 py-2.5 flex items-center justify-between shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[var(--accent-color)] opacity-90 rounded-[22%] flex items-center justify-center shadow-sm">
               <WalletIcon className="w-7 h-7 text-white" />
@@ -453,7 +453,7 @@ export default function App() {
             />
             <button
               onClick={toggleTheme}
-              className="w-9 h-9 rounded-full bg-slate-50 dark:bg-[#111] border border-slate-100 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 transition-all active:scale-95 cursor-pointer flex items-center justify-center shadow-sm"
+              className="w-9 h-9 rounded-full bg-slate-50 dark:bg-[var(--surface-1)] border border-slate-100 dark:border-[var(--border-strong)] text-slate-500 dark:text-[var(--text-secondary)] hover:bg-slate-100 dark:hover:bg-white/10 transition-all active:scale-95 cursor-pointer flex items-center justify-center shadow-sm"
               title={
                 theme === 'light'
                   ? 'Включить темную тему'
@@ -560,7 +560,7 @@ export default function App() {
             height: navExpanded ? 68 : 56,
           }}
           transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-          className="w-full bg-white/95 dark:bg-[#1A1A1A]/95 backdrop-blur-2xl border border-slate-100 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.4)] flex items-center px-1 overflow-hidden"
+          className="w-full bg-white/90 dark:bg-[var(--surface-2)]/90 backdrop-blur-2xl border border-slate-100 dark:border-[var(--border-hairline)] shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.4)] flex items-center px-1 overflow-hidden"
           onClick={() => !navExpanded && setNavExpanded(true)}
         >
           <button
@@ -572,7 +572,7 @@ export default function App() {
               'flex-1 flex flex-col items-center justify-center h-full relative group cursor-pointer min-w-0',
               activeTab === 'current'
                 ? 'text-[var(--accent-color)]'
-                : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300',
+                : 'text-slate-500 dark:text-[var(--text-secondary)] hover:text-slate-900 dark:hover:text-[var(--text-primary)]',
             )}
           >
             <motion.div
@@ -580,7 +580,7 @@ export default function App() {
                 'p-1.5 rounded-xl flex items-center justify-center',
                 activeTab === 'current'
                   ? 'bg-[var(--accent-color)]/10 text-[var(--accent-color)]'
-                  : 'bg-transparent text-slate-500 dark:text-slate-400',
+                  : 'bg-transparent text-slate-500 dark:text-[var(--text-secondary)]',
               )}
               animate={{ scale: activeTab === 'current' ? 1.1 : 1 }}
               transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
@@ -619,7 +619,7 @@ export default function App() {
               'flex-1 flex flex-col items-center justify-center h-full relative group cursor-pointer min-w-0',
               activeTab === 'archive'
                 ? 'text-[var(--accent-color)]'
-                : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300',
+                : 'text-slate-500 dark:text-[var(--text-secondary)] hover:text-slate-900 dark:hover:text-[var(--text-primary)]',
             )}
           >
             <motion.div
@@ -627,7 +627,7 @@ export default function App() {
                 'p-1.5 rounded-xl flex items-center justify-center',
                 activeTab === 'archive'
                   ? 'bg-[var(--accent-color)]/10 text-[var(--accent-color)]'
-                  : 'bg-transparent text-slate-500 dark:text-slate-400',
+                  : 'bg-transparent text-slate-500 dark:text-[var(--text-secondary)]',
               )}
               animate={{ scale: activeTab === 'archive' ? 1.1 : 1 }}
               transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
@@ -666,7 +666,7 @@ export default function App() {
               'flex-1 flex flex-col items-center justify-center h-full relative group cursor-pointer min-w-0',
               activeTab === 'settings'
                 ? 'text-[var(--accent-color)]'
-                : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300',
+                : 'text-slate-500 dark:text-[var(--text-secondary)] hover:text-slate-900 dark:hover:text-[var(--text-primary)]',
             )}
           >
             <motion.div
@@ -674,7 +674,7 @@ export default function App() {
                 'p-1.5 rounded-xl flex items-center justify-center',
                 activeTab === 'settings'
                   ? 'bg-[var(--accent-color)]/10 text-[var(--accent-color)]'
-                  : 'bg-transparent text-slate-500 dark:text-slate-400',
+                  : 'bg-transparent text-slate-500 dark:text-[var(--text-secondary)]',
               )}
               animate={{ scale: activeTab === 'settings' ? 1.1 : 1 }}
               transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}

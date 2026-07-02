@@ -52,12 +52,12 @@ export class ErrorBoundary extends Component<Props, State> {
 
       return (
         <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50 dark:bg-[var(--surface-0)]">
-          <div className="max-w-md w-full bg-white/90 dark:bg-[var(--surface-1)]/90 backdrop-blur-2xl rounded-[var(--radius-app)] p-8 shadow-xl border border-[var(--border-hairline)] text-center">
+          <div className="max-w-md w-full bg-white/90 dark:bg-[var(--surface-1)]/90 backdrop-blur-2xl rounded-3xl p-8 shadow-xl border border-[var(--border-hairline)] text-center">
             <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner">
               <AlertCircle className="w-8 h-8 text-red-500" />
             </div>
             <h2 className="text-xl font-black uppercase tracking-tight text-slate-900 dark:text-white mb-2">Упс! Что-то пошло не так</h2>
-            <p className="text-slate-500 dark:text-slate-400 mb-8 text-sm font-semibold leading-relaxed">
+            <p className="text-slate-500 dark:text-[var(--text-secondary)] mb-8 text-sm font-semibold leading-relaxed">
               {errorMessage}
             </p>
             <button

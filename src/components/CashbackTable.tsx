@@ -1,3 +1,4 @@
+import { motion, AnimatePresence } from "motion/react";
 import React, { memo, useState, useEffect, useMemo } from 'react';
 import { CashbackEntry, Bank, LogoShape } from '../types';
 import { getBankDetails } from '../constants';
@@ -76,14 +77,14 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
     return (
       <div
         id={id}
-        className="bg-white dark:bg-[#0A0A0A] rounded-[var(--radius-app)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] border border-slate-100 dark:border-white/5 p-2 sm:p-4 w-full mx-auto overflow-hidden relative isolate"
+        className="bg-white dark:bg-[var(--surface-0)] rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] border border-slate-100 dark:border-[var(--border-hairline)] p-2 sm:p-4 w-full mx-auto overflow-hidden relative isolate"
       >
         <div className="relative z-10">
-          <div className="flex items-center justify-between mb-4 px-1 gap-2 flex-wrap">
+          <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
             <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
               {isAfter25 && allMonthIds.length > 1 ? (
                 <>
-                  <div className="flex bg-[#FAFAFA] dark:bg-[#111] rounded-[var(--radius-app)] p-0.5 shrink-0 [.pdf-export-mode_&]:hidden border border-slate-100 dark:border-white/5 shadow-sm translate-z-0 [backface-visibility:hidden]">
+                  <div className="flex bg-[var(--surface-0)] dark:bg-[var(--surface-1)] rounded-3xl p-0.5 shrink-0 [.pdf-export-mode_&]:hidden border border-slate-100 dark:border-[var(--border-hairline)] shadow-sm translate-z-0 [backface-visibility:hidden]">
                     {allMonthIds.map((mId) => (
                       <button
                         key={mId}
@@ -92,7 +93,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                           'px-3 py-1 rounded-xl text-[10px] font-black tracking-widest transition-all cursor-pointer',
                           (selectedMonthId || monthId) === mId
                             ? 'bg-[var(--accent-color)] text-white shadow-sm'
-                            : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300',
+                            : 'text-slate-500 hover:text-slate-700 dark:hover:text-[var(--text-primary)]',
                         )}
                       >
                         {capitalize(formatMonthId(mId).split(' ')[0])}
@@ -114,7 +115,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                   </span>
                 </h2>
               )}
-              <span className="text-[8px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 bg-white/60 dark:bg-white/5 backdrop-blur-md shadow-sm border border-slate-200/50 dark:border-white/10 px-2.5 py-1 rounded-xl shrink-0 translate-y-[1px] leading-none text-center flex items-center justify-center">
+              <span className="text-[8px] font-black uppercase tracking-widest text-slate-700 dark:text-[var(--text-secondary)] bg-white/60 dark:bg-white/5 backdrop-blur-md shadow-sm border border-slate-200/50 dark:border-[var(--border-strong)] px-2.5 py-1 rounded-xl shrink-0 translate-y-[1px] leading-none text-center flex items-center justify-center">
                 {formatMonthId(monthId).split(' ')[1]}
               </span>
               <button
@@ -139,7 +140,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
               {onExportImage && (
                 <button
                   onClick={onExportImage}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+                  className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-[var(--text-primary)] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
                   title="Изображение (PNG)"
                 >
                   <ImageIcon className="w-4 h-4" />
@@ -148,7 +149,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
               {onExportExcel && (
                 <button
                   onClick={onExportExcel}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+                  className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-[var(--text-primary)] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
                   title="Excel"
                 >
                   <FileSpreadsheet className="w-4 h-4" />
@@ -157,7 +158,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
               {onExportPDF && (
                 <button
                   onClick={onExportPDF}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+                  className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-[var(--text-primary)] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
                   title="PDF"
                 >
                   <FileText className="w-4 h-4" />
@@ -167,56 +168,62 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
           </div>
 
           {entries.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-8 text-center bg-[#FAFAFA] dark:bg-[#111] rounded-[var(--radius-app)] border border-dashed border-slate-200 dark:border-white/10">
-              <div className="w-16 h-16 bg-white/60 dark:bg-white/5 backdrop-blur-xl rounded-[var(--radius-app)] border border-slate-200/50 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] flex items-center justify-center mb-4">
+            <div className="flex flex-col items-center justify-center p-8 text-center bg-[var(--surface-0)] dark:bg-[var(--surface-1)] rounded-3xl border border-dashed border-slate-200 dark:border-[var(--border-strong)]">
+              <div className="w-16 h-16 bg-white/60 dark:bg-white/5 backdrop-blur-xl rounded-3xl border border-slate-200/50 dark:border-[var(--border-strong)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] flex items-center justify-center mb-4">
                 <span className="text-3xl drop-shadow-sm opacity-90">🏦</span>
               </div>
               <h3 className="text-base font-black text-slate-900 dark:text-white uppercase tracking-tight mb-1">
                 Нет данных
               </h3>
-              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+              <p className="text-xs font-semibold text-slate-500 dark:text-[var(--text-secondary)]">
                 Добавьте банки и категории кэшбека, чтобы увидеть таблицу
               </p>
             </div>
           ) : (
             <div className="flex flex-col gap-1">
-              {sortedEntries.map((entry) => {
-                const bank =
-                  getBankDetails(entry.bankId, entry.customBankName) ||
-                  (entry.bankId.startsWith('custom_')
-                    ? customBanks.find((b) => b.id === entry.bankId)
-                    : null) ||
-                  {
-                    id: entry.bankId,
-                    name: entry.customBankName || 'Удаленный банк',
-                    color: entry.customBankColor || '#64748b',
-                    logoText: entry.customBankLogoText || (entry.customBankName || 'Б').substring(0, 2).toUpperCase(),
-                    logoUrl: entry.customLogo
-                  };
+              <AnimatePresence mode="popLayout">
+                {sortedEntries.map((entry) => {
+                  const bank =
+                    getBankDetails(entry.bankId, entry.customBankName) ||
+                    (entry.bankId.startsWith('custom_')
+                      ? customBanks.find((b) => b.id === entry.bankId)
+                      : null) ||
+                    {
+                      id: entry.bankId,
+                      name: entry.customBankName || 'Удаленный банк',
+                      color: entry.customBankColor || '#64748b',
+                      logoText: entry.customBankLogoText || (entry.customBankName || 'Б').substring(0, 2).toUpperCase(),
+                      logoUrl: entry.customLogo
+                    };
 
-                const logoShape = globalLogoShape || 'circle';
+                  const logoShape = globalLogoShape || 'circle';
 
-                return (
-                  <div
-                    key={entry.id}
-                    className="flex flex-row items-stretch gap-2 p-1.5 rounded-[var(--radius-app)] bg-[#FAFAFA] dark:bg-[#111] border border-slate-100 dark:border-white/5 hover:bg-white dark:hover:bg-[#1A1A1A] hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-slate-200/50 dark:hover:border-white/10 transition-[background-color,border-color,box-shadow] duration-200 group isolate"
-                    role="row"
-                    aria-label={`Банк ${bank.name}`}
-                  >
-                    <div className="flex flex-col items-center justify-center gap-1 w-[76px] sm:w-[84px] shrink-0 border-r border-slate-100 dark:border-white/5 pr-2">
+                  return (
+                    <motion.div
+                      layout
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
+                      key={entry.id}
+                      className="flex flex-row items-stretch gap-2 p-1.5 rounded-2xl bg-[var(--surface-0)] dark:bg-[var(--surface-1)] border border-slate-100 dark:border-[var(--border-hairline)] hover:bg-white dark:hover:bg-[var(--surface-2)] hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-slate-200/50 dark:hover:border-white/10 transition-[background-color,border-color,box-shadow] duration-200 group isolate"
+                      role="row"
+                      aria-label={`Банк ${bank.name}`}
+                    >
+                      <div className="flex flex-col items-center justify-center gap-1 w-[76px] sm:w-[84px] shrink-0 border-r border-slate-100 dark:border-[var(--border-hairline)] pr-2">
                       <BankLogo
                         bank={bank}
                         customLogo={entry.customLogo}
                         logoShape={logoShape}
                         size="md"
                       />
-                      <span className="text-[8px] sm:text-[9px] font-black text-center text-slate-700 dark:text-slate-300 uppercase tracking-tight leading-tight w-full break-words">
+                      <span className="text-[8px] sm:text-[9px] font-black text-center text-slate-700 dark:text-[var(--text-secondary)] uppercase tracking-tight leading-tight w-full break-words">
                         {formatBankName(bank.name)}
                       </span>
                     </div>
 
                     <div className="flex flex-col justify-center flex-1 py-0.5 min-w-0">
-                      <div className="flex flex-col bg-white dark:bg-[#1A1A1A] border border-slate-100 dark:border-white/5 rounded-lg shadow-sm overflow-hidden w-full">
+                      <div className="flex flex-col bg-white dark:bg-[var(--surface-2)] border border-slate-100 dark:border-[var(--border-hairline)] rounded-lg shadow-sm overflow-hidden w-full">
                         {entry.sortedCategories.map((cat, idx, arr) => {
                           const name = typeof cat === 'string' ? cat : cat.name;
                           const percent =
@@ -244,9 +251,10 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                         })}
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
+              </AnimatePresence>
             </div>
           )}
 

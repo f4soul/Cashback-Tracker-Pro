@@ -37,7 +37,6 @@ export interface AppSettings {
   percentBlockBg: string;
   percentBlockText: string;
   fontColor: string;
-  radius: number;
 }
 
 export interface MonthData {
