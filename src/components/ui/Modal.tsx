@@ -68,7 +68,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, headerCont
               initial={variants.hidden}
               animate={variants.visible}
               exit={variants.exit}
-              transition={useBottomSheet ? { duration: 0.4, ease: [0.32, 0.72, 0, 1] } : { duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+              transition={useBottomSheet ? { type: 'spring', stiffness: 400, damping: 35, mass: 1 } : { type: 'spring', stiffness: 450, damping: 30, mass: 1 }}
               className={`bg-white/95 dark:bg-[var(--surface-2)]/95 backdrop-blur-2xl shadow-[var(--elevation-highlight),0_-20px_60px_rgba(0,0,0,0.1)] dark:shadow-[var(--elevation-highlight),0_-20px_60px_rgba(0,0,0,0.4)] md:shadow-[var(--elevation-highlight),0_20px_60px_rgba(0,0,0,0.1)] dark:md:shadow-[var(--elevation-highlight),0_20px_60px_rgba(0,0,0,0.4)] border-t md:border border-[var(--border-hairline)] overflow-hidden flex flex-col w-full pointer-events-auto transform translate-z-0 will-change-transform pb-[env(safe-area-inset-bottom)] md:pb-0 ${
                 useBottomSheet 
                   ? 'fixed bottom-0 rounded-t-3xl rounded-b-none max-w-[700px]' 

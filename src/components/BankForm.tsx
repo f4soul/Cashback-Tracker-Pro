@@ -293,11 +293,8 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                 const isCustom = bank.id.startsWith('custom_');
                 
                 return (
-                  <motion.div 
+                  <div 
                     key={bank.id} 
-                    initial={{ opacity: 0, scale: 0.9, y: 6 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    transition={{ type: 'spring', stiffness: 350, damping: 25 }}
                     className="relative group/bank"
                   >
                     <div
@@ -324,7 +321,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                         <X className="w-3 h-3" />
                       </button>
                     )}
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
@@ -414,11 +411,8 @@ export const BankForm: React.FC<BankFormProps> = memo(({
           {filteredCategories.map(cat => {
             const isSelected = selectedCategories.some(c => c.name === cat);
             return (
-              <motion.button
+              <button
                 key={cat}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 onClick={() => toggleCategory(cat)}
                 className={clsx(
                   "px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center cursor-pointer border",
@@ -428,20 +422,17 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                 )}
               >
                 {cat}
-              </motion.button>
+              </button>
             );
           })}
           {selectedCategories.filter(c => !allCategories.includes(c.name)).map(cat => (
-            <motion.button
+            <button
               key={cat.name}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
               onClick={() => toggleCategory(cat.name)}
               className="px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center bg-[var(--accent-color)] text-white border border-transparent shadow-md shadow-[var(--accent-color)]/20 cursor-pointer"
             >
               {cat.name}
-            </motion.button>
+            </button>
           ))}
         </div>
 

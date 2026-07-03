@@ -2,14 +2,10 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import { Modal } from './ui/Modal';
 import { MCC_DATA, MccItemType } from '../utils/mccData';
-import { motion, AnimatePresence } from 'motion/react';
 
 const MccItem: React.FC<{ item: MccItemType }> = ({ item }) => {
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.98, y: 6 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+    <div
       className="w-full bg-[var(--surface-0)] dark:bg-[var(--surface-1)] p-3.5 rounded-3xl border border-slate-100 dark:border-[var(--border-hairline)] flex items-center gap-3 shadow-sm text-left hover:border-[var(--accent-color)]/30 transition-all hover:bg-white dark:hover:bg-[var(--surface-2)] hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)]"
     >
       <div className="w-14 h-12 rounded-xl bg-[var(--surface-2)] dark:bg-[var(--surface-0)] flex items-center justify-center shrink-0">
@@ -23,7 +19,7 @@ const MccItem: React.FC<{ item: MccItemType }> = ({ item }) => {
           {item.group}
         </p>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
