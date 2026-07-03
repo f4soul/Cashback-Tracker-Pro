@@ -4,7 +4,7 @@ import { BANKS, COMMON_CATEGORIES, getBankDetails } from '../constants';
 import { BankLogo } from './BankLogo';
 import { Check, Plus, Search, Upload, X, Crop, Circle, Square, Squircle, Trash2 } from 'lucide-react';
 import { clsx } from 'clsx';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../utils/cropImage';
 import { ConfirmModal } from './ui/ConfirmModal';
@@ -289,17 +289,17 @@ export const BankForm: React.FC<BankFormProps> = memo(({
               )}
             </div>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-64 overflow-y-auto p-1 scrollbar-hide">
-              <AnimatePresence mode="popLayout">
+              <LayoutGroup>
                 {filteredBanks.map(bank => {
                   const isCustom = bank.id.startsWith('custom_');
                   
                   return (
                     <motion.div 
                       key={bank.id} 
-                      layout
+                      layout="position"
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
                       className="relative group/bank"
                     >
                       <div
@@ -329,7 +329,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                     </motion.div>
                   );
                 })}
-              </AnimatePresence>
+              </LayoutGroup>
             </div>
             {filteredBanks.length === 0 && searchQuery.trim() && (
               <button
@@ -414,16 +414,16 @@ export const BankForm: React.FC<BankFormProps> = memo(({
         </div>
         
         <div className="flex flex-wrap gap-1.5 sm:gap-2 max-h-64 overflow-y-auto p-1 scrollbar-hide">
-          <AnimatePresence mode="popLayout">
+          <LayoutGroup>
             {filteredCategories.map(cat => {
               const isSelected = selectedCategories.some(c => c.name === cat);
               return (
                 <motion.button
                   key={cat}
-                  layout
+                  layout="position"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
                   onClick={() => toggleCategory(cat)}
                   className={clsx(
                     "px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center cursor-pointer border",
@@ -439,17 +439,17 @@ export const BankForm: React.FC<BankFormProps> = memo(({
             {selectedCategories.filter(c => !allCategories.includes(c.name)).map(cat => (
               <motion.button
                 key={cat.name}
-                layout
+                layout="position"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
                 onClick={() => toggleCategory(cat.name)}
                 className="px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center bg-[var(--accent-color)] text-white border border-transparent shadow-md shadow-[var(--accent-color)]/20 cursor-pointer"
               >
                 {cat.name}
               </motion.button>
             ))}
-          </AnimatePresence>
+          </LayoutGroup>
         </div>
 
         <form onSubmit={handleAddCustom} className="flex gap-2 pt-1">

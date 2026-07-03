@@ -486,7 +486,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, del
       ) : (
         <LayoutGroup>
           <div className="flex flex-col gap-3 sm:gap-4">
-            <AnimatePresence mode="popLayout">
+            <AnimatePresence>
               {filteredData.map((month) => (
                 <MonthAccordion
                   key={month.monthId}

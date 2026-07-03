@@ -2,16 +2,15 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
 import { Modal } from './ui/Modal';
 import { MCC_DATA, MccItemType } from '../utils/mccData';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
 
 const MccItem: React.FC<{ item: MccItemType }> = ({ item }) => {
   return (
     <motion.div
-      layout
+      layout="position"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
       className="w-full bg-[var(--surface-0)] dark:bg-[var(--surface-1)] p-3.5 rounded-3xl border border-slate-100 dark:border-[var(--border-hairline)] flex items-center gap-3 shadow-sm text-left hover:border-[var(--accent-color)]/30 transition-all hover:bg-white dark:hover:bg-[var(--surface-2)] hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)]"
     >
       <div className="w-14 h-12 rounded-xl bg-[var(--surface-2)] dark:bg-[var(--surface-0)] flex items-center justify-center shrink-0">
@@ -89,9 +88,9 @@ export const MccDirectory: React.FC<MccDirectoryProps> = ({ isOpen, onClose }) =
     >
       <div className="space-y-2 pb-8 sm:pb-0">
         {filteredMcc.length > 0 ? (
-          <AnimatePresence mode="popLayout">
+          <LayoutGroup>
             {filteredMcc.map((item) => <MccItem key={item.code} item={item} />)}
-          </AnimatePresence>
+          </LayoutGroup>
         ) : (
           <div className="text-center py-10 space-y-4">
             <p className="text-sm font-medium text-gray-500 dark:text-[var(--text-secondary)]">
