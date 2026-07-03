@@ -9,7 +9,7 @@ import { Download, FileSpreadsheet, FileText, Image as ImageIcon, Search, Filter
 import { BANKS, COMMON_CATEGORIES, getBankDetails } from '../constants';
 import { BankLogo } from '../components/BankLogo';
 import { clsx } from 'clsx';
-import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface MonthAccordionProps {
   month: MonthData;
@@ -44,11 +44,9 @@ const MonthAccordion: React.FC<MonthAccordionProps> = memo(({
 
   return (
     <motion.div
-      layout="position"
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={transition}
+      initial={{ opacity: 0, scale: 0.98, y: 6 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ type: 'spring', stiffness: 350, damping: 25 }}
       className={containerCls}
     >
       <div
@@ -484,26 +482,24 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, del
           <p className="text-sm text-slate-500 dark:text-[var(--text-secondary)]">Попробуйте изменить параметры поиска или фильтры</p>
         </div>
       ) : (
-        <LayoutGroup>
-          <div className="flex flex-col gap-3 sm:gap-4">
-            <AnimatePresence>
-              {filteredData.map((month) => (
-                <MonthAccordion
-                  key={month.monthId}
-                  month={month}
-                  isExpanded={expandedMonths.has(month.monthId)}
-                  toggleMonth={toggleMonth}
-                  handleDeleteMonthClick={handleDeleteMonthClick}
-                  customBanks={allCustomBanks}
-                  globalLogoShape={globalLogoShape}
-                  handleExportImage={handleExportImage}
-                  handleExportExcel={handleExportExcel}
-                  handleExport={handleExport}
-                />
-              ))}
-            </AnimatePresence>
-          </div>
-        </LayoutGroup>
+        <div className="flex flex-col gap-3 sm:gap-4">
+          <AnimatePresence>
+            {filteredData.map((month) => (
+              <MonthAccordion
+                key={month.monthId}
+                month={month}
+                isExpanded={expandedMonths.has(month.monthId)}
+                toggleMonth={toggleMonth}
+                handleDeleteMonthClick={handleDeleteMonthClick}
+                customBanks={allCustomBanks}
+                globalLogoShape={globalLogoShape}
+                handleExportImage={handleExportImage}
+                handleExportExcel={handleExportExcel}
+                handleExport={handleExport}
+              />
+            ))}
+          </AnimatePresence>
+        </div>
       )}
       {/* Delete Confirmation Modal */}
       <ConfirmModal

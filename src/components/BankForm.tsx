@@ -4,7 +4,7 @@ import { BANKS, COMMON_CATEGORIES, getBankDetails } from '../constants';
 import { BankLogo } from './BankLogo';
 import { Check, Plus, Search, Upload, X, Crop, Circle, Square, Squircle, Trash2 } from 'lucide-react';
 import { clsx } from 'clsx';
-import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../utils/cropImage';
 import { ConfirmModal } from './ui/ConfirmModal';
@@ -289,47 +289,44 @@ export const BankForm: React.FC<BankFormProps> = memo(({
               )}
             </div>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-64 overflow-y-auto p-1 scrollbar-hide">
-              <LayoutGroup>
-                {filteredBanks.map(bank => {
-                  const isCustom = bank.id.startsWith('custom_');
-                  
-                  return (
-                    <motion.div 
-                      key={bank.id} 
-                      layout="position"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.2, ease: "easeOut" }}
-                      className="relative group/bank"
+              {filteredBanks.map(bank => {
+                const isCustom = bank.id.startsWith('custom_');
+                
+                return (
+                  <motion.div 
+                    key={bank.id} 
+                    initial={{ opacity: 0, scale: 0.9, y: 6 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+                    className="relative group/bank"
+                  >
+                    <div
+                      onClick={() => setSelectedBankId(bank.id)}
+                      className="w-full aspect-square flex flex-col items-center justify-center gap-1 p-1.5 rounded-3xl border border-slate-100 dark:border-[var(--border-hairline)] hover:border-[var(--accent-color)]/50 hover:bg-[var(--percent-bg)]/30 transition-all cursor-pointer group shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] hover:shadow-md"
                     >
-                      <div
-                        onClick={() => setSelectedBankId(bank.id)}
-                        className="w-full aspect-square flex flex-col items-center justify-center gap-1 p-1.5 rounded-3xl border border-slate-100 dark:border-[var(--border-hairline)] hover:border-[var(--accent-color)]/50 hover:bg-[var(--percent-bg)]/30 transition-all cursor-pointer group shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] hover:shadow-md"
-                      >
-                        <BankLogo 
-                          bank={bank} 
-                          logoShape={globalLogoShape} 
-                          size="md"
-                        />
-                        <div className="flex items-center justify-center w-full px-0.5">
-                          <span className="text-[9px] sm:text-[10px] font-bold text-center text-gray-600 dark:text-[var(--text-secondary)] uppercase tracking-tight group-hover:text-gray-900 dark:group-hover:text-white transition-colors break-words leading-tight line-clamp-2" title={bank.name}>{bank.name}</span>
-                        </div>
+                      <BankLogo 
+                        bank={bank} 
+                        logoShape={globalLogoShape} 
+                        size="md"
+                      />
+                      <div className="flex items-center justify-center w-full px-0.5">
+                        <span className="text-[9px] sm:text-[10px] font-bold text-center text-gray-600 dark:text-[var(--text-secondary)] uppercase tracking-tight group-hover:text-gray-900 dark:group-hover:text-white transition-colors break-words leading-tight line-clamp-2" title={bank.name}>{bank.name}</span>
                       </div>
-                      {isCustom && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setBankToDelete(bank.id);
-                          }}
-                          className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover/bank:opacity-100 transition-opacity shadow-md hover:bg-red-600 z-10 cursor-pointer"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      )}
-                    </motion.div>
-                  );
-                })}
-              </LayoutGroup>
+                    </div>
+                    {isCustom && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setBankToDelete(bank.id);
+                        }}
+                        className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover/bank:opacity-100 transition-opacity shadow-md hover:bg-red-600 z-10 cursor-pointer"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
+                  </motion.div>
+                );
+              })}
             </div>
             {filteredBanks.length === 0 && searchQuery.trim() && (
               <button
@@ -414,42 +411,38 @@ export const BankForm: React.FC<BankFormProps> = memo(({
         </div>
         
         <div className="flex flex-wrap gap-1.5 sm:gap-2 max-h-64 overflow-y-auto p-1 scrollbar-hide">
-          <LayoutGroup>
-            {filteredCategories.map(cat => {
-              const isSelected = selectedCategories.some(c => c.name === cat);
-              return (
-                <motion.button
-                  key={cat}
-                  layout="position"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.2, ease: "easeOut" }}
-                  onClick={() => toggleCategory(cat)}
-                  className={clsx(
-                    "px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center cursor-pointer border",
-                    isSelected
-                      ? "bg-[var(--accent-color)] text-white border-transparent shadow-md shadow-[var(--accent-color)]/20"
-                      : "bg-[var(--surface-0)] dark:bg-[var(--surface-1)] text-slate-600 dark:text-[var(--text-secondary)] hover:bg-white dark:hover:bg-[var(--surface-2)] border-slate-100 dark:border-[var(--border-hairline)] shadow-sm"
-                  )}
-                >
-                  {cat}
-                </motion.button>
-              );
-            })}
-            {selectedCategories.filter(c => !allCategories.includes(c.name)).map(cat => (
+          {filteredCategories.map(cat => {
+            const isSelected = selectedCategories.some(c => c.name === cat);
+            return (
               <motion.button
-                key={cat.name}
-                layout="position"
-                initial={{ opacity: 0, scale: 0.9 }}
+                key={cat}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-                onClick={() => toggleCategory(cat.name)}
-                className="px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center bg-[var(--accent-color)] text-white border border-transparent shadow-md shadow-[var(--accent-color)]/20 cursor-pointer"
+                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                onClick={() => toggleCategory(cat)}
+                className={clsx(
+                  "px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center cursor-pointer border",
+                  isSelected
+                    ? "bg-[var(--accent-color)] text-white border-transparent shadow-md shadow-[var(--accent-color)]/20"
+                    : "bg-[var(--surface-0)] dark:bg-[var(--surface-1)] text-slate-600 dark:text-[var(--text-secondary)] hover:bg-white dark:hover:bg-[var(--surface-2)] border-slate-100 dark:border-[var(--border-hairline)] shadow-sm"
+                )}
               >
-                {cat.name}
+                {cat}
               </motion.button>
-            ))}
-          </LayoutGroup>
+            );
+          })}
+          {selectedCategories.filter(c => !allCategories.includes(c.name)).map(cat => (
+            <motion.button
+              key={cat.name}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+              onClick={() => toggleCategory(cat.name)}
+              className="px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center bg-[var(--accent-color)] text-white border border-transparent shadow-md shadow-[var(--accent-color)]/20 cursor-pointer"
+            >
+              {cat.name}
+            </motion.button>
+          ))}
         </div>
 
         <form onSubmit={handleAddCustom} className="flex gap-2 pt-1">

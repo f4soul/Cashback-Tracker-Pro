@@ -1,16 +1,15 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import { Modal } from './ui/Modal';
 import { MCC_DATA, MccItemType } from '../utils/mccData';
-import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 
 const MccItem: React.FC<{ item: MccItemType }> = ({ item }) => {
   return (
     <motion.div
-      layout="position"
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
+      initial={{ opacity: 0, scale: 0.98, y: 6 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ type: 'spring', stiffness: 350, damping: 25 }}
       className="w-full bg-[var(--surface-0)] dark:bg-[var(--surface-1)] p-3.5 rounded-3xl border border-slate-100 dark:border-[var(--border-hairline)] flex items-center gap-3 shadow-sm text-left hover:border-[var(--accent-color)]/30 transition-all hover:bg-white dark:hover:bg-[var(--surface-2)] hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)]"
     >
       <div className="w-14 h-12 rounded-xl bg-[var(--surface-2)] dark:bg-[var(--surface-0)] flex items-center justify-center shrink-0">
@@ -35,12 +34,20 @@ interface MccDirectoryProps {
 
 export const MccDirectory: React.FC<MccDirectoryProps> = ({ isOpen, onClose }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [displayLimit, setDisplayLimit] = useState(30);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!isOpen) {
       setSearchQuery('');
+      setDisplayLimit(30);
     }
   }, [isOpen]);
+
+  // Reset limit when query changes
+  useEffect(() => {
+    setDisplayLimit(30);
+  }, [searchQuery]);
 
   const filteredMcc = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
@@ -53,6 +60,35 @@ export const MccDirectory: React.FC<MccDirectoryProps> = ({ isOpen, onClose }) =
         item.group.toLowerCase().includes(query)
     );
   }, [searchQuery]);
+
+  const displayedMcc = useMemo(() => {
+    return filteredMcc.slice(0, displayLimit);
+  }, [filteredMcc, displayLimit]);
+
+  // Setup infinite scroll observer
+  useEffect(() => {
+    if (!isOpen || displayLimit >= filteredMcc.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setDisplayLimit((prev) => Math.min(prev + 30, filteredMcc.length));
+        }
+      },
+      { rootMargin: '150px' }
+    );
+
+    const currentSentinel = sentinelRef.current;
+    if (currentSentinel) {
+      observer.observe(currentSentinel);
+    }
+
+    return () => {
+      if (currentSentinel) {
+        observer.unobserve(currentSentinel);
+      }
+    };
+  }, [isOpen, displayLimit, filteredMcc.length]);
 
   const searchHeader = (
     <div className="px-4 py-3 border-b border-slate-100 dark:border-[var(--border-hairline)] shrink-0 bg-transparent">
@@ -87,10 +123,17 @@ export const MccDirectory: React.FC<MccDirectoryProps> = ({ isOpen, onClose }) =
       isFixedHeight={true}
     >
       <div className="space-y-2 pb-8 sm:pb-0">
-        {filteredMcc.length > 0 ? (
-          <LayoutGroup>
-            {filteredMcc.map((item) => <MccItem key={item.code} item={item} />)}
-          </LayoutGroup>
+        {displayedMcc.length > 0 ? (
+          <>
+            {displayedMcc.map((item) => (
+              <MccItem key={item.code} item={item} />
+            ))}
+            {displayLimit < filteredMcc.length && (
+              <div ref={sentinelRef} className="h-10 w-full flex items-center justify-center text-xs text-slate-400 font-semibold py-2">
+                Загрузка...
+              </div>
+            )}
+          </>
         ) : (
           <div className="text-center py-10 space-y-4">
             <p className="text-sm font-medium text-gray-500 dark:text-[var(--text-secondary)]">

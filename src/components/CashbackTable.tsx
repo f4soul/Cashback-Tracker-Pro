@@ -1,4 +1,4 @@
-import { motion, AnimatePresence, LayoutGroup } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import React, { memo, useState, useEffect, useMemo } from 'react';
 import { CashbackEntry, Bank, LogoShape } from '../types';
 import { getBankDetails } from '../constants';
@@ -181,34 +181,32 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
             </div>
           ) : (
             <div className="flex flex-col gap-1">
-              <LayoutGroup>
-                {sortedEntries.map((entry) => {
-                  const bank =
-                    getBankDetails(entry.bankId, entry.customBankName) ||
-                    (entry.bankId.startsWith('custom_')
-                      ? customBanks.find((b) => b.id === entry.bankId)
-                      : null) ||
-                    {
-                      id: entry.bankId,
-                      name: entry.customBankName || 'Удаленный банк',
-                      color: entry.customBankColor || '#64748b',
-                      logoText: entry.customBankLogoText || (entry.customBankName || 'Б').substring(0, 2).toUpperCase(),
-                      logoUrl: entry.customLogo
-                    };
+              {sortedEntries.map((entry) => {
+                const bank =
+                  getBankDetails(entry.bankId, entry.customBankName) ||
+                  (entry.bankId.startsWith('custom_')
+                    ? customBanks.find((b) => b.id === entry.bankId)
+                    : null) ||
+                  {
+                    id: entry.bankId,
+                    name: entry.customBankName || 'Удаленный банк',
+                    color: entry.customBankColor || '#64748b',
+                    logoText: entry.customBankLogoText || (entry.customBankName || 'Б').substring(0, 2).toUpperCase(),
+                    logoUrl: entry.customLogo
+                  };
 
-                  const logoShape = globalLogoShape || 'circle';
+                const logoShape = globalLogoShape || 'circle';
 
-                  return (
-                    <motion.div
-                      layout="position"
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
-                      key={entry.id}
-                      className="flex flex-row items-stretch gap-2 p-1.5 rounded-2xl bg-[var(--surface-0)] dark:bg-[var(--surface-1)] border border-slate-100 dark:border-[var(--border-hairline)] hover:bg-white dark:hover:bg-[var(--surface-2)] hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-slate-200/50 dark:hover:border-white/10 transition-[background-color,border-color,box-shadow] duration-200 group isolate"
-                      role="row"
-                      aria-label={`Банк ${bank.name}`}
-                    >
+                return (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.98, y: 6 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+                    key={entry.id}
+                    className="flex flex-row items-stretch gap-2 p-1.5 rounded-2xl bg-[var(--surface-0)] dark:bg-[var(--surface-1)] border border-slate-100 dark:border-[var(--border-hairline)] hover:bg-white dark:hover:bg-[var(--surface-2)] hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-slate-200/50 dark:hover:border-white/10 transition-[background-color,border-color,box-shadow] duration-200 group isolate"
+                    role="row"
+                    aria-label={`Банк ${bank.name}`}
+                  >
                       <div className="flex flex-col items-center justify-center gap-1 w-[76px] sm:w-[84px] shrink-0 border-r border-slate-100 dark:border-[var(--border-hairline)] pr-2">
                       <BankLogo
                         bank={bank}
@@ -253,7 +251,6 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                   </motion.div>
                 );
               })}
-              </LayoutGroup>
             </div>
           )}
 

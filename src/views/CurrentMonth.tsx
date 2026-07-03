@@ -602,7 +602,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                     setIsModalOpen(true);
                   }}
                   title="Добавить банк"
-                  className="w-14 h-14 bg-[var(--accent-color)] text-white rounded-3xl flex items-center justify-center shadow-lg shadow-[var(--accent-color)]/30 hover:shadow-[var(--accent-color)]/40 transition-all opacity-95 hover:opacity-100 cursor-pointer active:scale-95"
+                  className="w-14 h-14 bg-[var(--accent-color)] text-white rounded-2xl flex items-center justify-center shadow-lg shadow-[var(--accent-color)]/30 hover:shadow-[var(--accent-color)]/40 transition-all opacity-95 hover:opacity-100 cursor-pointer active:scale-95"
                 >
                   <Plus className="w-7 h-7" />
                 </button>
@@ -658,7 +658,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   );
                   setYOffset(snappedY);
                 }}
-                className="fixed pwa-fab-bottom w-4 h-14 bg-[var(--accent-color)]/40 hover:bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-2xl transition-colors touch-none select-none backdrop-blur-md"
+                className="fixed pwa-fab-bottom w-5 h-14 bg-[var(--accent-color)]/40 hover:bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-2xl transition-colors touch-none select-none backdrop-blur-md"
                 style={{ right: 0, willChange: 'transform, opacity' }}
                 title="Показать кнопку (перетащите вертикально)"
               >
