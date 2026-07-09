@@ -69,17 +69,17 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, headerCont
               animate={variants.visible}
               exit={variants.exit}
               transition={useBottomSheet ? { type: 'spring', stiffness: 400, damping: 35, mass: 1 } : { type: 'spring', stiffness: 450, damping: 30, mass: 1 }}
-              className={`bg-white/95 dark:bg-[var(--surface-2)]/95 backdrop-blur-2xl shadow-[var(--elevation-highlight),0_-20px_60px_rgba(0,0,0,0.1)] dark:shadow-[var(--elevation-highlight),0_-20px_60px_rgba(0,0,0,0.4)] md:shadow-[var(--elevation-highlight),0_20px_60px_rgba(0,0,0,0.1)] dark:md:shadow-[var(--elevation-highlight),0_20px_60px_rgba(0,0,0,0.4)] border-t md:border border-[var(--border-hairline)] overflow-hidden flex flex-col w-full pointer-events-auto transform translate-z-0 will-change-transform pb-[env(safe-area-inset-bottom)] md:pb-0 ${
+              className={`bg-white/95 dark:bg-[var(--surface-2)]/95 backdrop-blur-2xl shadow-[var(--elevation-highlight),0_-20px_60px_rgba(0,0,0,0.1)] dark:shadow-[var(--elevation-highlight),0_-20px_60px_rgba(0,0,0,0.4)] md:shadow-[var(--elevation-highlight),0_20px_60px_rgba(0,0,0,0.1)] dark:md:shadow-[var(--elevation-highlight),0_20px_60px_rgba(0,0,0,0.4)] border-t md:border border-[var(--border-hairline)] overflow-hidden flex flex-col w-full pointer-events-auto transform translate-z-0 will-change-transform ${
                 useBottomSheet 
-                  ? 'fixed bottom-0 rounded-t-3xl rounded-b-none max-w-[700px]' 
-                  : 'relative rounded-3xl max-w-[500px]'
+                  ? 'fixed bottom-0 rounded-t-[var(--radius-app)] rounded-b-none max-w-[700px]' 
+                  : 'relative rounded-[var(--radius-app)] max-w-[500px]'
               } ${isFixedHeight ? 'h-[90vh] md:h-[85vh]' : 'max-h-[90vh] md:max-h-[85vh]'}`}
             >
               <div className="flex items-center justify-between p-4 sm:p-5 border-b border-[var(--border-hairline)] bg-transparent shrink-0">
-                <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white tracking-tight uppercase">{title}</h3>
+                <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white tracking-tight">{title}</h3>
                 <button
                   onClick={onClose}
-                  className="w-8 h-8 -mr-1 rounded-xl bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-[var(--text-secondary)] hover:bg-slate-200 dark:hover:bg-white/20 transition-all cursor-pointer active:scale-95 shrink-0"
+                  className="w-8 h-8 -mr-1 rounded-full bg-[var(--fill)] flex items-center justify-center text-slate-500 dark:text-[var(--text-secondary)] hover:bg-slate-200 dark:hover:bg-white/20 transition-all cursor-pointer active:scale-95 shrink-0"
                 >
                   <X className="w-5 h-5" />
                 </button>

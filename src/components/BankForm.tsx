@@ -274,7 +274,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={clsx(
-                  "w-full pl-9 py-2.5 bg-[var(--surface-0)] dark:bg-[var(--surface-1)] border border-slate-200/50 dark:border-[var(--border-strong)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all shadow-inner",
+                  "w-full pl-10 py-2.5 bg-[var(--fill)] focus:bg-[var(--fill-hover)] hover:bg-[var(--fill-hover)] border-none rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 dark:text-white transition-all",
                   searchQuery ? "pr-10" : "pr-4"
                 )}
               />
@@ -299,14 +299,15 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                   >
                     <div
                       onClick={() => setSelectedBankId(bank.id)}
-                      className="w-full aspect-square flex flex-col items-center justify-center gap-1 p-1.5 rounded-3xl border border-slate-100 dark:border-[var(--border-hairline)] hover:border-[var(--accent-color)]/50 hover:bg-[var(--percent-bg)]/30 transition-all cursor-pointer group shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] hover:shadow-md"
+                      className="w-full aspect-square flex flex-col items-center justify-center gap-1 p-1.5 rounded-[var(--radius-sm)] hover:bg-[var(--fill)] active:scale-95 transition-all duration-200 cursor-pointer group transform-gpu"
                     >
                       <BankLogo 
                         bank={bank} 
                         logoShape={globalLogoShape} 
                         size="md"
+                        className="group-hover:scale-105 transition-transform duration-300 ease-out will-change-transform origin-center"
                       />
-                      <div className="flex items-center justify-center w-full px-0.5">
+                      <div className="flex items-center justify-center w-full px-0.5 mt-1">
                         <span className="text-[9px] sm:text-[10px] font-bold text-center text-gray-600 dark:text-[var(--text-secondary)] uppercase tracking-tight group-hover:text-gray-900 dark:group-hover:text-white transition-colors break-words leading-tight line-clamp-2" title={bank.name}>{bank.name}</span>
                       </div>
                     </div>
@@ -392,7 +393,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
             value={categorySearchQuery}
             onChange={(e) => setCategorySearchQuery(e.target.value)}
             className={clsx(
-              "w-full pl-9 py-2.5 bg-[var(--surface-0)] dark:bg-[var(--surface-1)] border border-slate-200/50 dark:border-[var(--border-strong)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all shadow-inner",
+              "w-full pl-10 py-2.5 bg-[var(--fill)] focus:bg-[var(--fill-hover)] hover:bg-[var(--fill-hover)] border-none rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 dark:text-white transition-all",
               categorySearchQuery ? "pr-10" : "pr-4"
             )}
           />
@@ -415,10 +416,10 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                 key={cat}
                 onClick={() => toggleCategory(cat)}
                 className={clsx(
-                  "px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center cursor-pointer border",
+                  "px-3 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center justify-center cursor-pointer",
                   isSelected
-                    ? "bg-[var(--accent-color)] text-white border-transparent shadow-md shadow-[var(--accent-color)]/20"
-                    : "bg-[var(--surface-0)] dark:bg-[var(--surface-1)] text-slate-600 dark:text-[var(--text-secondary)] hover:bg-white dark:hover:bg-[var(--surface-2)] border-slate-100 dark:border-[var(--border-hairline)] shadow-sm"
+                    ? "bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20"
+                    : "bg-[var(--fill)] hover:bg-[var(--fill-hover)] text-slate-600 dark:text-[var(--text-secondary)]"
                 )}
               >
                 {cat}
@@ -444,7 +445,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
               value={customCategory}
               onChange={(e) => setCustomCategory(e.target.value)}
               className={clsx(
-                "w-full py-2.5 bg-[var(--surface-0)] dark:bg-[var(--surface-1)] border border-slate-200/50 dark:border-[var(--border-strong)] shadow-inner rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all",
+                "w-full py-2.5 bg-[var(--fill)] focus:bg-[var(--fill-hover)] hover:bg-[var(--fill-hover)] border-none rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 dark:text-white transition-all",
                 customCategory ? "pl-4 pr-10" : "px-4"
               )}
             />
@@ -486,7 +487,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: -4 }}
                     transition={{ duration: 0.15 }}
-                    className="flex items-center justify-between p-2 bg-[var(--surface-0)] dark:bg-[var(--surface-1)] rounded-3xl border border-slate-100 dark:border-[var(--border-hairline)] shadow-sm"
+                    className="flex items-center justify-between p-2 bg-[var(--surface-0)] dark:bg-[var(--surface-1)] rounded-[var(--radius-app)] border border-slate-100 dark:border-[var(--border-hairline)] shadow-sm"
                   >
                     <div className="flex items-center gap-2">
                       <button
@@ -504,7 +505,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                         placeholder="0"
                         value={cat.percent}
                         onChange={(e) => updateCategoryPercent(cat.name, e.target.value)}
-                        className="w-14 px-2 py-1 text-right bg-white dark:bg-[var(--surface-2)] border border-slate-100 dark:border-[var(--border-hairline)] shadow-inner rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white"
+                        className="w-14 px-2 py-1 text-right bg-[var(--fill)] hover:bg-[var(--fill-hover)] focus:bg-[var(--fill-hover)] border-none rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 dark:text-white"
                       />
                       <span className="text-gray-500 dark:text-[var(--text-secondary)] text-xs font-medium">%</span>
                     </div>
@@ -517,7 +518,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3 pt-3 border-t border-slate-200/50 dark:border-[var(--border-strong)] mt-1">
+      <div className="flex gap-3 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-slate-200/50 dark:border-[var(--border-strong)] mt-4 sticky -bottom-3 sm:-bottom-4 -mb-3 sm:-mb-4 -mx-3 sm:-mx-4 px-3 sm:px-4 bg-[var(--surface-0)]/95 dark:bg-[var(--surface-2)]/95 backdrop-blur-md z-10">
         <button
           onClick={onCancel}
           className="flex-1 px-4 py-2.5 rounded-xl font-bold text-slate-700 dark:text-[var(--text-secondary)] bg-[var(--surface-0)] dark:bg-[var(--surface-1)] hover:bg-white dark:hover:bg-[var(--surface-2)] border border-slate-100 dark:border-[var(--border-hairline)] transition-all text-sm cursor-pointer shadow-sm active:scale-95"

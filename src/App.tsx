@@ -85,7 +85,7 @@ const AuthButton = ({
         >
           {isSyncing && isMobile && (
             <div
-              className="absolute bg-blue-500 rounded-full border-2 border-slate-50 dark:border-[#111] animate-pulse z-10 shrink-0 pointer-events-none -top-1 -right-1 w-3 h-3"
+              className="absolute bg-[var(--accent-color)] rounded-full border-2 border-slate-50 dark:border-[#111] animate-pulse z-10 shrink-0 pointer-events-none -top-1 -right-1 w-3 h-3"
               title="Синхронизация..."
             />
           )}
@@ -104,7 +104,7 @@ const AuthButton = ({
             )}
             {isSyncing && !isMobile && (
               <div
-                className="absolute bg-blue-500 rounded-full border-2 border-slate-50 dark:border-[#111] animate-pulse z-10 shrink-0 pointer-events-none -top-0.5 -right-0.5 w-2.5 h-2.5"
+                className="absolute bg-[var(--accent-color)] rounded-full border-2 border-slate-50 dark:border-[#111] animate-pulse z-10 shrink-0 pointer-events-none -top-0.5 -right-0.5 w-2.5 h-2.5"
                 title="Синхронизация..."
               />
             )}

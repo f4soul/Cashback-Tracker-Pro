@@ -34,7 +34,7 @@ const MonthAccordion: React.FC<MonthAccordionProps> = memo(({
   handleExportExcel,
   handleExport,
 }) => {
-  const containerCls = "bg-white dark:bg-[var(--surface-0)] rounded-3xl border border-slate-100 dark:border-[var(--border-hairline)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] overflow-hidden transition-colors duration-300 translate-z-0 [backface-visibility:hidden] isolate relative";
+  const containerCls = "bg-white dark:bg-[var(--surface-0)] rounded-[var(--radius-app)] border border-slate-100 dark:border-[var(--border-hairline)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] overflow-hidden transition-colors duration-300 translate-z-0 [backface-visibility:hidden] isolate relative";
   const headerCls = "w-full flex items-center justify-between p-4 sm:p-5 hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors cursor-pointer relative z-10";
   const expandWrapCls = "p-4 sm:p-5 pt-0 border-t border-slate-100 dark:border-[var(--border-hairline)] bg-[var(--surface-0)] dark:bg-[var(--surface-1)] translate-z-0 relative z-10";
   const chipCls = "flex items-center gap-2.5 sm:gap-3.5 p-2.5 sm:p-3.5 bg-white dark:bg-[var(--surface-2)] rounded-2xl border border-slate-100 dark:border-[var(--border-hairline)] shadow-sm hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-[var(--accent-color)]/30 transition-[border-color,box-shadow,background-color] duration-200 group isolate";
@@ -99,7 +99,7 @@ const MonthAccordion: React.FC<MonthAccordionProps> = memo(({
               {/* Compact banks list in Archive */}
               <div className="flex flex-col gap-2 mb-4 sm:mb-6 mt-4 sm:mt-6">
                 <div className="px-1">
-                  <h4 className="text-[10px] font-black text-slate-400 dark:text-[var(--text-tertiary)] uppercase tracking-widest leading-none">Банки в этом месяце</h4>
+                  <h4 className="text-[10px] font-semibold text-slate-400 dark:text-[var(--text-tertiary)] leading-none">Банки в этом месяце</h4>
                 </div>
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 font-sans">
                   {month.entries.map(entry => {
@@ -130,7 +130,7 @@ const MonthAccordion: React.FC<MonthAccordionProps> = memo(({
                         </div>
                         <div className="min-w-0 flex-1">
                           <h4 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate leading-tight group-hover:text-[var(--accent-color)] transition-colors" title={bank.name}>{bank.name}</h4>
-                          <p className="text-[8px] font-bold text-slate-500 dark:text-[var(--text-secondary)] uppercase tracking-widest mt-0.5 truncate border-transparent">
+                          <p className="text-[8px] font-semibold text-slate-500 dark:text-[var(--text-secondary)] mt-0.5 truncate border-transparent">
                             {entry.categories.length} {pluralize(entry.categories.length, ['категория', 'категории', 'категорий'])}
                           </p>
                         </div>
@@ -147,7 +147,7 @@ const MonthAccordion: React.FC<MonthAccordionProps> = memo(({
                   title="Изображение (PNG)"
                 >
                   <ImageIcon className="w-4 h-4 text-blue-500 group-hover:scale-110 transition-transform mb-0.5" />
-                  <span className="text-[9px] font-black text-slate-500 dark:text-[var(--text-secondary)] uppercase tracking-widest leading-none">PNG</span>
+                  <span className="text-[9px] font-semibold text-slate-500 dark:text-[var(--text-secondary)] leading-none">PNG</span>
                 </button>
 
                 <button 
@@ -156,7 +156,7 @@ const MonthAccordion: React.FC<MonthAccordionProps> = memo(({
                   title="Таблица (Excel)"
                 >
                   <FileSpreadsheet className="w-4 h-4 text-[var(--accent-color)] group-hover:scale-110 transition-transform mb-0.5" />
-                  <span className="text-[9px] font-black text-slate-500 dark:text-[var(--text-secondary)] uppercase tracking-widest leading-none">Excel</span>
+                  <span className="text-[9px] font-semibold text-slate-500 dark:text-[var(--text-secondary)] leading-none">Excel</span>
                 </button>
 
                 <button 
@@ -165,7 +165,7 @@ const MonthAccordion: React.FC<MonthAccordionProps> = memo(({
                   title="Документ (PDF)"
                 >
                   <FileText className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform mb-0.5" />
-                  <span className="text-[9px] font-black text-slate-500 dark:text-[var(--text-secondary)] uppercase tracking-widest leading-none">PDF</span>
+                  <span className="text-[9px] font-semibold text-slate-500 dark:text-[var(--text-secondary)] leading-none">PDF</span>
                 </button>
               </div>
               <CashbackTable 
@@ -308,7 +308,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, del
   return (
     <div className="flex flex-col gap-3">
       {/* Filters Section */}
-      <div className="bg-white dark:bg-[var(--surface-0)] rounded-3xl border border-slate-100 dark:border-[var(--border-hairline)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] p-3 sm:p-4 flex flex-col gap-3 sm:gap-4">
+      <div className="bg-white dark:bg-[var(--surface-0)] rounded-[var(--radius-app)] border border-slate-100 dark:border-[var(--border-hairline)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] p-3 sm:p-4 flex flex-col gap-3 sm:gap-4">
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -317,7 +317,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, del
               placeholder="Поиск по банку или категории..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-10 py-2.5 bg-[var(--surface-0)] dark:bg-[var(--surface-1)] border border-slate-100 dark:border-[var(--border-hairline)] rounded-3xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all shadow-inner"
+              className="w-full pl-9 pr-10 py-2.5 bg-[var(--surface-0)] dark:bg-[var(--surface-1)] border border-slate-100 dark:border-[var(--border-hairline)] rounded-[var(--radius-app)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all shadow-inner"
             />
             {searchQuery && (
               <button
@@ -332,7 +332,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, del
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={clsx(
-              "p-2.5 rounded-3xl border transition-all flex items-center justify-center cursor-pointer active:scale-95",
+              "p-2.5 rounded-[var(--radius-app)] border transition-all flex items-center justify-center cursor-pointer active:scale-95",
               showFilters || selectedBankFilter || selectedCategoryFilter
                 ? "bg-[var(--accent-color)] border-[var(--accent-color)] shadow-md shadow-[var(--accent-color)]/20 text-white"
                 : "bg-[var(--surface-0)] dark:bg-[var(--surface-1)] border border-slate-100 dark:border-[var(--border-hairline)] text-slate-500 dark:text-[var(--text-secondary)] hover:bg-white dark:hover:bg-[var(--surface-2)] shadow-sm"
@@ -346,13 +346,13 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, del
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-200/50 dark:border-[var(--border-strong)] animate-in fade-in slide-in-from-top-2">
             {/* Bank Filter Dropdown */}
             <div className="flex flex-col gap-1.5 relative">
-              <label className="text-[10px] font-black text-slate-500 dark:text-[var(--text-secondary)] uppercase tracking-widest">Фильтр по банку</label>
+              <label className="text-[10px] font-semibold text-slate-500 dark:text-[var(--text-secondary)]">Фильтр по банку</label>
               <button
                 onClick={() => {
                   setOpenBankDropdown(!openBankDropdown);
                   setOpenCategoryDropdown(false);
                 }}
-                className="w-full flex items-center justify-between px-3 py-2.5 bg-[var(--surface-0)] dark:bg-[var(--surface-1)] border border-slate-100 dark:border-[var(--border-hairline)] rounded-3xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all cursor-pointer shadow-none hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] hover:bg-white dark:hover:bg-[var(--surface-2)]"
+                className="w-full flex items-center justify-between px-3 py-2.5 bg-[var(--surface-0)] dark:bg-[var(--surface-1)] border border-slate-100 dark:border-[var(--border-hairline)] rounded-[var(--radius-app)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all cursor-pointer shadow-none hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] hover:bg-white dark:hover:bg-[var(--surface-2)]"
               >
                 <div className="flex items-center gap-2 overflow-hidden">
                   {selectedBankFilter ? (
@@ -379,7 +379,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, del
                       initial={{ opacity: 0, y: 4, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 4, scale: 0.95 }}
-                      className="absolute top-full left-0 right-0 mt-2 z-20 bg-white/95 dark:bg-[var(--surface-2)]/95 border border-[var(--border-hairline)] backdrop-blur-2xl rounded-3xl shadow-[var(--elevation-highlight),0_8px_30px_rgba(0,0,0,0.12)] max-h-64 overflow-y-auto scrollbar-hide p-1.5"
+                      className="absolute top-full left-0 right-0 mt-2 z-20 bg-white/95 dark:bg-[var(--surface-2)]/95 border border-[var(--border-hairline)] backdrop-blur-2xl rounded-[var(--radius-app)] shadow-[var(--elevation-highlight),0_8px_30px_rgba(0,0,0,0.12)] max-h-64 overflow-y-auto scrollbar-hide p-1.5"
                     >
                       <button
                         onClick={() => { setSelectedBankFilter(''); setOpenBankDropdown(false); }}
@@ -418,13 +418,13 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, del
 
             {/* Category Filter Dropdown */}
             <div className="flex flex-col gap-1.5 relative">
-              <label className="text-[10px] font-black text-slate-500 dark:text-[var(--text-secondary)] uppercase tracking-widest">Фильтр по категории</label>
+              <label className="text-[10px] font-semibold text-slate-500 dark:text-[var(--text-secondary)]">Фильтр по категории</label>
               <button
                 onClick={() => {
                   setOpenCategoryDropdown(!openCategoryDropdown);
                   setOpenBankDropdown(false);
                 }}
-                className="w-full flex items-center justify-between px-3 py-2.5 bg-[var(--surface-0)] dark:bg-[var(--surface-1)] border border-slate-100 dark:border-[var(--border-hairline)] rounded-3xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all cursor-pointer shadow-none hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] hover:bg-white dark:hover:bg-[var(--surface-2)]"
+                className="w-full flex items-center justify-between px-3 py-2.5 bg-[var(--surface-0)] dark:bg-[var(--surface-1)] border border-slate-100 dark:border-[var(--border-hairline)] rounded-[var(--radius-app)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] dark:text-white transition-all cursor-pointer shadow-none hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] hover:bg-white dark:hover:bg-[var(--surface-2)]"
               >
                 <span className={clsx("truncate", !selectedCategoryFilter && "text-gray-400")}>
                   {selectedCategoryFilter || "Все категории"}
@@ -440,7 +440,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, del
                       initial={{ opacity: 0, y: 4, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 4, scale: 0.95 }}
-                      className="absolute top-full left-0 right-0 mt-2 z-20 bg-white/95 dark:bg-[var(--surface-2)]/95 border border-[var(--border-hairline)] backdrop-blur-2xl rounded-3xl shadow-[var(--elevation-highlight),0_8px_30px_rgba(0,0,0,0.12)] max-h-64 overflow-y-auto scrollbar-hide p-1.5"
+                      className="absolute top-full left-0 right-0 mt-2 z-20 bg-white/95 dark:bg-[var(--surface-2)]/95 border border-[var(--border-hairline)] backdrop-blur-2xl rounded-[var(--radius-app)] shadow-[var(--elevation-highlight),0_8px_30px_rgba(0,0,0,0.12)] max-h-64 overflow-y-auto scrollbar-hide p-1.5"
                     >
                       <button
                         onClick={() => { setSelectedCategoryFilter(''); setOpenCategoryDropdown(false); }}
@@ -474,7 +474,7 @@ export const Archive: React.FC<ArchiveProps> = memo(({ allData, customBanks, del
 
       {/* Results */}
       {filteredData.length === 0 ? (
-        <div className="flex flex-col items-center justify-center p-12 text-center bg-slate-50 dark:bg-white/5 rounded-3xl border border-dashed border-slate-200 dark:border-[var(--border-strong)]">
+        <div className="flex flex-col items-center justify-center p-12 text-center bg-slate-50 dark:bg-white/5 rounded-[var(--radius-app)] border border-dashed border-slate-200 dark:border-[var(--border-strong)]">
           <div className="w-16 h-16 bg-slate-100 dark:bg-white/10 rounded-full flex items-center justify-center mb-4">
             <Search className="w-8 h-8 text-slate-400 dark:text-[var(--text-tertiary)]" />
           </div>

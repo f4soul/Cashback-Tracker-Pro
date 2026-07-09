@@ -120,7 +120,7 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
         ref={ref}
         style={style}
         className={clsx(
-          'flex items-center justify-between p-3 bg-white dark:bg-[var(--surface-2)] rounded-3xl border border-slate-100 dark:border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] group/card select-none hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-slate-200/50 dark:hover:border-white/10 transition-all translate-z-0 [backface-visibility:hidden] will-change-[transform]',
+          'flex items-center justify-between p-3 bg-white dark:bg-[var(--surface-2)] rounded-[var(--radius-sm)] border border-slate-100 dark:border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] group/card select-none hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-slate-200/50 dark:hover:border-white/10 transition-all translate-z-0 [backface-visibility:hidden] will-change-[transform]',
           isDragging && !isOverlay && 'opacity-30',
           isOverlay &&
             'border-[var(--accent-color)] shadow-2xl scale-105 z-50 ring-2 ring-[var(--accent-color)]/50 cursor-grabbing bg-white dark:bg-[var(--surface-2)]',
@@ -151,7 +151,7 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
             <h3 className="font-bold text-sm text-slate-900 dark:text-white truncate leading-tight">
               {bank.name}
             </h3>
-            <p className="text-[10px] font-black text-slate-500 dark:text-[var(--text-secondary)] truncate leading-none mt-1 uppercase tracking-widest">
+            <p className="text-[10px] font-semibold text-slate-500 dark:text-[var(--text-secondary)] truncate leading-none mt-1">
               {entry.categories.length}{' '}
               {pluralize(entry.categories.length, [
                 'категория',
@@ -674,7 +674,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
         )}
 
         {/* Table/Bank List Switcher - Simplified and Compact */}
-        <div className="flex p-0.5 gap-0.5 relative bg-white dark:bg-[var(--surface-2)] rounded-3xl border border-slate-100 dark:border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] w-full mb-2 translate-z-0 [backface-visibility:hidden] z-10">
+        <div className="flex p-0.5 gap-0.5 relative bg-white dark:bg-[var(--surface-2)] rounded-[var(--radius-app)] border border-slate-100 dark:border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] w-full mb-2 translate-z-0 [backface-visibility:hidden] z-10">
             <div
               className="absolute inset-y-0.5 rounded-[0.85rem] bg-slate-50 dark:bg-white/[0.05] shadow-sm z-0 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]"
               style={{
@@ -685,7 +685,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
             <button
               onClick={() => setActiveSubTab('table')}
               className={clsx(
-                'flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-[0.85rem] text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer relative z-10',
+                'flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-[0.85rem] text-[10px] font-semibold transition-colors cursor-pointer relative z-10',
                 activeSubTab === 'table'
                   ? 'text-[var(--accent-color)]'
                   : 'text-slate-500 hover:text-slate-700 dark:hover:text-[var(--text-primary)]',
@@ -697,7 +697,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
             <button
               onClick={() => setActiveSubTab('list')}
               className={clsx(
-                'flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-[0.85rem] text-[10px] font-black uppercase tracking-widest transition-colors cursor-pointer relative z-10',
+                'flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-[0.85rem] text-[10px] font-semibold transition-colors cursor-pointer relative z-10',
                 activeSubTab === 'list'
                   ? 'text-[var(--accent-color)]'
                   : 'text-slate-500 hover:text-slate-700 dark:hover:text-[var(--text-primary)]',
@@ -748,7 +748,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                       setEditingEntry(undefined);
                       setIsModalOpen(true);
                     }}
-                    className="flex flex-col items-center justify-center p-8 text-center bg-[var(--surface-0)] dark:bg-[var(--surface-1)] rounded-3xl border border-dashed border-slate-200 dark:border-[var(--border-strong)] hover:bg-white dark:hover:bg-[var(--surface-2)] transition-colors group w-full cursor-pointer"
+                    className="flex flex-col items-center justify-center p-8 text-center bg-[var(--surface-0)] dark:bg-[var(--surface-1)] rounded-[var(--radius-app)] border border-dashed border-slate-200 dark:border-[var(--border-strong)] hover:bg-white dark:hover:bg-[var(--surface-2)] transition-colors group w-full cursor-pointer"
                   >
                     <Plus className="w-8 h-8 text-slate-300 dark:text-slate-600 mb-2 group-hover:text-[var(--accent-color)] dark:group-hover:text-[var(--accent-color)] transition-colors" />
                     <p className="text-xs text-slate-500">

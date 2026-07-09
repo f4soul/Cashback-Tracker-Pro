@@ -36,10 +36,10 @@ export const BankLogo: React.FC<BankLogoProps> = memo(({
   };
 
   const shapeSizes = {
-    circle: 'w-[70%] h-[70%]',
-    square: 'w-[70%] h-[70%]',
-    rectangle: 'w-[70%] h-[70%]',
-    octagon: 'w-[70%] h-[70%]'
+    circle: 'scale-[0.60]',
+    square: 'scale-[0.75]',
+    rectangle: 'scale-[0.75]',
+    octagon: 'scale-[0.58]'
   };
 
   if (logoUrl && !error) {
@@ -58,7 +58,7 @@ export const BankLogo: React.FC<BankLogoProps> = memo(({
           onError={() => setError(true)}
           loading="lazy"
           decoding="async"
-          className={clsx("object-contain object-center select-none", shapeSizes[logoShape])}
+          className={clsx("w-full h-full object-contain object-center select-none gpu-accelerated", shapeSizes[logoShape])}
         />
       </div>
     );

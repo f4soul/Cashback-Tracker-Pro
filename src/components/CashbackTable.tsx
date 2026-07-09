@@ -9,6 +9,7 @@ import {
   FileSpreadsheet,
   Image as ImageIcon,
   ArrowUpDown,
+  Landmark,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { sortCategoriesAsc, sortCategoriesDesc } from '../utils/sorting';
@@ -77,20 +78,20 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
     return (
       <div
         id={id}
-        className="bg-white dark:bg-[var(--surface-0)] rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] border border-slate-100 dark:border-[var(--border-hairline)] p-2 sm:p-4 w-full mx-auto overflow-hidden relative isolate"
+        className="bg-white dark:bg-[var(--surface-0)] rounded-[var(--radius-app)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] border border-slate-100 dark:border-[var(--border-hairline)] p-2 sm:p-4 w-full mx-auto overflow-hidden relative isolate"
       >
         <div className="relative z-10">
-          <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
+          <div className="flex items-center justify-between px-0.5 mb-4 gap-2 flex-wrap">
             <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
               {isAfter25 && allMonthIds.length > 1 ? (
                 <>
-                  <div className="flex bg-[var(--surface-0)] dark:bg-[var(--surface-1)] rounded-3xl p-0.5 shrink-0 [.pdf-export-mode_&]:hidden border border-slate-100 dark:border-[var(--border-hairline)] shadow-sm translate-z-0 [backface-visibility:hidden]">
+                  <div className="flex bg-[var(--surface-0)] dark:bg-[var(--surface-1)] rounded-[var(--radius-sm)] p-0.5 shrink-0 [.pdf-export-mode_&]:hidden border border-slate-100 dark:border-[var(--border-hairline)] shadow-sm translate-z-0 [backface-visibility:hidden]">
                     {allMonthIds.map((mId) => (
                       <button
                         key={mId}
                         onClick={() => onMonthChange?.(mId)}
                         className={clsx(
-                          'px-3 py-1 rounded-xl text-[10px] font-black tracking-widest transition-all cursor-pointer',
+                          'px-3 py-1 rounded-xl text-[10px] font-semibold transition-all cursor-pointer',
                           (selectedMonthId || monthId) === mId
                             ? 'bg-[var(--accent-color)] text-white shadow-sm'
                             : 'text-slate-500 hover:text-slate-700 dark:hover:text-[var(--text-primary)]',
@@ -168,11 +169,11 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
           </div>
 
           {entries.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-8 text-center bg-[var(--surface-0)] dark:bg-[var(--surface-1)] rounded-3xl border border-dashed border-slate-200 dark:border-[var(--border-strong)]">
-              <div className="w-16 h-16 bg-white/60 dark:bg-white/5 backdrop-blur-xl rounded-3xl border border-slate-200/50 dark:border-[var(--border-strong)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] flex items-center justify-center mb-4">
-                <span className="text-3xl drop-shadow-sm opacity-90">🏦</span>
+            <div className="flex flex-col items-center justify-center p-8 text-center bg-[var(--surface-0)] dark:bg-[var(--surface-1)] rounded-[var(--radius-app)] border border-dashed border-slate-200 dark:border-[var(--border-strong)]">
+              <div className="w-16 h-16 bg-[var(--surface-2)] rounded-[var(--radius-sm)] border border-slate-200/50 dark:border-[var(--border-strong)] flex items-center justify-center mb-4">
+                <Landmark className="w-8 h-8 text-[var(--text-tertiary)]" />
               </div>
-              <h3 className="text-base font-black text-slate-900 dark:text-white uppercase tracking-tight mb-1">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-1">
                 Нет данных
               </h3>
               <p className="text-xs font-semibold text-slate-500 dark:text-[var(--text-secondary)]">
@@ -203,7 +204,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     transition={{ type: 'spring', stiffness: 350, damping: 25 }}
                     key={entry.id}
-                    className="flex flex-row items-stretch gap-2 p-1.5 rounded-2xl bg-[var(--surface-0)] dark:bg-[var(--surface-1)] border border-slate-100 dark:border-[var(--border-hairline)] hover:bg-white dark:hover:bg-[var(--surface-2)] hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-slate-200/50 dark:hover:border-white/10 transition-[background-color,border-color,box-shadow] duration-200 group isolate"
+                    className="flex flex-row items-stretch gap-2 p-1.5 rounded-[var(--radius-sm)] bg-[var(--surface-0)] dark:bg-[var(--surface-1)] border border-slate-100 dark:border-[var(--border-hairline)] hover:bg-white dark:hover:bg-[var(--surface-2)] hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-slate-200/50 dark:hover:border-white/10 transition-[background-color,border-color,box-shadow] duration-200 group isolate"
                     role="row"
                     aria-label={`Банк ${bank.name}`}
                   >
@@ -214,14 +215,14 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                         logoShape={logoShape}
                         size="md"
                       />
-                      <span className="text-[8px] sm:text-[9px] font-black text-center text-slate-700 dark:text-[var(--text-secondary)] uppercase tracking-tight leading-tight w-full break-words">
+                      <span className="text-[8px] sm:text-[9px] font-semibold text-center text-slate-700 dark:text-[var(--text-secondary)] leading-tight w-full break-words">
                         {formatBankName(bank.name)}
                       </span>
                     </div>
 
                     <div className="flex flex-col justify-center flex-1 py-0.5 min-w-0">
-                      <div className="flex flex-col bg-white dark:bg-[var(--surface-2)] border border-slate-100 dark:border-[var(--border-hairline)] rounded-lg shadow-sm overflow-hidden w-full">
-                        {entry.sortedCategories.map((cat, idx, arr) => {
+                      <div className="flex flex-col divide-y divide-[var(--border-hairline)] w-full">
+                        {entry.sortedCategories.map((cat, idx) => {
                           const name = typeof cat === 'string' ? cat : cat.name;
                           const percent =
                             typeof cat === 'string' ? '' : cat.percent;
@@ -229,17 +230,13 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                           return (
                             <div
                               key={idx}
-                              className={clsx(
-                                'flex items-center justify-between text-[11px] font-bold text-slate-800 dark:text-slate-200 px-2 py-1 translate-z-0',
-                                idx !== arr.length - 1 &&
-                                  'border-b border-slate-100 dark:border-white/[0.04]',
-                              )}
+                              className="flex items-center justify-between text-[11px] font-semibold text-slate-800 dark:text-slate-200 px-2.5 py-1.5 translate-z-0"
                             >
                               <span className="leading-tight truncate pr-4 flex-1">
                                 {formatCategoryName(name)}
                               </span>
                               {percent && (
-                                <span className="text-[var(--percent-text)] font-bold bg-[var(--percent-bg)] px-1.5 py-0.5 rounded-[4px] text-[10px] shrink-0 leading-none translate-z-0 [backface-visibility:hidden]">
+                                <span className="text-[var(--percent-text)] font-semibold bg-[var(--percent-bg)] px-1.5 py-0.5 rounded-[4px] text-[10px] shrink-0 leading-none translate-z-0 [backface-visibility:hidden]">
                                   {percent}%
                                 </span>
                               )}

@@ -200,6 +200,10 @@ h1, h2, h3, h4, h5, h6 {
   --text-secondary: #475569;
   --text-tertiary: #94A3B8;
   --elevation-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
+  --radius-app: 24px;
+  --radius-sm: max(10px, calc(var(--radius-app) * 0.5));
+  --fill: rgba(15, 23, 42, 0.04);
+  --fill-hover: rgba(15, 23, 42, 0.06);
 }
 
 .dark {
@@ -212,6 +216,8 @@ h1, h2, h3, h4, h5, h6 {
   --text-secondary: #A1A1AA;
   --text-tertiary: #71717A;
   --elevation-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  --fill: rgba(255, 255, 255, 0.06);
+  --fill-hover: rgba(255, 255, 255, 0.1);
 }
 
 html {
