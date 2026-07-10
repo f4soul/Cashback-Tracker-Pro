@@ -8,25 +8,34 @@ export function useScrollVisibility() {
   // Handle header and nav visibility on scroll
   useEffect(() => {
     let lastScrollY = window.scrollY;
+    let ticking = false;
 
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const isScrollingDown = currentScrollY > lastScrollY;
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          const isScrollingDown = currentScrollY > lastScrollY;
 
-      if (currentScrollY > 100) {
-        setHeaderVisible(!isScrollingDown);
-        setNavVisible(!isScrollingDown);
-        if (isScrollingDown) {
-          setNavExpanded(false);
-        }
-      } else {
-        setHeaderVisible(true);
-        setNavVisible(true);
-        setNavExpanded(true);
+          if (currentScrollY > 100) {
+            setHeaderVisible(prev => prev === !isScrollingDown ? prev : !isScrollingDown);
+            setNavVisible(prev => prev === !isScrollingDown ? prev : !isScrollingDown);
+            if (isScrollingDown) {
+              setNavExpanded(prev => prev === false ? prev : false);
+            }
+          } else {
+            setHeaderVisible(prev => prev === true ? prev : true);
+            setNavVisible(prev => prev === true ? prev : true);
+            setNavExpanded(prev => prev === true ? prev : true);
+          }
+
+          lastScrollY = currentScrollY;
+          ticking = false;
+        });
+        ticking = true;
       }
-      lastScrollY = currentScrollY;
     };
 
+    
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);

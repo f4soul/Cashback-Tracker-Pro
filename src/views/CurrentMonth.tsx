@@ -590,7 +590,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   setYOffset(snappedY);
                 }}
                 className="fixed pwa-fab-bottom z-50 touch-none select-none"
-                style={{ right: rightPos, willChange: 'transform, opacity' }}
+                style={{ right: rightPos, willChange: 'transform, opacity', touchAction: 'none' }}
               >
                 <button
                   onClick={(e) => {
@@ -659,7 +659,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   setYOffset(snappedY);
                 }}
                 className="fixed pwa-fab-bottom w-5 h-14 bg-[var(--accent-color)]/40 hover:bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-2xl transition-colors touch-none select-none backdrop-blur-md"
-                style={{ right: 0, willChange: 'transform, opacity' }}
+                style={{ right: 0, willChange: 'transform, opacity', touchAction: 'none' }}
                 title="Показать кнопку (перетащите вертикально)"
               >
                 <div className="flex flex-col items-center gap-0.5 opacity-40 group-hover:opacity-100 transition-opacity">

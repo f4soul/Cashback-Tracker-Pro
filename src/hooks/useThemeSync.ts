@@ -84,7 +84,7 @@ export function useThemeSync(activeTab: 'current' | 'archive' | 'settings') {
       clearTimeout(timer100);
       clearTimeout(timer300);
     };
-  }, [theme, settings, activeTab]);
+  }, [theme, settings]);
 
   return {
     theme,

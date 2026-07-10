@@ -305,7 +305,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                         bank={bank} 
                         logoShape={globalLogoShape} 
                         size="md"
-                        className="group-hover:scale-105 transition-transform duration-300 ease-out will-change-transform origin-center"
+                        className="group-hover:scale-105 transition-transform duration-300 ease-out group-hover:will-change-transform origin-center"
                       />
                       <div className="flex items-center justify-center w-full px-0.5 mt-1">
                         <span className="text-[9px] sm:text-[10px] font-bold text-center text-gray-600 dark:text-[var(--text-secondary)] uppercase tracking-tight group-hover:text-gray-900 dark:group-hover:text-white transition-colors break-words leading-tight line-clamp-2" title={bank.name}>{bank.name}</span>

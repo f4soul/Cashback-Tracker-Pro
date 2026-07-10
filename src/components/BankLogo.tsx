@@ -58,7 +58,7 @@ export const BankLogo: React.FC<BankLogoProps> = memo(({
           onError={() => setError(true)}
           loading="lazy"
           decoding="async"
-          className={clsx("w-full h-full object-contain object-center select-none gpu-accelerated", shapeSizes[logoShape])}
+          className={clsx("w-full h-full object-contain object-center select-none", shapeSizes[logoShape])}
         />
       </div>
     );
