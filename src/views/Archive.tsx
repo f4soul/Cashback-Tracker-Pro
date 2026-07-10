@@ -37,8 +37,8 @@ const MonthAccordion: React.FC<MonthAccordionProps> = memo(({
   const containerCls = "bg-white dark:bg-[var(--surface-0)] rounded-[var(--radius-app)] border border-slate-100 dark:border-[var(--border-hairline)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] overflow-hidden transition-colors duration-300 translate-z-0 [backface-visibility:hidden] isolate relative";
   const headerCls = "w-full flex items-center justify-between p-4 sm:p-5 hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors cursor-pointer relative z-10";
   const expandWrapCls = "p-4 sm:p-5 pt-0 border-t border-slate-100 dark:border-[var(--border-hairline)] bg-[var(--surface-0)] dark:bg-[var(--surface-1)] translate-z-0 relative z-10";
-  const chipCls = "flex items-center gap-2.5 sm:gap-3.5 p-2.5 sm:p-3.5 bg-white dark:bg-[var(--surface-2)] rounded-2xl border border-slate-100 dark:border-[var(--border-hairline)] shadow-sm hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-[var(--accent-color)]/30 transition-[border-color,box-shadow,background-color] duration-200 group isolate";
-  const exportBoxCls = "flex p-1 gap-1 bg-white dark:bg-[var(--surface-2)] rounded-2xl border border-slate-100 dark:border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] mb-4 translate-z-0";
+  const chipCls = "flex items-center gap-2.5 sm:gap-3.5 p-2.5 sm:p-3.5 bg-white dark:bg-[var(--surface-2)] rounded-[var(--radius-sm)] border border-slate-100 dark:border-[var(--border-hairline)] shadow-sm hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-[var(--accent-color)]/30 transition-[border-color,box-shadow,background-color] duration-200 group isolate";
+  const exportBoxCls = "flex p-1 gap-1 bg-white dark:bg-[var(--surface-2)] rounded-[var(--radius-sm)] border border-slate-100 dark:border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] mb-4 translate-z-0";
 
   const transition = { duration: 0.35, ease: [0.32, 0.72, 0, 1] as const };
 

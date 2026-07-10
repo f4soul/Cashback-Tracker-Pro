@@ -6,9 +6,9 @@ import { MCC_DATA, MccItemType } from '../utils/mccData';
 const MccItem: React.FC<{ item: MccItemType }> = ({ item }) => {
   return (
     <div
-      className="w-full bg-[var(--surface-0)] dark:bg-[var(--surface-1)] p-3.5 rounded-3xl border border-slate-100 dark:border-[var(--border-hairline)] flex items-center gap-3 shadow-sm text-left hover:border-[var(--accent-color)]/30 transition-all hover:bg-white dark:hover:bg-[var(--surface-2)] hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)]"
+      className="w-full bg-[var(--fill)] p-3.5 rounded-[var(--radius-sm)] border border-slate-100 dark:border-[var(--border-hairline)] flex items-center gap-3 shadow-[var(--elevation-highlight),0_2px_4px_rgb(0,0,0,0.02)] text-left hover:border-[var(--accent-color)]/30 transition-all hover:bg-[var(--fill-hover)] hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)]"
     >
-      <div className="w-14 h-12 rounded-xl bg-[var(--surface-2)] dark:bg-[var(--surface-0)] flex items-center justify-center shrink-0">
+      <div className="w-14 h-12 rounded-[var(--radius-sm)] bg-[var(--fill-hover)] flex items-center justify-center shrink-0">
         <span className="text-sm font-black text-slate-900 dark:text-white">{item.code}</span>
       </div>
       <div className="flex-1 min-w-0">
@@ -95,7 +95,7 @@ export const MccDirectory: React.FC<MccDirectoryProps> = ({ isOpen, onClose }) =
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Поиск по коду или названию..."
-          className="w-full pl-10 pr-10 py-3 bg-[var(--surface-0)] dark:bg-[var(--surface-1)] border border-slate-200/50 dark:border-[var(--border-strong)] shadow-inner rounded-xl text-sm font-bold text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] transition-all"
+          className="w-full pl-10 pr-10 py-3 bg-[var(--fill)] border-none rounded-full text-sm font-bold text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 transition-all"
         />
         {searchQuery && (
           <button
@@ -137,7 +137,7 @@ export const MccDirectory: React.FC<MccDirectoryProps> = ({ isOpen, onClose }) =
             </p>
             <button
               onClick={() => window.open(`https://www.google.com/search?q=MCC+код+${searchQuery}`, '_blank')}
-              className="px-4 py-2 bg-[var(--accent-color)] text-white rounded-xl text-sm font-bold shadow-md shadow-[var(--accent-color)]/20 hover:brightness-110 transition-all cursor-pointer active:scale-95"
+              className="px-4 py-2 bg-[var(--accent-color)] text-white rounded-[var(--radius-app)] text-sm font-bold shadow-md shadow-[var(--accent-color)]/20 hover:brightness-110 transition-all cursor-pointer active:scale-95"
             >
               Поиск в Google
             </button>

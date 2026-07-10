@@ -69,14 +69,14 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             aria-modal="true"
             aria-labelledby="modal-title"
             aria-describedby="modal-description"
-            className="relative w-full max-w-[400px] bg-white/95 dark:bg-[var(--surface-0)]/95 backdrop-blur-2xl rounded-[2rem] shadow-[0_20px_60px_rgb(0,0,0,0.1)] dark:shadow-[0_20px_60px_rgb(0,0,0,0.4)] overflow-hidden flex flex-col border border-slate-100 dark:border-[var(--border-hairline)] transform translate-z-0 will-change-transform"
+            className="relative w-full max-w-[400px] bg-white/95 dark:bg-[var(--surface-2)]/95 backdrop-blur-2xl rounded-[var(--radius-app)] shadow-[var(--elevation-highlight),0_20px_60px_rgb(0,0,0,0.1)] dark:shadow-[var(--elevation-highlight),0_20px_60px_rgb(0,0,0,0.4)] overflow-hidden flex flex-col border border-slate-100 dark:border-[var(--border-hairline)] transform translate-z-0 will-change-transform"
           >
             <div className="p-6 sm:p-8 flex flex-col items-center text-center">
               <div className={clsx(
                 "w-16 h-16 rounded-full flex items-center justify-center mb-5 relative",
                 variant === 'danger' ? 'bg-red-50 dark:bg-red-900/20 text-red-500' : 
                 variant === 'warning' ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-500' : 
-                'bg-blue-50 dark:bg-blue-900/20 text-blue-500'
+                'bg-[var(--percent-bg)] text-[var(--accent-color)]'
               )}>
                 <motion.div
                   initial={{ scale: 0.5, opacity: 0 }}
@@ -93,7 +93,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                     "absolute inset-0 rounded-full border-2",
                     variant === 'danger' ? 'border-red-500/30' : 
                     variant === 'warning' ? 'border-amber-500/30' : 
-                    'border-blue-500/30'
+                    'border-[var(--accent-color)]/30'
                   )}
                 />
               </div>
@@ -113,7 +113,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                   onClose();
                 }}
                 className={clsx(
-                  "flex-1 py-3.5 px-4 rounded-3xl font-bold text-sm transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2",
+                  "flex-1 py-3.5 px-4 rounded-[var(--radius-app)] font-bold text-sm transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2",
                   variant === 'danger' 
                     ? 'bg-red-500 hover:bg-red-600 text-white shadow-[0_4px_12px_rgba(239,68,68,0.3)] hover:shadow-[0_4px_16px_rgba(239,68,68,0.4)]' 
                     : variant === 'warning'
@@ -126,7 +126,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
               <button
                 ref={cancelRef}
                 onClick={onClose}
-                className="flex-1 py-3.5 px-4 rounded-3xl font-bold text-sm text-slate-700 dark:text-[var(--text-secondary)] bg-[var(--surface-0)] hover:bg-white dark:bg-[var(--surface-1)] dark:hover:bg-[var(--surface-2)] transition-all active:scale-95 cursor-pointer shadow-sm border border-slate-100 dark:border-[var(--border-hairline)]"
+                className="flex-1 py-3.5 px-4 rounded-[var(--radius-app)] font-bold text-sm text-slate-700 dark:text-[var(--text-secondary)] bg-[var(--fill)] hover:bg-[var(--fill-hover)] transition-all active:scale-95 cursor-pointer shadow-sm border border-slate-100 dark:border-[var(--border-hairline)]"
               >
                 {cancelText}
               </button>

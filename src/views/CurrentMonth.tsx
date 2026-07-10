@@ -602,7 +602,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                     setIsModalOpen(true);
                   }}
                   title="Добавить банк"
-                  className="w-14 h-14 bg-[var(--accent-color)] text-white rounded-2xl flex items-center justify-center shadow-lg shadow-[var(--accent-color)]/30 hover:shadow-[var(--accent-color)]/40 transition-all opacity-95 hover:opacity-100 cursor-pointer active:scale-95"
+                  className="w-14 h-14 bg-[var(--accent-color)] text-white rounded-[var(--radius-sm)] flex items-center justify-center shadow-lg shadow-[var(--accent-color)]/30 hover:shadow-[var(--accent-color)]/40 transition-all opacity-95 hover:opacity-100 cursor-pointer active:scale-95"
                 >
                   <Plus className="w-7 h-7" />
                 </button>

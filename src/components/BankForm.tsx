@@ -202,7 +202,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
             <X className="w-5 h-5" />
           </button>
         </div>
-        <div className="relative w-full h-64 bg-gray-100 dark:bg-[var(--surface-0)] rounded-2xl overflow-hidden">
+        <div className="relative w-full h-64 bg-gray-100 dark:bg-[var(--surface-0)] rounded-[var(--radius-sm)] overflow-hidden">
           <Cropper
             image={imageSrc}
             crop={crop}
@@ -262,7 +262,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
   return (
     <div className="flex flex-col gap-4">
       {/* Bank Selection */}
-      <div className="space-y-2">
+      <div className="space-y-3">
         <label className="text-sm font-medium text-gray-700 dark:text-[var(--text-secondary)]">Выберите банк</label>
         {!selectedBankId ? (
           <>
@@ -299,7 +299,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                   >
                     <div
                       onClick={() => setSelectedBankId(bank.id)}
-                      className="w-full aspect-square flex flex-col items-center justify-center gap-1 p-1.5 rounded-[var(--radius-sm)] hover:bg-[var(--fill)] active:scale-95 transition-all duration-200 cursor-pointer group transform-gpu"
+                      className="w-full aspect-square flex flex-col items-center justify-center gap-1 p-1.5 rounded-[var(--radius-sm)] border border-slate-100 dark:border-[var(--border-hairline)] hover:border-slate-200/50 dark:hover:border-white/10 hover:bg-[var(--fill)] active:scale-95 transition-[background-color,border-color,box-shadow,transform] duration-200 cursor-pointer group isolate transform-gpu"
                     >
                       <BankLogo 
                         bank={bank} 
@@ -332,7 +332,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
                   setSelectedBankId('custom');
                   setCustomBankName(searchQuery.trim());
                 }}
-                className="w-full p-4 border border-dashed border-[var(--accent-color)]/30 bg-[var(--accent-color)]/5 rounded-2xl text-[var(--accent-color)] font-medium hover:bg-[var(--percent-bg)] transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full p-4 border border-dashed border-[var(--accent-color)]/30 bg-[var(--accent-color)]/5 rounded-[var(--radius-sm)] text-[var(--accent-color)] font-medium hover:bg-[var(--percent-bg)] transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Plus className="w-5 h-5" />
                 Добавить банк "{searchQuery.trim()}"
@@ -343,7 +343,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col gap-3 p-3 rounded-2xl border border-[var(--accent-color)]/20 bg-[var(--percent-bg)]/20 backdrop-blur-md"
+            className="flex flex-col gap-3 p-3 rounded-[var(--radius-sm)] border border-[var(--accent-color)]/20 bg-[var(--percent-bg)]/20 backdrop-blur-md"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">

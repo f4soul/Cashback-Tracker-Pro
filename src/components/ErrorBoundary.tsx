@@ -52,8 +52,8 @@ export class ErrorBoundary extends Component<Props, State> {
 
       return (
         <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50 dark:bg-[var(--surface-0)]">
-          <div className="max-w-md w-full bg-white/90 dark:bg-[var(--surface-1)]/90 backdrop-blur-2xl rounded-3xl p-8 shadow-xl border border-[var(--border-hairline)] text-center">
-            <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+          <div className="max-w-md w-full bg-white/95 dark:bg-[var(--surface-2)]/95 backdrop-blur-2xl rounded-[var(--radius-app)] p-8 shadow-[var(--elevation-highlight),0_20px_40px_rgb(0,0,0,0.1)] dark:shadow-[var(--elevation-highlight),0_20px_60px_rgb(0,0,0,0.4)] border border-slate-100 dark:border-[var(--border-hairline)] text-center">
+            <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-[var(--radius-sm)] flex items-center justify-center mx-auto mb-6">
               <AlertCircle className="w-8 h-8 text-red-500" />
             </div>
             <h2 className="text-xl font-black uppercase tracking-tight text-slate-900 dark:text-white mb-2">Упс! Что-то пошло не так</h2>
@@ -62,7 +62,7 @@ export class ErrorBoundary extends Component<Props, State> {
             </p>
             <button
               onClick={this.handleReset}
-              className="flex items-center justify-center gap-2 w-full py-4 bg-[var(--accent-color)] text-white rounded-xl font-bold hover:brightness-110 transition-all shadow-md shadow-[var(--accent-color)]/30 active:scale-95 cursor-pointer"
+              className="flex items-center justify-center gap-2 w-full py-4 bg-[var(--accent-color)] text-white rounded-[var(--radius-app)] font-bold hover:brightness-110 transition-all shadow-md shadow-[var(--accent-color)]/30 active:scale-95 cursor-pointer"
             >
               <RefreshCcw className="w-5 h-5" />
               Перезагрузить приложение

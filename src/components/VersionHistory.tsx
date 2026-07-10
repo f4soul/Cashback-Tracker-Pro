@@ -19,7 +19,7 @@ export const VersionHistory: React.FC = () => {
       {reversedVersions.map((v, index) => {
         const isOpen = openIndex === index;
         return (
-          <div key={v.version} className="border border-[var(--border-hairline)] rounded-3xl overflow-hidden bg-[var(--surface-1)] dark:bg-[var(--surface-1)] transition-all duration-300">
+          <div key={v.version} className="border border-[var(--border-hairline)] rounded-[var(--radius-app)] overflow-hidden bg-[var(--surface-1)] dark:bg-[var(--surface-1)] transition-all duration-300">
             <button
               onClick={() => setOpenIndex(isOpen ? null : index)}
               className="w-full flex items-center justify-between p-4 hover:bg-[var(--surface-2)]/30 dark:hover:bg-[var(--surface-2)]/30 transition-colors cursor-pointer"
@@ -39,7 +39,7 @@ export const VersionHistory: React.FC = () => {
                   "transition-all duration-[300ms] ease-[cubic-bezier(0.16,1,0.3,1)] gpu-accelerated origin-top p-3",
                   isOpen ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-2 scale-[0.98] pointer-events-none"
                 )}>
-                  <div className="p-4 bg-[var(--surface-2)] dark:bg-[var(--surface-2)] border border-[var(--border-hairline)] rounded-2xl">
+                  <div className="p-4 bg-[var(--surface-2)] dark:bg-[var(--surface-2)] border border-[var(--border-hairline)] rounded-[var(--radius-sm)]">
                     <ul className="space-y-2.5 text-sm text-gray-600 dark:text-[var(--text-secondary)] list-disc list-inside">
                       {v.changes.map((change, i) => (
                         <li key={i} className="leading-snug">{change}</li>

@@ -80,7 +80,7 @@ const AuthButton = ({
             'flex items-center group transition-all',
             isMobile
               ? 'relative w-9 h-9 justify-center bg-slate-50 dark:bg-[var(--surface-1)] border border-slate-100 dark:border-[var(--border-hairline)] rounded-full cursor-pointer shadow-sm hover:bg-slate-100 dark:hover:bg-white/10 active:scale-95'
-              : 'px-4 py-3 bg-gray-100/50 dark:bg-white/5 border border-gray-200/50 dark:border-[var(--border-hairline)] w-full gap-3 rounded-2xl',
+              : 'px-4 py-3 bg-gray-100/50 dark:bg-white/5 border border-gray-200/50 dark:border-[var(--border-hairline)] w-full gap-3 rounded-[var(--radius-sm)]',
           )}
         >
           {isSyncing && isMobile && (
@@ -140,7 +140,7 @@ const AuthButton = ({
     <button
       onClick={loginWithGoogle}
       className={clsx(
-        'flex items-center gap-2 rounded-2xl transition-all font-bold text-sm cursor-pointer shadow-lg shadow-[var(--accent-color)]/20 hover:bg-[var(--accent-color)] hover:brightness-110 active:scale-95 shrink-0',
+        'flex items-center gap-2 rounded-[var(--radius-sm)] transition-all font-bold text-sm cursor-pointer shadow-lg shadow-[var(--accent-color)]/20 hover:bg-[var(--accent-color)] hover:brightness-110 active:scale-95 shrink-0',
         isMobile
           ? 'h-8 px-4 bg-[var(--accent-color)] text-white'
           : 'px-4 py-3 w-full bg-[var(--accent-color)] text-white justify-center',
@@ -375,7 +375,7 @@ export default function App() {
             <button
               onClick={() => handleTabClick('current')}
               className={clsx(
-                'flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
+                'flex items-center gap-3 px-4 py-3.5 rounded-[var(--radius-sm)] transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
                 activeTab === 'current'
                   ? 'bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 border border-transparent'
                   : 'text-slate-500 dark:text-[var(--text-secondary)] hover:bg-white/80 dark:hover:bg-[var(--surface-2)]/50 hover:text-slate-900 dark:hover:text-[var(--text-primary)] hover:border-[var(--accent-color)]/30 border border-transparent',
@@ -387,7 +387,7 @@ export default function App() {
             <button
               onClick={() => handleTabClick('archive')}
               className={clsx(
-                'flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
+                'flex items-center gap-3 px-4 py-3.5 rounded-[var(--radius-sm)] transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
                 activeTab === 'archive'
                   ? 'bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 border border-transparent'
                   : 'text-slate-500 dark:text-[var(--text-secondary)] hover:bg-white/80 dark:hover:bg-[var(--surface-2)]/50 hover:text-slate-900 dark:hover:text-[var(--text-primary)] hover:border-[var(--accent-color)]/30 border border-transparent',
@@ -399,7 +399,7 @@ export default function App() {
             <button
               onClick={() => handleTabClick('settings')}
               className={clsx(
-                'flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
+                'flex items-center gap-3 px-4 py-3.5 rounded-[var(--radius-sm)] transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
                 activeTab === 'settings'
                   ? 'bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 border border-transparent'
                   : 'text-slate-500 dark:text-[var(--text-secondary)] hover:bg-white/80 dark:hover:bg-[var(--surface-2)]/50 hover:text-slate-900 dark:hover:text-[var(--text-primary)] hover:border-[var(--accent-color)]/30 border border-transparent',
@@ -428,7 +428,7 @@ export default function App() {
           !headerVisible && '-translate-y-full',
         )}
       >
-        <div className="max-w-3xl mx-auto bg-white/95 dark:bg-[var(--surface-2)]/95 backdrop-blur-2xl border border-slate-100 dark:border-[var(--border-hairline)] rounded-2xl px-4 py-2.5 flex items-center justify-between shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)]">
+        <div className="max-w-3xl mx-auto bg-white/95 dark:bg-[var(--surface-2)]/95 backdrop-blur-2xl border border-slate-100 dark:border-[var(--border-hairline)] rounded-[var(--radius-app)] px-4 py-2.5 flex items-center justify-between shadow-[var(--elevation-highlight),0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[var(--elevation-highlight),0_20px_40px_rgb(0,0,0,0.2)]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[var(--accent-color)] opacity-90 rounded-[22%] flex items-center justify-center shadow-sm">
               <WalletIcon className="w-7 h-7 text-white" />
