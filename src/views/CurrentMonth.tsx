@@ -136,6 +136,7 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
                 ? 'cursor-grabbing'
                 : 'cursor-grab active:cursor-grabbing',
             )}
+            style={{ touchAction: 'none' }}
           >
             <GripVertical className="w-4 h-4" />
           </button>
