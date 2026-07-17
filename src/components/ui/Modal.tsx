@@ -65,6 +65,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, headerCont
           />
           <div className="fixed inset-0 flex items-end md:items-center justify-center p-0 md:p-4 z-[70] pointer-events-none">
             <motion.div
+              layout="size"
               initial={variants.hidden}
               animate={variants.visible}
               exit={variants.exit}
