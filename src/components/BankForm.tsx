@@ -260,7 +260,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 flex-1">
       {/* Bank Selection */}
       <div className="space-y-3">
         <label className="text-sm font-medium text-gray-700 dark:text-[var(--text-secondary)]">Выберите банк</label>
@@ -518,7 +518,7 @@ export const BankForm: React.FC<BankFormProps> = memo(({
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-slate-200/50 dark:border-[var(--border-strong)] mt-4 sticky -bottom-3 sm:-bottom-4 -mb-3 sm:-mb-4 -mx-3 sm:-mx-4 px-3 sm:px-4 bg-[var(--surface-0)]/95 dark:bg-[var(--surface-2)]/95 backdrop-blur-md z-10">
+      <div className="flex gap-3 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-slate-200/50 dark:border-[var(--border-strong)] mt-auto sticky -bottom-3 sm:-bottom-4 -mb-3 sm:-mb-4 -mx-3 sm:-mx-4 px-3 sm:px-4 bg-[var(--surface-0)]/95 dark:bg-[var(--surface-2)]/95 backdrop-blur-md z-10">
         <button
           onClick={onCancel}
           className="flex-1 px-4 py-2.5 rounded-xl font-bold text-slate-700 dark:text-[var(--text-secondary)] bg-[var(--surface-0)] dark:bg-[var(--surface-1)] hover:bg-white dark:hover:bg-[var(--surface-2)] border border-slate-100 dark:border-[var(--border-hairline)] transition-all text-sm cursor-pointer shadow-sm active:scale-95"

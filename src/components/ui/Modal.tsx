@@ -85,7 +85,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, headerCont
                 </button>
               </div>
               {headerContent}
-              <div className="p-3 sm:p-4 overflow-y-auto w-full flex-1 min-h-0 scrollbar-hide">
+              <div className="p-3 sm:p-4 overflow-y-auto w-full flex-1 min-h-0 scrollbar-hide flex flex-col">
                 {children}
               </div>
             </motion.div>
