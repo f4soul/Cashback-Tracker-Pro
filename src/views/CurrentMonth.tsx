@@ -37,7 +37,7 @@ import {
   DndContext,
   closestCenter,
   KeyboardSensor,
-  PointerSensor,
+  MouseSensor,
   TouchSensor,
   useSensor,
   useSensors,
@@ -47,7 +47,6 @@ import {
 } from '@dnd-kit/core';
 import {
   restrictToVerticalAxis,
-  restrictToWindowEdges,
 } from '@dnd-kit/modifiers';
 import {
   arrayMove,
@@ -201,13 +200,7 @@ const SortableBankCard: React.FC<SortableBankCardProps> = memo(
 
     const wrapperStyle: React.CSSProperties = {
       transform: CSS.Translate.toString(transform),
-      transition:
-        transition ||
-        (isDragging
-          ? 'none'
-          : 'transform 250ms cubic-bezier(0.32, 0.72, 0, 1)'),
-      zIndex: isDragging ? 50 : undefined,
-      position: isDragging ? 'relative' : undefined,
+      transition: transition || 'transform 250ms cubic-bezier(0.32, 0.72, 0, 1)',
     };
 
     const cardStyle: React.CSSProperties = {
@@ -215,8 +208,15 @@ const SortableBankCard: React.FC<SortableBankCardProps> = memo(
       boxShadow: isDragging ? '0 12px 28px rgba(0,0,0,0.25)' : undefined,
     };
 
+    const motionStyle: React.CSSProperties = {
+      position: 'relative',
+      zIndex: isDragging ? 50 : 1,
+      transition: isDragging ? 'none' : 'z-index 0s 250ms',
+    };
+
     return (
       <motion.div
+        style={motionStyle}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95 }}
@@ -445,7 +445,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     }, [dragConstraints, snapToPosition]);
 
     const sensors = useSensors(
-      useSensor(PointerSensor, {
+      useSensor(MouseSensor, {
         activationConstraint: {
           distance: 8,
         },
@@ -752,13 +752,13 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                     sensors={sensors}
                     collisionDetection={closestCenter}
                     onDragEnd={handleDragEnd}
-                    modifiers={[restrictToVerticalAxis, restrictToWindowEdges]}
+                    modifiers={[restrictToVerticalAxis]}
                   >
                     <SortableContext
                       items={data.entries.map((e) => e.id)}
                       strategy={verticalListSortingStrategy}
                     >
-                      <div className="grid grid-cols-1 gap-1">
+                      <div className="flex flex-col gap-1">
                         <AnimatePresence initial={false}>
                           {data.entries.map((entry) => {
                             const bank =
