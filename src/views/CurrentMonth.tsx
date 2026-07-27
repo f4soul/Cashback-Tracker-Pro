@@ -42,9 +42,6 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
-  DragStartEvent,
-  DragOverlay,
-  defaultDropAnimationSideEffects,
   DraggableAttributes,
   DraggableSyntheticListeners,
 } from '@dnd-kit/core';
@@ -93,7 +90,6 @@ interface BankCardProps {
   onEdit: () => void;
   onDelete: () => void;
   isDragging?: boolean;
-  isOverlay?: boolean;
   attributes?: DraggableAttributes;
   listeners?: DraggableSyntheticListeners;
   style?: any;
@@ -108,7 +104,6 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
       onEdit,
       onDelete,
       isDragging,
-      isOverlay,
       attributes,
       listeners,
       style,
@@ -121,9 +116,6 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
         style={style}
         className={clsx(
           'flex items-center justify-between p-3 bg-white dark:bg-[var(--surface-2)] rounded-[var(--radius-sm)] border border-slate-100 dark:border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] group/card select-none hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-slate-200/50 dark:hover:border-white/10 transition-all translate-z-0 [backface-visibility:hidden] will-change-[transform]',
-          isDragging && !isOverlay && 'opacity-30',
-          isOverlay &&
-            'border-[var(--accent-color)] shadow-2xl scale-105 z-50 ring-2 ring-[var(--accent-color)]/50 cursor-grabbing bg-white dark:bg-[var(--surface-2)]',
         )}
       >
         <div className="flex items-center gap-3 min-w-0">
@@ -132,9 +124,7 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
             {...listeners}
             className={clsx(
               'p-3 -ml-2 text-slate-400 hover:text-slate-600 dark:hover:text-[var(--text-primary)] shrink-0 touch-none transition-colors active:scale-95',
-              isOverlay
-                ? 'cursor-grabbing'
-                : 'cursor-grab active:cursor-grabbing',
+              'cursor-grab active:cursor-grabbing',
             )}
             style={{ touchAction: 'none' }}
           >
@@ -209,14 +199,20 @@ const SortableBankCard: React.FC<SortableBankCardProps> = memo(
       id: entry.id,
     });
 
-    const style = {
-      transform: CSS.Transform.toString(transform),
+    const wrapperStyle: React.CSSProperties = {
+      transform: CSS.Translate.toString(transform),
       transition:
         transition ||
         (isDragging
-          ? undefined
+          ? 'none'
           : 'transform 250ms cubic-bezier(0.32, 0.72, 0, 1)'),
       zIndex: isDragging ? 50 : undefined,
+      position: isDragging ? 'relative' : undefined,
+    };
+
+    const cardStyle: React.CSSProperties = {
+      scale: isDragging ? 1.02 : 1,
+      boxShadow: isDragging ? '0 12px 28px rgba(0,0,0,0.25)' : undefined,
     };
 
     return (
@@ -226,18 +222,19 @@ const SortableBankCard: React.FC<SortableBankCardProps> = memo(
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
       >
-        <BankCard
-          ref={setNodeRef}
-          style={style}
-          entry={entry}
-          bank={bank}
-          logoShape={logoShape}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          isDragging={isDragging}
-          attributes={attributes}
-          listeners={listeners}
-        />
+        <div ref={setNodeRef} style={wrapperStyle}>
+          <BankCard
+            style={cardStyle}
+            entry={entry}
+            bank={bank}
+            logoShape={logoShape}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            isDragging={isDragging}
+            attributes={attributes}
+            listeners={listeners}
+          />
+        </div>
       </motion.div>
     );
   },
@@ -302,7 +299,6 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [entryIdToDelete, setEntryIdToDelete] = useState<string | null>(null);
     const [activeSubTab, setActiveSubTab] = useState<'table' | 'list'>('table');
-    const [activeDragId, setActiveDragId] = useState<string | null>(null);
     const [isFabHidden, setIsFabHidden] = useState(() => {
       if (typeof window !== 'undefined' && window.innerWidth >= 1150) {
         return false;
@@ -496,14 +492,9 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
       }
     }, [entryIdToDelete, onDeleteEntry]);
 
-    const handleDragStart = useCallback((event: DragStartEvent) => {
-      setActiveDragId(event.active.id as string);
-    }, []);
-
     const handleDragEnd = useCallback(
       (event: DragEndEvent) => {
         const { active, over } = event;
-        setActiveDragId(null);
 
         if (over && active.id !== over.id) {
           const oldIndex = data.entries.findIndex((e) => e.id === active.id);
@@ -760,7 +751,6 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
-                    onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
                     modifiers={[restrictToVerticalAxis, restrictToWindowEdges]}
                   >
@@ -801,44 +791,6 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                         </AnimatePresence>
                       </div>
                     </SortableContext>
-                    <DragOverlay
-                      dropAnimation={{
-                        sideEffects: defaultDropAnimationSideEffects({
-                          styles: { active: { opacity: '0.4' } },
-                        }),
-                        duration: 250,
-                        easing: 'cubic-bezier(0.32, 0.72, 0, 1)',
-                      }}
-                    >
-                      {activeDragId
-                        ? (() => {
-                            const entry = data.entries.find(
-                              (e) => e.id === activeDragId,
-                            );
-                            if (!entry) return null;
-                            const bank =
-                              getBankDetails(
-                                entry.bankId,
-                                entry.customBankName,
-                              ) ||
-                              (entry.bankId.startsWith('custom_')
-                                ? allCustomBanks.find((b) => b.id === entry.bankId)
-                                : null);
-                            if (!bank) return null;
-
-                            return (
-                              <BankCard
-                                entry={entry}
-                                bank={bank}
-                                logoShape={globalLogoShape || 'circle'}
-                                onEdit={() => {}}
-                                onDelete={() => {}}
-                                isOverlay={true}
-                              />
-                            );
-                          })()
-                        : null}
-                    </DragOverlay>
                   </DndContext>
                 )}
               </motion.div>
