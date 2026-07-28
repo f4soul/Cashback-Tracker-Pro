@@ -44,6 +44,9 @@ import {
   DragEndEvent,
   DraggableAttributes,
   DraggableSyntheticListeners,
+  DragOverlay,
+  DragStartEvent,
+  defaultDropAnimationSideEffects,
 } from '@dnd-kit/core';
 import {
   restrictToVerticalAxis,
@@ -52,7 +55,7 @@ import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
+  rectSortingStrategy,
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -78,6 +81,7 @@ interface SortableBankCardProps {
   entry: CashbackEntry;
   bank: Bank;
   logoShape: LogoShape;
+  index: number;
   onEdit: () => void;
   onDelete: () => void;
 }
@@ -86,9 +90,11 @@ interface BankCardProps {
   entry: CashbackEntry;
   bank: Bank;
   logoShape: LogoShape;
+  index?: number;
   onEdit: () => void;
   onDelete: () => void;
   isDragging?: boolean;
+  isOverlay?: boolean;
   attributes?: DraggableAttributes;
   listeners?: DraggableSyntheticListeners;
   style?: any;
@@ -100,9 +106,11 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
       entry,
       bank,
       logoShape,
+      index,
       onEdit,
       onDelete,
       isDragging,
+      isOverlay,
       attributes,
       listeners,
       style,
@@ -115,6 +123,7 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
         style={style}
         className={clsx(
           'flex items-center justify-between p-3 bg-white dark:bg-[var(--surface-2)] rounded-[var(--radius-sm)] border border-slate-100 dark:border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] group/card select-none hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-slate-200/50 dark:hover:border-white/10 transition-all translate-z-0 [backface-visibility:hidden] will-change-[transform]',
+          isDragging && !isOverlay && 'opacity-0',
         )}
       >
         <div className="flex items-center gap-3 min-w-0">
@@ -130,12 +139,19 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
             <GripVertical className="w-4 h-4" />
           </button>
 
-          <BankLogo
-            bank={bank}
-            customLogo={entry.customLogo}
-            logoShape={logoShape}
-            size="lg"
-          />
+          <div className="relative shrink-0">
+            {index !== undefined && (
+              <div className="absolute -top-1.5 -left-1.5 z-10 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-slate-400/60 dark:bg-black/50 backdrop-blur-sm text-[9px] font-bold text-white shadow-sm pointer-events-none">
+                {index + 1}
+              </div>
+            )}
+            <BankLogo
+              bank={bank}
+              customLogo={entry.customLogo}
+              logoShape={logoShape}
+              size="lg"
+            />
+          </div>
 
           <div className="min-w-0 flex-1">
             <h3 className="font-bold text-sm text-slate-900 dark:text-white truncate leading-tight">
@@ -186,7 +202,7 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
 );
 
 const SortableBankCard: React.FC<SortableBankCardProps> = memo(
-  ({ entry, bank, logoShape, onEdit, onDelete }) => {
+  ({ entry, bank, logoShape, index, onEdit, onDelete }) => {
     const {
       attributes,
       listeners,
@@ -201,11 +217,6 @@ const SortableBankCard: React.FC<SortableBankCardProps> = memo(
     const wrapperStyle: React.CSSProperties = {
       transform: CSS.Translate.toString(transform),
       transition: transition || 'transform 250ms cubic-bezier(0.32, 0.72, 0, 1)',
-    };
-
-    const cardStyle: React.CSSProperties = {
-      scale: isDragging ? 1.02 : 1,
-      boxShadow: isDragging ? '0 12px 28px rgba(0,0,0,0.25)' : undefined,
     };
 
     const motionStyle: React.CSSProperties = {
@@ -224,10 +235,10 @@ const SortableBankCard: React.FC<SortableBankCardProps> = memo(
       >
         <div ref={setNodeRef} style={wrapperStyle}>
           <BankCard
-            style={cardStyle}
             entry={entry}
             bank={bank}
             logoShape={logoShape}
+            index={index}
             onEdit={onEdit}
             onDelete={onDelete}
             isDragging={isDragging}
@@ -292,6 +303,9 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
       };
     }, []);
 
+    const [activeDragId, setActiveDragId] = useState<string | null>(null);
+    const [activeDragWidth, setActiveDragWidth] = useState<number | undefined>(undefined);
+    const [isGridLayout, setIsGridLayout] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1024);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingEntry, setEditingEntry] = useState<CashbackEntry | undefined>(
       undefined,
@@ -492,8 +506,14 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
       }
     }, [entryIdToDelete, onDeleteEntry]);
 
+    const handleDragStart = useCallback((event: DragStartEvent) => {
+      setActiveDragId(event.active.id as string);
+      setActiveDragWidth(event.active.rect.current.initial?.width ?? undefined);
+    }, []);
+
     const handleDragEnd = useCallback(
       (event: DragEndEvent) => {
+        setActiveDragId(null);
         const { active, over } = event;
 
         if (over && active.id !== over.id) {
@@ -684,7 +704,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
               )}
             >
               <TableIcon className="w-3.5 h-3.5 shrink-0" />
-              <span className="leading-none">Таблица</span>
+              <span className="leading-none uppercase">Таблица</span>
             </button>
             <button
               onClick={() => setActiveSubTab('list')}
@@ -696,7 +716,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
               )}
             >
               <LayoutList className="w-3.5 h-3.5 shrink-0" />
-              <span className="leading-none">Список банков</span>
+              <span className="leading-none uppercase">Список банков</span>
             </button>
         </div>
 
@@ -751,16 +771,17 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
+                    onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
-                    modifiers={[restrictToVerticalAxis]}
+                    modifiers={isGridLayout ? [] : [restrictToVerticalAxis]}
                   >
                     <SortableContext
                       items={data.entries.map((e) => e.id)}
-                      strategy={verticalListSortingStrategy}
+                      strategy={rectSortingStrategy}
                     >
-                      <div className="flex flex-col gap-1">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
                         <AnimatePresence initial={false}>
-                          {data.entries.map((entry) => {
+                          {data.entries.map((entry, index) => {
                             const bank =
                               getBankDetails(
                                 entry.bankId,
@@ -780,6 +801,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                                 entry={entry}
                                 bank={bank}
                                 logoShape={logoShape}
+                                index={index}
                                 onEdit={() => {
                                   setEditingEntry(entry);
                                   setIsModalOpen(true);
@@ -791,6 +813,41 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                         </AnimatePresence>
                       </div>
                     </SortableContext>
+
+                    {createPortal(
+                      <DragOverlay
+                        dropAnimation={{
+                          duration: 200,
+                          easing: 'cubic-bezier(0.32, 0.72, 0, 1)',
+                        }}
+                      >
+                        {activeDragId ? (
+                          <div style={{ width: activeDragWidth }}>
+                            <BankCard
+                              isOverlay
+                              index={data.entries.findIndex((e) => e.id === activeDragId)}
+                              entry={data.entries.find((e) => e.id === activeDragId)!}
+                            bank={
+                              getBankDetails(
+                                data.entries.find((e) => e.id === activeDragId)?.bankId || '',
+                                data.entries.find((e) => e.id === activeDragId)?.customBankName
+                              ) || (data.entries.find((e) => e.id === activeDragId)?.bankId.startsWith('custom_')
+                                ? allCustomBanks.find((b) => b.id === data.entries.find((e) => e.id === activeDragId)?.bankId)
+                                : null)!
+                            }
+                            logoShape={globalLogoShape || 'circle'}
+                            onEdit={() => {}}
+                            onDelete={() => {}}
+                            style={{
+                              scale: 1.02,
+                              boxShadow: '0 12px 28px rgba(0,0,0,0.25)',
+                            }}
+                          />
+                          </div>
+                        ) : null}
+                      </DragOverlay>,
+                      document.body
+                    )}
                   </DndContext>
                 )}
               </motion.div>
