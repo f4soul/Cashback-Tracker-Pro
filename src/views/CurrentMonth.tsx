@@ -35,7 +35,10 @@ import { clsx } from 'clsx';
 import { motion, AnimatePresence, useAnimation } from 'motion/react';
 import {
   DndContext,
+
   closestCenter,
+  pointerWithin,
+  closestCorners,
   KeyboardSensor,
   MouseSensor,
   TouchSensor,
@@ -56,6 +59,7 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   rectSortingStrategy,
+  verticalListSortingStrategy,
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -141,7 +145,7 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
 
           <div className="relative shrink-0">
             {index !== undefined && (
-              <div className="absolute -top-1.5 -left-1.5 z-10 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-slate-400/60 dark:bg-black/50 backdrop-blur-sm text-[9px] font-bold text-white shadow-sm pointer-events-none">
+              <div className="absolute -top-1.5 -left-1.5 z-10 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-white/40 dark:bg-black/30 border border-[var(--border-strong)] backdrop-blur-md text-[9px] font-bold text-[var(--text-secondary)] shadow-sm pointer-events-none">
                 {index + 1}
               </div>
             )}
@@ -215,7 +219,7 @@ const SortableBankCard: React.FC<SortableBankCardProps> = memo(
     });
 
     const wrapperStyle: React.CSSProperties = {
-      transform: CSS.Translate.toString(transform),
+      transform: CSS.Transform.toString(transform),
       transition: transition || 'transform 250ms cubic-bezier(0.32, 0.72, 0, 1)',
     };
 
@@ -770,7 +774,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                 ) : (
                   <DndContext
                     sensors={sensors}
-                    collisionDetection={closestCenter}
+                    collisionDetection={pointerWithin}
                     onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
                     modifiers={isGridLayout ? [] : [restrictToVerticalAxis]}
@@ -840,6 +844,8 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                             onDelete={() => {}}
                             style={{
                               scale: 1.02,
+                              rotate: '1.5deg',
+                              opacity: 0.95,
                               boxShadow: '0 12px 28px rgba(0,0,0,0.25)',
                             }}
                           />
