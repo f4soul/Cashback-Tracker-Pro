@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     
     <!-- Динамическая тема цвета -->
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FAFAFA" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000" />
     <meta name="description" content="Умный трекер кэшбека и банковских карт. Отслеживайте свои категории и оптимизируйте расходы." />
     
     <!-- Apple PWA -->
@@ -23,13 +24,18 @@
           if (isDark) root.classList.add('dark');
           else root.classList.remove('dark');
           
-          const color = isDark ? '#0A0A0A' : '#FAFAFA';
+          const color = isDark ? '#000000' : '#FAFAFA';
           root.style.setProperty('background-color', color, 'important');
           
           // Force update meta
           document.querySelectorAll('meta[name="theme-color"][media]').forEach(m => m.remove());
-          const meta = document.querySelector('meta[name="theme-color"]:not([media])');
-          if (meta) meta.setAttribute('content', color);
+          let meta = document.querySelector('meta[name="theme-color"]:not([media])');
+          if (!meta) {
+            meta = document.createElement('meta');
+            meta.setAttribute('name', 'theme-color');
+            document.head.appendChild(meta);
+          }
+          meta.setAttribute('content', color);
         } catch(e) {}
       })();
     </script>
