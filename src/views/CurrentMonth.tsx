@@ -310,6 +310,11 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     const [activeDragId, setActiveDragId] = useState<string | null>(null);
     const [activeDragWidth, setActiveDragWidth] = useState<number | undefined>(undefined);
     const [isGridLayout, setIsGridLayout] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1024);
+    useEffect(() => {
+      const handleResize = () => setIsGridLayout(window.innerWidth >= 1024);
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingEntry, setEditingEntry] = useState<CashbackEntry | undefined>(
       undefined,
@@ -774,14 +779,14 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                 ) : (
                   <DndContext
                     sensors={sensors}
-                    collisionDetection={pointerWithin}
+                    collisionDetection={closestCenter}
                     onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
                     modifiers={isGridLayout ? [] : [restrictToVerticalAxis]}
                   >
                     <SortableContext
                       items={data.entries.map((e) => e.id)}
-                      strategy={rectSortingStrategy}
+                      strategy={isGridLayout ? rectSortingStrategy : verticalListSortingStrategy}
                     >
                       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
                         <AnimatePresence initial={false}>
