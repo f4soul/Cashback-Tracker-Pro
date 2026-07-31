@@ -338,7 +338,7 @@ export default function App() {
         }}
       />
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-[280px] h-[100dvh] sticky top-0 bg-white dark:bg-[var(--surface-1)] border-r border-slate-100 dark:border-[var(--border-hairline)] z-40 shrink-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
+      <aside className="hidden md:flex flex-col w-[280px] h-[100dvh] sticky top-0 bg-white dark:bg-[var(--surface-1)] transition-colors duration-300 border-r border-slate-100 dark:border-[var(--border-hairline)] z-40 shrink-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
         <div className="px-6 py-10 flex flex-col h-full">
           <div className="flex items-center mb-12 px-1">
             <div className="flex items-center gap-3 flex-1">
@@ -346,10 +346,10 @@ export default function App() {
                 <WalletIcon className="w-7 h-7 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight leading-none">
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300 tracking-tight leading-none">
                   Cashback
                 </h1>
-                <p className="text-[10px] font-bold text-[var(--accent-color)] uppercase tracking-widest mt-1">
+                <p className="text-[10px] font-bold text-[var(--accent-color)] transition-colors duration-300 uppercase tracking-widest mt-1">
                   Tracker Pro
                 </p>
               </div>
@@ -428,16 +428,16 @@ export default function App() {
           !headerVisible && '-translate-y-full',
         )}
       >
-        <div className="max-w-3xl mx-auto bg-white/95 dark:bg-[var(--surface-2)]/95 backdrop-blur-2xl border border-slate-100 dark:border-[var(--border-hairline)] rounded-[var(--radius-app)] px-4 py-2.5 flex items-center justify-between shadow-[var(--elevation-highlight),0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[var(--elevation-highlight),0_20px_40px_rgb(0,0,0,0.2)]">
+        <div className="max-w-3xl mx-auto bg-white/95 dark:bg-[var(--surface-2)]/95 transition-colors duration-300 backdrop-blur-2xl border border-slate-100 dark:border-[var(--border-hairline)] rounded-[var(--radius-app)] px-4 py-2.5 flex items-center justify-between shadow-[var(--elevation-highlight),0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[var(--elevation-highlight),0_20px_40px_rgb(0,0,0,0.2)]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[var(--accent-color)] opacity-90 rounded-[22%] flex items-center justify-center shadow-sm">
               <WalletIcon className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight leading-none">
+              <h1 className="text-lg font-bold text-gray-900 dark:text-white transition-colors duration-300 tracking-tight leading-none">
                 Cashback
               </h1>
-              <p className="text-[10px] font-black text-[var(--accent-color)] uppercase tracking-widest mt-0.5">
+              <p className="text-[10px] font-black text-[var(--accent-color)] transition-colors duration-300 uppercase tracking-widest mt-0.5">
                 Tracker Pro
               </p>
             </div>

@@ -16,12 +16,20 @@ export default defineConfig(({ mode }) => {
         registerType: 'autoUpdate',
         includeAssets: [
           'favicon.png',
+          'favicon-16x16.png',
+          'favicon-32x32.png',
+          'favicon.ico',
           'apple-touch-icon.png',
           'icon.svg',
+          'pwa-192x192.png',
+          'pwa-512x512.png',
+          'pwa-maskable-192x192.png',
+          'pwa-maskable-512x512.png',
+          'manifest.json'
         ],
         workbox: {
           maximumFileSizeToCacheInBytes: 5000000,
-          globPatterns: ['**/*.{js,css,html,svg,png,ico,txt}'],
+          globPatterns: ['**/*.{js,css,html,svg,png,ico,txt,json}'],
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -53,57 +61,14 @@ export default defineConfig(({ mode }) => {
             },
           ],
         },
-
-        manifest: {
-          name: 'Cashback Tracker Pro',
-          short_name: 'Cashback Pro',
-          description: 'Умный трекер кэшбэка',
-          theme_color: '#10b981',
-          background_color: '#FAFAFA',
-          display: 'standalone',
-          display_override: ['standalone'],
-          orientation: 'portrait',
-          categories: ['finance', 'utilities'],
-          start_url: '/',
-          scope: '/',
-          id: 'cashback-tracker-pro',
-
-          icons: [
-            {
-              src: 'pwa-192x192.png',
-              sizes: '192x192',
-              type: 'image/png',
-              purpose: 'any',
-            },
-            {
-              src: 'pwa-512x512.png',
-              sizes: '512x512',
-              type: 'image/png',
-              purpose: 'any',
-            },
-            {
-              src: 'apple-touch-icon.png',
-              sizes: '180x180',
-              type: 'image/png',
-              purpose: 'any',
-            },
-            {
-              src: 'icon.svg',
-              sizes: 'any',
-              type: 'image/svg+xml',
-              purpose: 'any maskable',
-            },
-          ],
-        },
+        manifest: false,
       }),
     ],
-
     resolve: {
       alias: {
         '@': path.resolve(__dirname, 'src'),
       },
     },
-
     server: {
       hmr: true,
     },
