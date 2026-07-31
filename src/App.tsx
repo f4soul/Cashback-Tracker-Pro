@@ -346,10 +346,10 @@ export default function App() {
                 <WalletIcon className="w-7 h-7 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight leading-none">
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-150 tracking-tight leading-none">
                   Cashback
                 </h1>
-                <p className="text-[10px] font-bold text-[var(--accent-color)] uppercase tracking-widest mt-1">
+                <p className="text-[10px] font-bold text-[var(--accent-color)] transition-colors duration-150 uppercase tracking-widest mt-1">
                   Tracker Pro
                 </p>
               </div>
@@ -448,16 +448,19 @@ export default function App() {
           !headerVisible && '-translate-y-full',
         )}
       >
-        <div className="max-w-3xl mx-auto bg-white/95 dark:bg-[var(--surface-2)]/95 transition-colors duration-300 backdrop-blur-2xl border border-slate-100 dark:border-[var(--border-hairline)] rounded-[var(--radius-app)] px-4 py-2.5 flex items-center justify-between shadow-[var(--elevation-highlight),0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[var(--elevation-highlight),0_20px_40px_rgb(0,0,0,0.2)]">
+        <div className="relative z-10 max-w-3xl mx-auto rounded-[var(--radius-app)] px-4 py-2.5 flex items-center justify-between">
+          {/* iOS Safari Backdrop-Filter Composite Layer Fix */}
+          <div className="absolute inset-0 bg-white/95 dark:bg-[var(--surface-2)]/95 transition-colors duration-300 backdrop-blur-2xl border border-slate-100 dark:border-[var(--border-hairline)] rounded-[var(--radius-app)] shadow-[var(--elevation-highlight),0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[var(--elevation-highlight),0_20px_40px_rgb(0,0,0,0.2)] pointer-events-none -z-10" />
+          
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[var(--accent-color)] opacity-90 rounded-[22%] flex items-center justify-center shadow-sm">
               <WalletIcon className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight leading-none">
+              <h1 className="text-lg font-bold text-gray-900 dark:text-white transition-colors duration-150 tracking-tight leading-none">
                 Cashback
               </h1>
-              <p className="text-[10px] font-black text-[var(--accent-color)] uppercase tracking-widest mt-0.5">
+              <p className="text-[10px] font-black text-[var(--accent-color)] transition-colors duration-150 uppercase tracking-widest mt-0.5">
                 Tracker Pro
               </p>
             </div>
