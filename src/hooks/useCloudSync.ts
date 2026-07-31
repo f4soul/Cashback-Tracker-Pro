@@ -60,6 +60,8 @@ export function useCloudSync({
     const unsubscribe = onSnapshot(
       userDocRef,
       (snapshot) => {
+        if (snapshot.metadata.hasPendingWrites) return;
+        
         if (snapshot.exists()) {
           const data = snapshot.data();
           if (data.settings) setSettings(data.settings);
