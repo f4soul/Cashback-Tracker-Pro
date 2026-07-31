@@ -126,7 +126,7 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
         ref={ref}
         style={style}
         className={clsx(
-          'flex items-center justify-between p-3 bg-white dark:bg-[var(--surface-2)] rounded-[var(--radius-sm)] border border-slate-100 dark:border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] group/card select-none hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-slate-200/50 dark:hover:border-white/10 transition-all translate-z-0 [backface-visibility:hidden] will-change-[transform]',
+          'flex items-center justify-between p-3 bg-white dark:bg-[var(--surface-2)] rounded-[var(--radius-sm)] border border-slate-100 dark:border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] group/card select-none hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-slate-200/50 dark:hover:border-white/10 transition-[background-color,border-color,box-shadow,opacity] duration-200 translate-z-0 [backface-visibility:hidden]',
           isDragging && !isOverlay && 'opacity-0',
         )}
       >
@@ -216,11 +216,15 @@ const SortableBankCard: React.FC<SortableBankCardProps> = memo(
       isDragging,
     } = useSortable({
       id: entry.id,
+      transition: {
+        duration: 250,
+        easing: 'cubic-bezier(0.32, 0.72, 0, 1)',
+      },
     });
 
     const wrapperStyle: React.CSSProperties = {
       transform: CSS.Transform.toString(transform),
-      transition: transition || 'transform 250ms cubic-bezier(0.32, 0.72, 0, 1)',
+      transition,
     };
 
     const motionStyle: React.CSSProperties = {

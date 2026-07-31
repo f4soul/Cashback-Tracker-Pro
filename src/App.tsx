@@ -346,10 +346,10 @@ export default function App() {
                 <WalletIcon className="w-7 h-7 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-150 tracking-tight leading-none">
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight leading-none">
                   Cashback
                 </h1>
-                <p className="text-[10px] font-bold text-[var(--accent-color)] transition-colors duration-150 uppercase tracking-widest mt-1">
+                <p className="text-[10px] font-bold text-[var(--accent-color)] uppercase tracking-widest mt-1">
                   Tracker Pro
                 </p>
               </div>
@@ -457,10 +457,10 @@ export default function App() {
               <WalletIcon className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-gray-900 dark:text-white transition-colors duration-150 tracking-tight leading-none">
+              <h1 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight leading-none">
                 Cashback
               </h1>
-              <p className="text-[10px] font-black text-[var(--accent-color)] transition-colors duration-150 uppercase tracking-widest mt-0.5">
+              <p className="text-[10px] font-black text-[var(--accent-color)] uppercase tracking-widest mt-0.5">
                 Tracker Pro
               </p>
             </div>
