@@ -779,7 +779,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                 ) : (
                   <DndContext
                     sensors={sensors}
-                    collisionDetection={closestCenter}
+                    collisionDetection={closestCorners}
                     onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
                     modifiers={isGridLayout ? [] : [restrictToVerticalAxis]}

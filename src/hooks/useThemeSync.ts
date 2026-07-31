@@ -71,19 +71,6 @@ export function useThemeSync(activeTab: 'current' | 'archive' | 'settings') {
 
     // Run immediately on active tab switch or theme change
     syncColorsAndMetaTags();
-
-    // Run again on next frame when React components finish layout mount and paint
-    const rAF = requestAnimationFrame(syncColorsAndMetaTags);
-
-    // Schedule delayed syncs to handle component mounting, modal popups, scroll-bar hidden layouts, or Framer Motion enter animations completing
-    const timer100 = setTimeout(syncColorsAndMetaTags, 100);
-    const timer300 = setTimeout(syncColorsAndMetaTags, 300);
-
-    return () => {
-      cancelAnimationFrame(rAF);
-      clearTimeout(timer100);
-      clearTimeout(timer300);
-    };
   }, [theme, settings]);
 
   return {
