@@ -263,7 +263,9 @@ export const BankForm: React.FC<BankFormProps> = memo(({
     <div className="flex flex-col gap-4 flex-1">
       {/* Bank Selection */}
       <div className="space-y-3">
-        <label className="text-sm font-medium text-gray-700 dark:text-[var(--text-secondary)]">Выберите банк</label>
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-medium text-gray-700 dark:text-[var(--text-secondary)]">Выберите банк</label>
+        </div>
         {!selectedBankId ? (
           <>
             <div className="relative">
