@@ -109,7 +109,7 @@ export const Settings: React.FC<SettingsProps> = memo(({
     exportToPDF('settings-export-table', `Кэшбек_${currentMonthData.monthId}.pdf`);
   }, [currentMonthData.monthId]);
 
-  const isAdmin = userEmail === 'filimlive@gmail.com';
+  const isAdmin = userEmail === import.meta.env.VITE_ADMIN_EMAIL;
 
   return (
     <div className="flex flex-col gap-4 pb-8">
