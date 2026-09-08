@@ -1,25 +1,27 @@
-import React, { useState, useRef, useEffect, useCallback, memo, useMemo } from 'react';
-import { createPortal } from 'react-dom';
-import { MonthData, CashbackEntry, Bank, LogoShape } from '../types';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  memo,
+  useMemo,
+} from "react";
+import { createPortal } from "react-dom";
+import { MonthData, CashbackEntry, Bank, LogoShape } from "../types";
 import {
   getCurrentMonthId,
   getNextMonthId,
   getPreviousMonthId,
-  formatMonthId,
-  capitalize,
-} from '../utils/date';
-import { pluralize } from '../utils/format';
-import { Modal } from '../components/ui/Modal';
-import { BankForm } from '../components/BankForm';
-import { CashbackTable } from '../components/CashbackTable';
-import { ConfirmModal } from '../components/ui/ConfirmModal';
-import { exportToPDF, exportToExcel, exportToImage } from '../utils/export';
-import { BankLogo } from '../components/BankLogo';
+} from "../utils/date";
+import { pluralize } from "../utils/format";
+import { Modal } from "../components/ui/Modal";
+import { BankForm } from "../components/BankForm";
+import { CashbackTable } from "../components/CashbackTable";
+import { ConfirmModal } from "../components/ui/ConfirmModal";
+import { exportToPDF, exportToExcel, exportToImage } from "../utils/export";
+import { BankLogo } from "../components/BankLogo";
 import {
   Plus,
-  Download,
-  FileSpreadsheet,
-  Image as ImageIcon,
   Edit2,
   Trash2,
   ChevronDown,
@@ -27,17 +29,12 @@ import {
   GripVertical,
   Table as TableIcon,
   LayoutList,
-  Eye,
-  EyeOff,
-} from 'lucide-react';
-import { getBankDetails } from '../constants';
-import { clsx } from 'clsx';
-import { motion, AnimatePresence, useAnimation } from 'motion/react';
+} from "lucide-react";
+import { getBankDetails } from "../constants";
+import { clsx } from "clsx";
+import { motion, AnimatePresence } from "motion/react";
 import {
   DndContext,
-
-  closestCenter,
-  pointerWithin,
   closestCorners,
   KeyboardSensor,
   MouseSensor,
@@ -49,11 +46,8 @@ import {
   DraggableSyntheticListeners,
   DragOverlay,
   DragStartEvent,
-  defaultDropAnimationSideEffects,
-} from '@dnd-kit/core';
-import {
-  restrictToVerticalAxis,
-} from '@dnd-kit/modifiers';
+} from "@dnd-kit/core";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import {
   arrayMove,
   SortableContext,
@@ -61,8 +55,8 @@ import {
   rectSortingStrategy,
   verticalListSortingStrategy,
   useSortable,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface CurrentMonthProps {
   data: MonthData;
@@ -77,7 +71,6 @@ interface CurrentMonthProps {
   onDeleteCustomBank: (id: string) => void;
   onAddCustomCategory: (category: string) => void;
   globalLogoShape: LogoShape;
-  allMonthIds: string[];
   isExiting?: boolean;
 }
 
@@ -101,7 +94,7 @@ interface BankCardProps {
   isOverlay?: boolean;
   attributes?: DraggableAttributes;
   listeners?: DraggableSyntheticListeners;
-  style?: any;
+  style?: React.CSSProperties;
 }
 
 const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
@@ -126,8 +119,8 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
         ref={ref}
         style={style}
         className={clsx(
-          'flex items-center justify-between p-3 bg-white dark:bg-[var(--surface-2)] rounded-[var(--radius-sm)] border border-slate-100 dark:border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] group/card select-none hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-slate-200/50 dark:hover:border-white/10 transition-[background-color,border-color,box-shadow,opacity] duration-200 translate-z-0 [backface-visibility:hidden]',
-          isDragging && !isOverlay && 'opacity-0',
+          "flex items-center justify-between p-3 bg-white dark:bg-[var(--surface-1)] rounded-control border border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] group/card select-none hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-[var(--accent-color)]/30 transition-[background-color,border-color,box-shadow,opacity] duration-200 translate-z-0 [backface-visibility:hidden]",
+          isDragging && !isOverlay && "opacity-0",
         )}
       >
         <div className="flex items-center gap-3 min-w-0">
@@ -135,17 +128,17 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
             {...attributes}
             {...listeners}
             className={clsx(
-              'p-3 -ml-2 text-slate-400 hover:text-slate-600 dark:hover:text-[var(--text-primary)] shrink-0 touch-none transition-colors active:scale-95',
-              'cursor-grab active:cursor-grabbing',
+              "p-3 -ml-2 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] shrink-0 touch-none transition-colors active:scale-95",
+              "cursor-grab active:cursor-grabbing",
             )}
-            style={{ touchAction: 'none' }}
+            style={{ touchAction: "none" }}
           >
             <GripVertical className="w-4 h-4" />
           </button>
 
           <div className="relative shrink-0">
             {index !== undefined && (
-              <div className="absolute -top-1.5 -left-1.5 z-10 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-white/40 dark:bg-black/30 border border-[var(--border-strong)] backdrop-blur-md text-[9px] font-bold text-[var(--text-secondary)] shadow-sm pointer-events-none">
+              <div className="absolute -top-1.5 -left-1.5 z-10 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full surface-solid border border-[var(--border-strong)] text-[9px] font-bold text-[var(--text-secondary)] shadow-sm pointer-events-none">
                 {index + 1}
               </div>
             )}
@@ -158,15 +151,15 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
           </div>
 
           <div className="min-w-0 flex-1">
-            <h3 className="font-bold text-sm text-slate-900 dark:text-white truncate leading-tight">
+            <h3 className="font-bold text-sm text-[var(--text-primary)] truncate leading-tight">
               {bank.name}
             </h3>
-            <p className="text-[10px] font-semibold text-slate-500 dark:text-[var(--text-secondary)] truncate leading-none mt-1">
-              {entry.categories.length}{' '}
+            <p className="text-[10px] font-semibold text-[var(--text-secondary)] truncate leading-none mt-1">
+              {entry.categories.length}{" "}
               {pluralize(entry.categories.length, [
-                'категория',
-                'категории',
-                'категорий',
+                "категория",
+                "категории",
+                "категорий",
               ])}
             </p>
           </div>
@@ -182,7 +175,7 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
               e.stopPropagation();
               onEdit();
             }}
-            className="p-2 text-slate-400 hover:text-[var(--accent-color)] hover:bg-[var(--percent-bg)] rounded-xl transition-all cursor-pointer active:scale-95"
+            className="p-2 text-[var(--text-tertiary)] hover:text-[var(--accent-color)] hover:bg-[var(--percent-bg)] rounded-control transition-[color,background-color,transform] cursor-pointer active:scale-95"
           >
             <Edit2 className="w-4 h-4" />
           </button>
@@ -195,7 +188,7 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
               e.stopPropagation();
               onDelete();
             }}
-            className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all cursor-pointer active:scale-95"
+            className="p-2 text-[var(--text-tertiary)] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-control transition-[color,background-color,transform] cursor-pointer active:scale-95"
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -218,7 +211,7 @@ const SortableBankCard: React.FC<SortableBankCardProps> = memo(
       id: entry.id,
       transition: {
         duration: 250,
-        easing: 'cubic-bezier(0.32, 0.72, 0, 1)',
+        easing: "cubic-bezier(0.32, 0.72, 0, 1)",
       },
     });
 
@@ -228,9 +221,9 @@ const SortableBankCard: React.FC<SortableBankCardProps> = memo(
     };
 
     const motionStyle: React.CSSProperties = {
-      position: 'relative',
+      position: "relative",
       zIndex: isDragging ? 50 : 1,
-      transition: isDragging ? 'none' : 'z-index 0s 250ms',
+      transition: isDragging ? "none" : "z-index 0s 250ms",
     };
 
     return (
@@ -273,7 +266,6 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     onDeleteCustomBank,
     onAddCustomCategory,
     globalLogoShape,
-    allMonthIds,
     isExiting = false,
   }) => {
     const allCustomBanks = useMemo(
@@ -296,28 +288,21 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
         ? [prevMonthId, currentMonthId]
         : [currentMonthId];
     const [mounted, setMounted] = useState(false);
-    const [currentTab, setCurrentTab] = useState('current');
     useEffect(() => {
       setMounted(true);
-      const handleTabChange = (e: Event) => {
-        const detail = (e as CustomEvent).detail;
-        if (detail && detail.activeTab) {
-          setCurrentTab(detail.activeTab);
-        }
-      };
-      window.addEventListener('app-tab-change', handleTabChange);
-      return () => {
-        window.removeEventListener('app-tab-change', handleTabChange);
-      };
     }, []);
 
     const [activeDragId, setActiveDragId] = useState<string | null>(null);
-    const [activeDragWidth, setActiveDragWidth] = useState<number | undefined>(undefined);
-    const [isGridLayout, setIsGridLayout] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1024);
+    const [activeDragWidth, setActiveDragWidth] = useState<number | undefined>(
+      undefined,
+    );
+    const [isGridLayout, setIsGridLayout] = useState(
+      () => typeof window !== "undefined" && window.innerWidth >= 1024,
+    );
     useEffect(() => {
       const handleResize = () => setIsGridLayout(window.innerWidth >= 1024);
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
     }, []);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingEntry, setEditingEntry] = useState<CashbackEntry | undefined>(
@@ -325,13 +310,13 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     );
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [entryIdToDelete, setEntryIdToDelete] = useState<string | null>(null);
-    const [activeSubTab, setActiveSubTab] = useState<'table' | 'list'>('table');
+    const [activeSubTab, setActiveSubTab] = useState<"table" | "list">("table");
     const [isFabHidden, setIsFabHidden] = useState(() => {
-      if (typeof window !== 'undefined' && window.innerWidth >= 1150) {
+      if (typeof window !== "undefined" && window.innerWidth >= 1150) {
         return false;
       }
-      const saved = localStorage.getItem('fab_hidden');
-      return saved === 'true';
+      const saved = localStorage.getItem("fab_hidden");
+      return saved === "true";
     });
     const [dragConstraints, setDragConstraints] = useState({
       top: 0,
@@ -344,7 +329,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
       bottom: 0,
     });
     const [yOffset, setYOffset] = useState(() => {
-      const saved = localStorage.getItem('fab_y_offset');
+      const saved = localStorage.getItem("fab_y_offset");
       return saved ? parseInt(saved) : 0;
     });
     const [rightPos, setRightPos] = useState(16);
@@ -352,8 +337,8 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     const isDraggingRestore = useRef(false);
 
     useEffect(() => {
-      localStorage.setItem('fab_y_offset', yOffset.toString());
-      localStorage.setItem('fab_hidden', isFabHidden.toString());
+      localStorage.setItem("fab_y_offset", yOffset.toString());
+      localStorage.setItem("fab_hidden", isFabHidden.toString());
     }, [yOffset, isFabHidden]);
 
     useEffect(() => {
@@ -363,10 +348,10 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
           return;
 
         const target = e.target as HTMLElement;
-        if (target && typeof target.closest === 'function') {
+        if (target && typeof target.closest === "function") {
           if (
-            target.closest('#fab-container') ||
-            target.closest('#fab-restore')
+            target.closest("#fab-container") ||
+            target.closest("#fab-restore")
           ) {
             return;
           }
@@ -376,10 +361,10 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
       };
 
       // Use capture phase to ensure we catch events even if they are stopped elsewhere
-      window.addEventListener('scroll', handleInteraction, true);
+      window.addEventListener("scroll", handleInteraction, true);
 
       return () => {
-        window.removeEventListener('scroll', handleInteraction, true);
+        window.removeEventListener("scroll", handleInteraction, true);
       };
     }, [isFabHidden]);
 
@@ -403,7 +388,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
 
           // On desktop, we want to place the FAB outside the table to avoid overlap
           if (contentMargin > 80) {
-            setRightPos(contentMargin - 64); 
+            setRightPos(contentMargin - 64);
           } else if (isWide) {
             setRightPos(24);
           } else {
@@ -444,8 +429,8 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
         });
       };
       updateConstraints();
-      window.addEventListener('resize', updateConstraints);
-      return () => window.removeEventListener('resize', updateConstraints);
+      window.addEventListener("resize", updateConstraints);
+      return () => window.removeEventListener("resize", updateConstraints);
     }, []);
 
     const snapToPosition = useCallback(
@@ -464,7 +449,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
 
     useEffect(() => {
       if (dragConstraints.bottom !== 0) {
-        const saved = localStorage.getItem('fab_y_offset');
+        const saved = localStorage.getItem("fab_y_offset");
         if (!saved) {
           setYOffset(snapToPosition(0));
         }
@@ -488,7 +473,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     );
 
     const handleSaveEntry = useCallback(
-      (entryData: Omit<CashbackEntry, 'id'>) => {
+      (entryData: Omit<CashbackEntry, "id">) => {
         let newEntries = [...data.entries];
         if (editingEntry) {
           newEntries = newEntries.map((e) =>
@@ -537,206 +522,208 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
           onUpdate({ ...data, entries: newEntries });
         }
       },
-      [data.entries, onUpdate],
+      [data, onUpdate],
     );
 
-    const handleExport = useCallback(() => {
-      exportToPDF('current-cashback-table', `Кэшбек_${data.monthId}.pdf`);
+    const handleExport = useCallback(async () => {
+      await exportToPDF("current-cashback-table", `Кэшбек_${data.monthId}.pdf`);
     }, [data.monthId]);
 
-    const handleExportExcel = useCallback(() => {
-      exportToExcel(data, allCustomBanks, `Кэшбек_${data.monthId}.xlsx`);
+    const handleExportExcel = useCallback(async () => {
+      await exportToExcel(data, allCustomBanks, `Кэшбек_${data.monthId}.xlsx`);
     }, [data, allCustomBanks]);
 
-    const handleExportImage = useCallback(() => {
-      exportToImage('current-cashback-table', `Кэшбек_${data.monthId}.png`);
+    const handleExportImage = useCallback(async () => {
+      await exportToImage(
+        "current-cashback-table",
+        `Кэшбек_${data.monthId}.png`,
+      );
     }, [data.monthId]);
-
-    const sidebarWidth = window.innerWidth >= 768 ? 260 : 0;
-    const initialRight = window.innerWidth >= 768 ? 32 : 20;
-    const fabSize = 56;
-    const margin = 16;
-    const visibleLeftLimit = -(
-      window.innerWidth -
-      sidebarWidth -
-      fabSize -
-      margin -
-      initialRight
-    );
 
     return (
       <div className="flex flex-col relative gap-1">
-        {mounted && currentTab === 'current' && !isExiting && createPortal(
-          <AnimatePresence mode="wait">
-            {!isFabHidden ? (
-              <motion.div
-                key="fab-container"
-                id="fab-container"
-                drag="y"
-                dragConstraints={dragConstraints}
-                dragElastic={0.1}
-                dragMomentum={false}
-                initial={{ opacity: 0, scale: 0.8, x: 0, y: yOffset }}
-                animate={{
-                  opacity: 1,
-                  scale: 1,
-                  x: 0,
-                  y: yOffset,
-                }}
-                transition={{
-                  duration: 0.4,
-                  ease: [0.32, 0.72, 0, 1],
-                }}
-                exit={{
-                  opacity: 0,
-                  scale: 0.5,
-                  transition: { duration: 0.15 },
-                }}
-                onDragStart={() => {
-                  isDraggingFab.current = true;
-                }}
-                onDragEnd={(e, info) => {
-                  setTimeout(() => {
-                    isDraggingFab.current = false;
-                  }, 100);
-
-                  const finalY = yOffset + info.offset.y;
-                  // Snap to 3 positions: top, center, bottom
-                  const top = dragConstraints.top;
-                  const bottom = dragConstraints.bottom;
-                  const center = (top + bottom) / 2;
-                  const points = [top, center, bottom];
-
-                  const snappedY = points.reduce((prev, curr) =>
-                    Math.abs(curr - finalY) < Math.abs(prev - finalY)
-                      ? curr
-                      : prev,
-                  );
-                  setYOffset(snappedY);
-                }}
-                className="fixed pwa-fab-bottom z-50 touch-none select-none"
-                style={{ right: rightPos, willChange: 'transform, opacity', touchAction: 'none' }}
-              >
-                <button
-                  onClick={(e) => {
-                    if (isDraggingFab.current) {
-                      e.preventDefault();
-                      return;
-                    }
-                    setEditingEntry(undefined);
-                    setIsModalOpen(true);
+        {mounted &&
+          !isExiting &&
+          createPortal(
+            <AnimatePresence mode="wait">
+              {!isFabHidden ? (
+                <motion.div
+                  key="fab-container"
+                  id="fab-container"
+                  drag="y"
+                  dragConstraints={dragConstraints}
+                  dragElastic={0.1}
+                  dragMomentum={false}
+                  initial={{ opacity: 0, scale: 0.8, x: 0, y: yOffset }}
+                  animate={{
+                    opacity: 1,
+                    scale: 1,
+                    x: 0,
+                    y: yOffset,
                   }}
-                  title="Добавить банк"
-                  className="w-14 h-14 bg-[var(--accent-color)] text-white rounded-[var(--radius-sm)] flex items-center justify-center shadow-lg shadow-[var(--accent-color)]/30 hover:shadow-[var(--accent-color)]/40 transition-all opacity-95 hover:opacity-100 cursor-pointer active:scale-95"
+                  transition={{
+                    duration: 0.4,
+                    ease: [0.32, 0.72, 0, 1],
+                  }}
+                  exit={{
+                    opacity: 0,
+                    scale: 0.5,
+                    transition: { duration: 0.15 },
+                  }}
+                  onDragStart={() => {
+                    isDraggingFab.current = true;
+                  }}
+                  onDragEnd={(e, info) => {
+                    setTimeout(() => {
+                      isDraggingFab.current = false;
+                    }, 100);
+
+                    const finalY = yOffset + info.offset.y;
+                    // Snap to 3 positions: top, center, bottom
+                    const top = dragConstraints.top;
+                    const bottom = dragConstraints.bottom;
+                    const center = (top + bottom) / 2;
+                    const points = [top, center, bottom];
+
+                    const snappedY = points.reduce((prev, curr) =>
+                      Math.abs(curr - finalY) < Math.abs(prev - finalY)
+                        ? curr
+                        : prev,
+                    );
+                    setYOffset(snappedY);
+                  }}
+                  className="fixed pwa-fab-bottom z-50 touch-none select-none"
+                  style={{
+                    right: rightPos,
+                    willChange: "transform, opacity",
+                    touchAction: "none",
+                  }}
                 >
-                  <Plus className="w-7 h-7" />
-                </button>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="fab-restore"
-                id="fab-restore"
-                drag="y"
-                dragConstraints={restoreConstraints}
-                dragElastic={0.1}
-                dragMomentum={false}
-                initial={{ opacity: 0, x: 20, y: yOffset }}
-                animate={{ 
-                  opacity: 1, 
-                  scale: 1,
-                  x: 0, 
-                  y: yOffset 
-                }}
-                transition={{
-                  duration: 0.4,
-                  ease: [0.32, 0.72, 0, 1],
-                }}
-                whileTap={{ scale: 0.95 }}
-                exit={{
-                  opacity: 0,
-                  scale: 0.5,
-                  transition: { duration: 0.15 },
-                }}
-                onClick={() => {
-                  if (isDraggingRestore.current) return;
-                  setIsFabHidden(false);
-                }}
-                onDragStart={() => {
-                  isDraggingRestore.current = true;
-                }}
-                onDragEnd={(e, info) => {
-                  setTimeout(() => {
-                    isDraggingRestore.current = false;
-                  }, 100);
+                  <button
+                    onClick={(e) => {
+                      if (isDraggingFab.current) {
+                        e.preventDefault();
+                        return;
+                      }
+                      setEditingEntry(undefined);
+                      setIsModalOpen(true);
+                    }}
+                    title="Добавить банк"
+                    className="w-14 h-14 bg-[var(--accent-color)] text-white rounded-[var(--radius-sm)] flex items-center justify-center shadow-lg shadow-[var(--accent-color)]/30 hover:shadow-[var(--accent-color)]/40 transition-[box-shadow,transform] cursor-pointer active:scale-95"
+                  >
+                    <Plus className="w-7 h-7" />
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="fab-restore"
+                  id="fab-restore"
+                  drag="y"
+                  dragConstraints={restoreConstraints}
+                  dragElastic={0.1}
+                  dragMomentum={false}
+                  initial={{ opacity: 0, x: 20, y: yOffset }}
+                  animate={{
+                    opacity: 0.5,
+                    scale: 1,
+                    x: 0,
+                    y: yOffset,
+                  }}
+                  whileHover={{ opacity: 1 }}
+                  transition={{
+                    duration: 0.4,
+                    ease: [0.32, 0.72, 0, 1],
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  exit={{
+                    opacity: 0,
+                    scale: 0.5,
+                    transition: { duration: 0.15 },
+                  }}
+                  onClick={() => {
+                    if (isDraggingRestore.current) return;
+                    setIsFabHidden(false);
+                  }}
+                  onDragStart={() => {
+                    isDraggingRestore.current = true;
+                  }}
+                  onDragEnd={(e, info) => {
+                    setTimeout(() => {
+                      isDraggingRestore.current = false;
+                    }, 100);
 
-                  const finalY = yOffset + info.offset.y;
-                  // Snap to 3 positions: top, center, bottom
-                  const top = restoreConstraints.top;
-                  const bottom = restoreConstraints.bottom;
-                  const center = (top + bottom) / 2;
-                  const points = [top, center, bottom];
+                    const finalY = yOffset + info.offset.y;
+                    // Snap to 3 positions: top, center, bottom
+                    const top = restoreConstraints.top;
+                    const bottom = restoreConstraints.bottom;
+                    const center = (top + bottom) / 2;
+                    const points = [top, center, bottom];
 
-                  const snappedY = points.reduce((prev, curr) =>
-                    Math.abs(curr - finalY) < Math.abs(prev - finalY)
-                      ? curr
-                      : prev,
-                  );
-                  setYOffset(snappedY);
-                }}
-                className="fixed pwa-fab-bottom w-5 h-14 bg-[var(--accent-color)]/40 hover:bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-2xl transition-colors touch-none select-none backdrop-blur-md"
-                style={{ right: 0, willChange: 'transform, opacity', touchAction: 'none' }}
-                title="Показать кнопку (перетащите вертикально)"
-              >
-                <div className="flex flex-col items-center gap-0.5 opacity-40 group-hover:opacity-100 transition-opacity">
-                  <ChevronUp className="w-3 h-3" />
-                  <Plus className="w-3 h-3" />
-                  <ChevronDown className="w-3 h-3" />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>,
-          document.body
-        )}
+                    const snappedY = points.reduce((prev, curr) =>
+                      Math.abs(curr - finalY) < Math.abs(prev - finalY)
+                        ? curr
+                        : prev,
+                    );
+                    setYOffset(snappedY);
+                  }}
+                  className="fixed pwa-fab-bottom w-5 h-14 bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-2xl hover:scale-95 transition-transform duration-300 touch-none select-none"
+                  style={{
+                    right: 0,
+                    willChange: "transform, opacity",
+                    touchAction: "none",
+                  }}
+                  title="Показать кнопку (перетащите вертикально)"
+                >
+                  <div className="flex flex-col items-center gap-0.5 opacity-70 group-hover:opacity-100 transition-opacity">
+                    <ChevronUp className="w-3 h-3" />
+                    <Plus className="w-3 h-3" />
+                    <ChevronDown className="w-3 h-3" />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>,
+            document.body,
+          )}
 
         {/* Table/Bank List Switcher - Simplified and Compact */}
-        <div className="flex p-0.5 gap-0.5 relative bg-white dark:bg-[var(--surface-2)] rounded-[var(--radius-app)] border border-slate-100 dark:border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] w-full mb-2 translate-z-0 [backface-visibility:hidden] z-10">
-            <div
-              className="absolute inset-y-0.5 rounded-[0.85rem] bg-slate-50 dark:bg-white/[0.05] shadow-sm z-0 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]"
-              style={{
-                left: activeSubTab === 'table' ? '0.125rem' : '50%',
-                right: activeSubTab === 'table' ? '50%' : '0.125rem',
-              }}
-            />
-            <button
-              onClick={() => setActiveSubTab('table')}
-              className={clsx(
-                'flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-[0.85rem] text-[10px] font-semibold transition-colors cursor-pointer relative z-10',
-                activeSubTab === 'table'
-                  ? 'text-[var(--accent-color)]'
-                  : 'text-slate-500 hover:text-slate-700 dark:hover:text-[var(--text-primary)]',
-              )}
-            >
-              <TableIcon className="w-3.5 h-3.5 shrink-0" />
-              <span className="leading-none uppercase">Таблица</span>
-            </button>
-            <button
-              onClick={() => setActiveSubTab('list')}
-              className={clsx(
-                'flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-[0.85rem] text-[10px] font-semibold transition-colors cursor-pointer relative z-10',
-                activeSubTab === 'list'
-                  ? 'text-[var(--accent-color)]'
-                  : 'text-slate-500 hover:text-slate-700 dark:hover:text-[var(--text-primary)]',
-              )}
-            >
-              <LayoutList className="w-3.5 h-3.5 shrink-0" />
-              <span className="leading-none uppercase">Список банков</span>
-            </button>
+        <div className="flex p-0.5 gap-0.5 relative bg-white dark:bg-[var(--surface-1)] rounded-control border border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] w-full mb-2 translate-z-0 [backface-visibility:hidden] z-10">
+          <div
+            className="absolute inset-y-0.5 rounded-control bg-[var(--fill-hover)] shadow-sm z-0 transition-[left,right] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]"
+            style={{
+              left: activeSubTab === "table" ? "0.125rem" : "50%",
+              right: activeSubTab === "table" ? "50%" : "0.125rem",
+            }}
+          />
+          <button
+            onClick={() => setActiveSubTab("table")}
+            className={clsx(
+              "flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-control text-[10px] font-semibold transition-colors cursor-pointer relative z-10",
+              activeSubTab === "table"
+                ? "text-[var(--accent-color)]"
+                : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]",
+            )}
+          >
+            <TableIcon className="w-3.5 h-3.5 shrink-0" />
+            <span className="leading-none uppercase">Таблица</span>
+          </button>
+          <button
+            onClick={() => setActiveSubTab("list")}
+            className={clsx(
+              "flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-control text-[10px] font-semibold transition-colors cursor-pointer relative z-10",
+              activeSubTab === "list"
+                ? "text-[var(--accent-color)]"
+                : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]",
+            )}
+          >
+            <LayoutList className="w-3.5 h-3.5 shrink-0" />
+            <span className="leading-none uppercase">Список банков</span>
+          </button>
         </div>
 
         {/* Content Area */}
         <div className="relative mt-1">
           <AnimatePresence mode="wait">
-            {activeSubTab === 'table' ? (
+            {activeSubTab === "table" ? (
               <motion.div
                 key="table-view"
                 initial={{ opacity: 0, y: 10 }}
@@ -773,10 +760,10 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                       setEditingEntry(undefined);
                       setIsModalOpen(true);
                     }}
-                    className="flex flex-col items-center justify-center p-8 text-center bg-[var(--surface-0)] dark:bg-[var(--surface-1)] rounded-[var(--radius-app)] border border-dashed border-slate-200 dark:border-[var(--border-strong)] hover:bg-white dark:hover:bg-[var(--surface-2)] transition-colors group w-full cursor-pointer"
+                    className="flex flex-col items-center justify-center p-8 text-center bg-[var(--surface-1)] rounded-card border border-dashed border-[var(--border-strong)] hover:bg-[var(--surface-2)] transition-colors group w-full cursor-pointer"
                   >
-                    <Plus className="w-8 h-8 text-slate-300 dark:text-slate-600 mb-2 group-hover:text-[var(--accent-color)] dark:group-hover:text-[var(--accent-color)] transition-colors" />
-                    <p className="text-xs text-slate-500">
+                    <Plus className="w-8 h-8 text-[var(--text-tertiary)] mb-2 group-hover:text-[var(--accent-color)] transition-colors" />
+                    <p className="text-xs text-[var(--text-secondary)]">
                       Добавьте первый банк
                     </p>
                   </button>
@@ -790,7 +777,11 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   >
                     <SortableContext
                       items={data.entries.map((e) => e.id)}
-                      strategy={isGridLayout ? rectSortingStrategy : verticalListSortingStrategy}
+                      strategy={
+                        isGridLayout
+                          ? rectSortingStrategy
+                          : verticalListSortingStrategy
+                      }
                     >
                       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
                         <AnimatePresence initial={false}>
@@ -800,13 +791,15 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                                 entry.bankId,
                                 entry.customBankName,
                               ) ||
-                              (entry.bankId.startsWith('custom_')
-                                ? allCustomBanks.find((b) => b.id === entry.bankId)
+                              (entry.bankId.startsWith("custom_")
+                                ? allCustomBanks.find(
+                                    (b) => b.id === entry.bankId,
+                                  )
                                 : null);
 
                             if (!bank) return null;
 
-                            const logoShape = globalLogoShape || 'circle';
+                            const logoShape = globalLogoShape || "circle";
 
                             return (
                               <SortableBankCard
@@ -831,37 +824,54 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                       <DragOverlay
                         dropAnimation={{
                           duration: 200,
-                          easing: 'cubic-bezier(0.32, 0.72, 0, 1)',
+                          easing: "cubic-bezier(0.32, 0.72, 0, 1)",
                         }}
                       >
                         {activeDragId ? (
                           <div style={{ width: activeDragWidth }}>
                             <BankCard
                               isOverlay
-                              index={data.entries.findIndex((e) => e.id === activeDragId)}
-                              entry={data.entries.find((e) => e.id === activeDragId)!}
-                            bank={
-                              getBankDetails(
-                                data.entries.find((e) => e.id === activeDragId)?.bankId || '',
-                                data.entries.find((e) => e.id === activeDragId)?.customBankName
-                              ) || (data.entries.find((e) => e.id === activeDragId)?.bankId.startsWith('custom_')
-                                ? allCustomBanks.find((b) => b.id === data.entries.find((e) => e.id === activeDragId)?.bankId)
-                                : null)!
-                            }
-                            logoShape={globalLogoShape || 'circle'}
-                            onEdit={() => {}}
-                            onDelete={() => {}}
-                            style={{
-                              scale: 1.02,
-                              rotate: '1.5deg',
-                              opacity: 0.95,
-                              boxShadow: '0 12px 28px rgba(0,0,0,0.25)',
-                            }}
-                          />
+                              index={data.entries.findIndex(
+                                (e) => e.id === activeDragId,
+                              )}
+                              entry={data.entries.find(
+                                (e) => e.id === activeDragId,
+                              )!}
+                              bank={
+                                getBankDetails(
+                                  data.entries.find(
+                                    (e) => e.id === activeDragId,
+                                  )?.bankId || "",
+                                  data.entries.find(
+                                    (e) => e.id === activeDragId,
+                                  )?.customBankName,
+                                ) ||
+                                (data.entries
+                                  .find((e) => e.id === activeDragId)
+                                  ?.bankId.startsWith("custom_")
+                                  ? allCustomBanks.find(
+                                      (b) =>
+                                        b.id ===
+                                        data.entries.find(
+                                          (e) => e.id === activeDragId,
+                                        )?.bankId,
+                                    )
+                                  : null)!
+                              }
+                              logoShape={globalLogoShape || "circle"}
+                              onEdit={() => {}}
+                              onDelete={() => {}}
+                              style={{
+                                scale: 1.02,
+                                rotate: "1.5deg",
+                                opacity: 0.95,
+                                boxShadow: "0 12px 28px rgba(0,0,0,0.25)",
+                              }}
+                            />
                           </div>
                         ) : null}
                       </DragOverlay>,
-                      document.body
+                      document.body,
                     )}
                   </DndContext>
                 )}
@@ -873,7 +883,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
         <Modal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          title={editingEntry ? 'Редактировать банк' : 'Добавить банк'}
+          title={editingEntry ? "Редактировать банк" : "Добавить банк"}
         >
           <BankForm
             initialEntry={editingEntry}

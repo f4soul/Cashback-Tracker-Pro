@@ -1,22 +1,22 @@
 export const createImage = (url: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
     const image = new Image();
-    image.addEventListener('load', () => resolve(image));
-    image.addEventListener('error', (error) => reject(error));
-    image.setAttribute('crossOrigin', 'anonymous');
+    image.addEventListener("load", () => resolve(image));
+    image.addEventListener("error", (error) => reject(error));
+    image.setAttribute("crossOrigin", "anonymous");
     image.src = url;
   });
 
 export async function getCroppedImg(
   imageSrc: string,
-  pixelCrop: { x: number; y: number; width: number; height: number }
+  pixelCrop: { x: number; y: number; width: number; height: number },
 ): Promise<string> {
   const image = await createImage(imageSrc);
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
 
   if (!ctx) {
-    return '';
+    return "";
   }
 
   // Set canvas size to match the bounding box
@@ -47,31 +47,21 @@ export async function getCroppedImg(
     sy = 0;
   }
   if (sx + sWidth > image.width) {
-    const overflow = (sx + sWidth) - image.width;
+    const overflow = sx + sWidth - image.width;
     sWidth -= overflow;
     dWidth -= overflow;
   }
   if (sy + sHeight > image.height) {
-    const overflow = (sy + sHeight) - image.height;
+    const overflow = sy + sHeight - image.height;
     sHeight -= overflow;
     dHeight -= overflow;
   }
 
   // Only draw if there's something to draw
   if (sWidth > 0 && sHeight > 0) {
-    ctx.drawImage(
-      image,
-      sx,
-      sy,
-      sWidth,
-      sHeight,
-      dx,
-      dy,
-      dWidth,
-      dHeight
-    );
+    ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
   }
 
   // Return as base64 string
-  return canvas.toDataURL('image/png');
+  return canvas.toDataURL("image/png");
 }

@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { MonthData, Bank, AppSettings, PlaceholderUser } from './types';
-import { getCurrentMonthId, getNextMonthId } from './utils/date';
-import { CurrentMonth } from './views/CurrentMonth';
-import { Archive } from './views/Archive';
-import { Settings } from './views/Settings';
+import { useState, useEffect, useCallback, useRef } from "react";
+import { PlaceholderUser } from "./types";
+import { CurrentMonth } from "./views/CurrentMonth";
+import { Archive } from "./views/Archive";
+import { Settings } from "./views/Settings";
 import {
   History,
   Settings as SettingsIcon,
@@ -12,38 +11,22 @@ import {
   LogIn,
   LogOut,
   User,
-} from 'lucide-react';
-import { clsx } from 'clsx';
-import { motion, AnimatePresence } from 'motion/react';
-import {
-  auth,
-  db,
-  loginWithGoogle,
-  logout,
-  handleFirestoreError,
-  OperationType,
-} from './firebase';
-import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
-import {
-  doc,
-  onSnapshot,
-  setDoc,
-  collection,
-  query,
-  where,
-} from 'firebase/firestore';
+} from "lucide-react";
+import { clsx } from "clsx";
+import { motion, AnimatePresence } from "motion/react";
+import { loginWithGoogle, logout } from "./firebase";
+import type { User as FirebaseUser } from "firebase/auth";
 
-import { Toaster } from 'sonner';
-import { ConfirmModal } from './components/ui/ConfirmModal';
-import { BANKS } from './constants';
+import { Toaster } from "sonner";
+import { ConfirmModal } from "./components/ui/ConfirmModal";
+import { BANKS } from "./constants";
 
-import { useAuth } from './hooks/useAuth';
-import { useThemeSync } from './hooks/useThemeSync';
-import { useScrollVisibility } from './hooks/useScrollVisibility';
-import { useCashbackData } from './hooks/useCashbackData';
-import { useCloudSync } from './hooks/useCloudSync';
+import { useAuth } from "./hooks/useAuth";
+import { useScrollVisibility } from "./hooks/useScrollVisibility";
+import { useCashbackStore } from "./store/CashbackStoreProvider";
+import { useLogoPreloader } from "./hooks/useLogoPreloader";
 
-const WalletIcon = ({ className = 'w-6 h-6' }: { className?: string }) => {
+const WalletIcon = ({ className = "w-6 h-6" }: { className?: string }) => {
   return (
     <svg
       className={className}
@@ -63,58 +46,68 @@ const AuthButton = ({
   isMobile = false,
   isSyncing,
   onLogoutClick,
-  theme,
 }: {
   user: FirebaseUser | PlaceholderUser | null;
   isMobile?: boolean;
   isSyncing: boolean;
   onLogoutClick: () => void;
-  theme: string;
 }) => {
   if (user) {
     return (
-      <div className={clsx('flex items-center', isMobile ? 'gap-1' : 'w-full')}>
+      <div className={clsx("flex items-center", isMobile ? "gap-1" : "w-full")}>
         <div
           onClick={() => isMobile && onLogoutClick()}
           className={clsx(
-            'flex items-center group transition-all',
+            "flex items-center group transition-[background-color,transform]",
             isMobile
-              ? 'relative w-9 h-9 justify-center bg-slate-50 dark:bg-[var(--surface-1)] border border-slate-100 dark:border-[var(--border-hairline)] rounded-full cursor-pointer shadow-sm hover:bg-slate-100 dark:hover:bg-white/10 active:scale-95'
-              : 'px-4 py-3 bg-gray-100/50 dark:bg-white/5 border border-gray-200/50 dark:border-[var(--border-hairline)] w-full gap-3 rounded-[var(--radius-sm)]',
+              ? "relative w-9 h-9 justify-center bg-[var(--surface-0)] dark:bg-[var(--surface-1)] border border-[var(--border-hairline)] rounded-full cursor-pointer shadow-sm hover:bg-[var(--fill-hover)] active:scale-95"
+              : "px-4 py-3 bg-[var(--fill)] border border-[var(--border-hairline)] w-full gap-3 rounded-control",
           )}
         >
           {isSyncing && isMobile && (
             <div
-              className="absolute bg-[var(--accent-color)] rounded-full border-2 border-slate-50 dark:border-[#111] animate-pulse z-10 shrink-0 pointer-events-none -top-1 -right-1 w-3 h-3"
+              className="absolute bg-[var(--accent-color)] rounded-full border-2 border-[var(--surface-0)] dark:border-[var(--surface-1)] animate-pulse z-10 shrink-0 pointer-events-none -top-1 -right-1 w-3 h-3"
               title="Синхронизация..."
             />
           )}
-          <div className={clsx("relative shrink-0", isMobile ? "w-full h-full" : "w-8 h-8")}>
+          <div
+            className={clsx(
+              "relative shrink-0",
+              isMobile ? "w-full h-full" : "w-8 h-8",
+            )}
+          >
             {user.photoURL ? (
               <img
                 src={user.photoURL}
-                alt={user.displayName || ''}
+                alt={user.displayName || ""}
                 className="w-full h-full rounded-full object-cover pointer-events-none"
                 referrerPolicy="no-referrer"
               />
             ) : (
               <div className="w-full h-full rounded-full bg-[var(--accent-color)]/20 flex items-center justify-center">
-                <User className={clsx("text-[var(--accent-color)]", isMobile ? "w-5 h-5": "w-4 h-4")} />
+                <User
+                  className={clsx(
+                    "text-[var(--accent-color)]",
+                    isMobile ? "w-5 h-5" : "w-4 h-4",
+                  )}
+                />
               </div>
             )}
             {isSyncing && !isMobile && (
               <div
-                className="absolute bg-[var(--accent-color)] rounded-full border-2 border-slate-50 dark:border-[#111] animate-pulse z-10 shrink-0 pointer-events-none -top-0.5 -right-0.5 w-2.5 h-2.5"
+                className="absolute bg-[var(--accent-color)] rounded-full border-2 border-[var(--surface-0)] dark:border-[var(--surface-1)] animate-pulse z-10 shrink-0 pointer-events-none -top-0.5 -right-0.5 w-2.5 h-2.5"
                 title="Синхронизация..."
               />
             )}
           </div>
           {!isMobile && (
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-gray-900 dark:text-white truncate">
-                {user.displayName || 'Пользователь'}
+              <p className="text-xs font-bold text-[var(--text-primary)] truncate">
+                {user.displayName || "Пользователь"}
               </p>
-              <p className="text-[10px] text-gray-500 truncate">{user.email}</p>
+              <p className="text-[10px] text-[var(--text-secondary)] truncate">
+                {user.email}
+              </p>
             </div>
           )}
           {!isMobile && (
@@ -124,7 +117,7 @@ const AuthButton = ({
                   e.stopPropagation();
                   onLogoutClick();
                 }}
-                className="p-2 transition-colors rounded-xl cursor-pointer flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10"
+                className="p-2 transition-colors rounded-control cursor-pointer flex items-center justify-center text-[var(--text-tertiary)] hover:text-red-500 hover:bg-red-500/10"
                 title="Выйти"
               >
                 <LogOut className="w-4 h-4" />
@@ -140,15 +133,19 @@ const AuthButton = ({
     <button
       onClick={loginWithGoogle}
       className={clsx(
-        'flex items-center gap-2 rounded-[var(--radius-sm)] transition-all font-bold text-sm cursor-pointer shadow-lg shadow-[var(--accent-color)]/20 hover:bg-[var(--accent-color)] hover:brightness-110 active:scale-95 shrink-0',
+        "flex items-center gap-2 rounded-[var(--radius-sm)] transition-[filter,transform] font-bold text-sm cursor-pointer shadow-lg shadow-[var(--accent-color)]/20 hover:bg-[var(--accent-color)] hover:brightness-110 active:scale-95 shrink-0",
         isMobile
-          ? 'h-8 px-4 bg-[var(--accent-color)] text-white'
-          : 'px-4 py-3 w-full bg-[var(--accent-color)] text-white justify-center',
+          ? "h-8 px-4 bg-[var(--accent-color)] text-white"
+          : "px-4 py-3 w-full bg-[var(--accent-color)] text-white justify-center",
       )}
       title="Войти в облако"
     >
       <LogIn className="w-4 h-4" />
-      <span className={isMobile ? 'text-[10px] uppercase tracking-wider font-black' : ''}>
+      <span
+        className={
+          isMobile ? "text-[10px] uppercase tracking-wider font-black" : ""
+        }
+      >
         Войти
       </span>
     </button>
@@ -157,47 +154,57 @@ const AuthButton = ({
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<
-    'current' | 'archive' | 'settings'
-  >('current');
-
-  useEffect(() => {
-    window.dispatchEvent(
-      new CustomEvent('app-tab-change', { detail: { activeTab } })
-    );
-  }, [activeTab]);
+    "current" | "archive" | "settings"
+  >("current");
 
   // Scroll to top instantly when active tab changes
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'auto' });
+    window.scrollTo({ top: 0, behavior: "auto" });
   }, [activeTab]);
 
   // Handle tab clicks with scroll to top on double click
-  const handleTabClick = useCallback((tab: 'current' | 'archive' | 'settings') => {
-    if (activeTab === tab) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-      setActiveTab(tab);
-    }
-  }, [activeTab]);
+  const handleTabClick = useCallback(
+    (tab: "current" | "archive" | "settings") => {
+      if (activeTab === tab) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        setActiveTab(tab);
+      }
+    },
+    [activeTab],
+  );
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
-  // Custom Hooks calls
-  const { user, isAuthReady } = useAuth();
-  const { theme, setTheme, settings, setSettings } = useThemeSync(activeTab);
+  // Responsive desktop state for toast positioning
+  const [isDesktop, setIsDesktop] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(min-width: 768px)").matches
+      : false,
+  );
 
-  const saveToFirestoreRef = useRef<(type: 'settings' | 'month', payload: any) => void>(undefined);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mql = window.matchMedia("(min-width: 768px)");
+    const onChange = (e: MediaQueryListEvent) => {
+      setIsDesktop(e.matches);
+    };
+    mql.addEventListener("change", onChange);
+    return () => mql.removeEventListener("change", onChange);
+  }, []);
 
+  // User auth state
+  const { user } = useAuth();
+
+  // Central Cashback Store
   const {
     selectedMonthId,
     setSelectedMonthId,
     allData,
     setAllData,
     customBanks,
-    setCustomBanks,
     deletedCustomBanks,
-    setDeletedCustomBanks,
     customCategories,
-    setCustomCategories,
+    settings,
     currentMonthData,
     archiveData,
     handleUpdateCurrentMonth,
@@ -206,32 +213,17 @@ export default function App() {
     handleDeleteCustomBank,
     handleAddCustomBank,
     handleAddCustomCategory,
-  } = useCashbackData(user, () => hasInitialSync, (type, payload) => saveToFirestoreRef.current?.(type, payload));
-
-  const {
     saveToFirestore,
     isSyncing,
     hasInitialSync,
     handleImportAllData,
     handleExportAllData,
-  } = useCloudSync({
-    user,
     theme,
-    setTheme,
-    settings,
-    setSettings,
-    allData,
-    setAllData,
-    customBanks,
-    setCustomBanks,
-    deletedCustomBanks,
-    setDeletedCustomBanks,
-    customCategories,
-    setCustomCategories,
-  });
+    toggleTheme,
+    handleUpdateSettings,
+  } = useCashbackStore();
 
-  // Assign the ref for useCashbackData to invoke it
-  saveToFirestoreRef.current = saveToFirestore;
+  useLogoPreloader(customBanks);
 
   // Cleanup all months from legacy/deleted custom banks exactly once after hasInitialSync
   const hasCleanedUpRef = useRef(false);
@@ -248,7 +240,7 @@ export default function App() {
       const filteredEntries = month.entries.filter((entry) => {
         const isStandard = BANKS.some((b) => b.id === entry.bankId);
         const isActiveCustom = customBanks.some((b) => b.id === entry.bankId);
-        if (entry.bankId === 'custom') return true;
+        if (entry.bankId === "custom") return true;
         const keep = isStandard || isActiveCustom;
         if (!keep) {
           hasChanges = true;
@@ -267,44 +259,41 @@ export default function App() {
         cleaned.forEach((m) => {
           const original = allData.find((orig) => orig.monthId === m.monthId);
           if (original && original.entries.length !== m.entries.length) {
-            saveToFirestore?.('month', m);
+            saveToFirestore?.("month", m);
           }
         });
       }
     }
   }, [user, hasInitialSync, allData, customBanks, setAllData, saveToFirestore]);
 
-  const {
-    headerVisible,
-    navVisible,
-    navExpanded,
-    setNavExpanded,
-  } = useScrollVisibility();
-
-  const currentMonthId = getCurrentMonthId();
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    if (user) {
-      saveToFirestore('settings', { theme: newTheme });
-    }
-  };
-
-  const handleUpdateSettings = useCallback(
-    (newSettings: AppSettings | ((prev: AppSettings) => AppSettings)) => {
-      const nextSettings =
-        typeof newSettings === 'function' ? newSettings(settings) : newSettings;
-      setSettings(nextSettings);
-      if (user) {
-        saveToFirestore('settings', { settings: nextSettings });
-      }
-    },
-    [settings, user, saveToFirestore, setSettings],
-  );
+  const { headerVisible, navVisible, navExpanded, setNavExpanded } =
+    useScrollVisibility();
 
   return (
-    <div className="min-h-[100dvh] bg-[var(--surface-0)] dark:bg-[var(--surface-0)] font-sans transition-colors duration-300 flex flex-col md:flex-row">
+    <div
+      className="min-h-[100dvh] bg-[var(--surface-0)] dark:bg-[var(--surface-0)] font-sans transition-colors duration-300 flex flex-col md:flex-row relative"
+      style={theme === 'dark' ? {
+        backgroundImage: 'radial-gradient(640px 420px at 50% -12%, rgba(56, 120, 255, 0.10), transparent 70%)',
+      } : undefined}
+    >
+      <Toaster
+        theme={theme}
+        position={isDesktop ? "bottom-right" : "top-center"}
+        expand={false}
+        toastOptions={{
+          style: {
+            borderRadius: "var(--radius-sm)",
+            padding: "10px 14px",
+            width: "fit-content",
+            minWidth: "auto",
+            maxWidth: "360px",
+          },
+          className:
+            "!bg-white dark:!bg-[var(--surface-2)] !border !border-[var(--border-hairline)] !text-[var(--text-primary)] shadow-[var(--elevation-highlight),0_12px_32px_rgba(0,0,0,0.12)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.35)] text-[13px] font-medium tracking-normal !w-fit !min-w-0 inline-flex items-center gap-2",
+          descriptionClassName: "!text-[var(--text-secondary)] !text-[12px]",
+        }}
+      />
+
       <ConfirmModal
         isOpen={isLogoutModalOpen}
         onClose={() => setIsLogoutModalOpen(false)}
@@ -317,28 +306,9 @@ export default function App() {
         confirmText="Выйти"
         variant="danger"
       />
-      <Toaster
-        theme={theme}
-        position="top-center"
-        expand={false}
-        richColors
-        toastOptions={{
-          style: {
-            borderRadius: '20px',
-            padding: '14px 24px',
-            border: '1px solid',
-            fontSize: '13px',
-            fontWeight: '700',
-            letterSpacing: '0.02em',
-            textTransform: 'uppercase',
-            backdropFilter: 'blur(32px)',
-          },
-          className:
-            'bg-white/70 dark:bg-[var(--surface-2)]/70 border-gray-200/50 dark:border-[var(--border-hairline)] text-gray-900 dark:text-white shadow-[var(--elevation-highlight),0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)]',
-        }}
-      />
+
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-[280px] h-[100dvh] sticky top-0 bg-white dark:bg-[var(--surface-1)] transition-colors duration-300 border-r border-slate-100 dark:border-[var(--border-hairline)] z-40 shrink-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
+      <aside className="hidden md:flex flex-col w-[280px] h-[100dvh] sticky top-0 self-start bg-white dark:bg-[var(--surface-1)] transition-colors duration-300 border-r border-[var(--border-hairline)] z-30 shrink-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
         <div className="px-6 py-10 flex flex-col h-full">
           <div className="flex items-center mb-12 px-1">
             <div className="flex items-center gap-3 flex-1">
@@ -346,7 +316,7 @@ export default function App() {
                 <WalletIcon className="w-7 h-7 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight leading-none">
+                <h1 className="text-xl font-bold text-[var(--text-primary)] tracking-tight leading-none">
                   Cashback
                 </h1>
                 <p className="text-[10px] font-bold text-[var(--accent-color)] uppercase tracking-widest mt-1">
@@ -356,15 +326,15 @@ export default function App() {
             </div>
             <button
               onClick={toggleTheme}
-              className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-[var(--surface-2)] border border-slate-100 dark:border-[var(--border-hairline)] text-slate-500 dark:text-[var(--text-secondary)] hover:bg-slate-100 dark:hover:bg-white/10 transition-all active:scale-95 cursor-pointer flex items-center justify-center shadow-sm"
+              className="w-10 h-10 rounded-control bg-[var(--surface-0)] dark:bg-[var(--surface-2)] border border-[var(--border-hairline)] text-[var(--text-secondary)] hover:bg-[var(--fill-hover)] transition-[background-color,transform] active:scale-95 cursor-pointer flex items-center justify-center shadow-sm"
               title={
-                theme === 'light'
-                  ? 'Включить темную тему'
-                  : 'Включить светлую тему'
+                theme === "light"
+                  ? "Включить темную тему"
+                  : "Включить светлую тему"
               }
             >
               <AnimatePresence mode="wait" initial={false}>
-                {theme === 'light' ? (
+                {theme === "light" ? (
                   <motion.span
                     key="moon"
                     initial={{ opacity: 0, scale: 0.5 }}
@@ -393,36 +363,36 @@ export default function App() {
 
           <nav className="flex flex-col gap-2.5 flex-1">
             <button
-              onClick={() => handleTabClick('current')}
+              onClick={() => handleTabClick("current")}
               className={clsx(
-                'flex items-center gap-3 px-4 py-3.5 rounded-[var(--radius-sm)] transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
-                activeTab === 'current'
-                  ? 'bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 border border-transparent'
-                  : 'text-slate-500 dark:text-[var(--text-secondary)] hover:bg-white/80 dark:hover:bg-[var(--surface-2)]/50 hover:text-slate-900 dark:hover:text-[var(--text-primary)] hover:border-[var(--accent-color)]/30 border border-transparent',
+                "flex items-center gap-3 px-4 py-3.5 rounded-control transition-[background-color,border-color,color,box-shadow,transform] duration-300 text-sm font-bold cursor-pointer active:scale-95",
+                activeTab === "current"
+                  ? "bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 border border-transparent"
+                  : "text-[var(--text-secondary)] hover:bg-[var(--fill-hover)] hover:text-[var(--text-primary)] hover:border-[var(--accent-color)]/30 border border-transparent",
               )}
             >
               <WalletIcon className="w-5 h-5 shrink-0" />
               <span className="leading-none mt-[1px]">Кэшбек</span>
             </button>
             <button
-              onClick={() => handleTabClick('archive')}
+              onClick={() => handleTabClick("archive")}
               className={clsx(
-                'flex items-center gap-3 px-4 py-3.5 rounded-[var(--radius-sm)] transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
-                activeTab === 'archive'
-                  ? 'bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 border border-transparent'
-                  : 'text-slate-500 dark:text-[var(--text-secondary)] hover:bg-white/80 dark:hover:bg-[var(--surface-2)]/50 hover:text-slate-900 dark:hover:text-[var(--text-primary)] hover:border-[var(--accent-color)]/30 border border-transparent',
+                "flex items-center gap-3 px-4 py-3.5 rounded-control transition-[background-color,border-color,color,box-shadow,transform] duration-300 text-sm font-bold cursor-pointer active:scale-95",
+                activeTab === "archive"
+                  ? "bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 border border-transparent"
+                  : "text-[var(--text-secondary)] hover:bg-[var(--fill-hover)] hover:text-[var(--text-primary)] hover:border-[var(--accent-color)]/30 border border-transparent",
               )}
             >
               <History className="w-5 h-5 shrink-0" />
               <span className="leading-none mt-[1px]">Архив</span>
             </button>
             <button
-              onClick={() => handleTabClick('settings')}
+              onClick={() => handleTabClick("settings")}
               className={clsx(
-                'flex items-center gap-3 px-4 py-3.5 rounded-[var(--radius-sm)] transition-all duration-300 text-sm font-bold cursor-pointer active:scale-95',
-                activeTab === 'settings'
-                  ? 'bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 border border-transparent'
-                  : 'text-slate-500 dark:text-[var(--text-secondary)] hover:bg-white/80 dark:hover:bg-[var(--surface-2)]/50 hover:text-slate-900 dark:hover:text-[var(--text-primary)] hover:border-[var(--accent-color)]/30 border border-transparent',
+                "flex items-center gap-3 px-4 py-3.5 rounded-control transition-[background-color,border-color,color,box-shadow,transform] duration-300 text-sm font-bold cursor-pointer active:scale-95",
+                activeTab === "settings"
+                  ? "bg-[var(--accent-color)] text-white shadow-md shadow-[var(--accent-color)]/20 border border-transparent"
+                  : "text-[var(--text-secondary)] hover:bg-[var(--fill-hover)] hover:text-[var(--text-primary)] hover:border-[var(--accent-color)]/30 border border-transparent",
               )}
             >
               <SettingsIcon className="w-5 h-5 shrink-0" />
@@ -435,7 +405,6 @@ export default function App() {
               user={user}
               isSyncing={isSyncing}
               onLogoutClick={() => setIsLogoutModalOpen(true)}
-              theme={theme}
             />
           </div>
         </div>
@@ -444,20 +413,20 @@ export default function App() {
       {/* Floating Header */}
       <header
         className={clsx(
-          'fixed top-0 left-0 right-0 z-40 transition-transform duration-300 p-3 pt-[calc(0.75rem+env(safe-area-inset-top))] md:hidden',
-          !headerVisible && '-translate-y-full',
+          "fixed top-0 left-0 right-0 z-40 transition-transform duration-300 p-3 pt-[calc(0.75rem+env(safe-area-inset-top))] md:hidden",
+          !headerVisible && "-translate-y-full",
         )}
       >
-        <div className="relative z-10 max-w-3xl mx-auto rounded-[var(--radius-app)] px-4 py-2.5 flex items-center justify-between">
+        <div className="relative z-10 max-w-3xl mx-auto rounded-card px-4 py-2.5 flex items-center justify-between">
           {/* iOS Safari Backdrop-Filter Composite Layer Fix */}
-          <div className="absolute inset-0 bg-white/95 dark:bg-[var(--surface-2)]/95 transition-colors duration-300 backdrop-blur-2xl border border-slate-100 dark:border-[var(--border-hairline)] rounded-[var(--radius-app)] shadow-[var(--elevation-highlight),0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[var(--elevation-highlight),0_20px_40px_rgb(0,0,0,0.2)] pointer-events-none -z-10" />
-          
+          <div className="absolute inset-0 bg-white dark:bg-[var(--surface-1)] transition-colors duration-300 border border-[var(--border-hairline)] rounded-card shadow-[var(--elevation-highlight),0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[var(--elevation-highlight),0_20px_40px_rgb(0,0,0,0.2)] pointer-events-none -z-10" />
+
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[var(--accent-color)] opacity-90 rounded-[22%] flex items-center justify-center shadow-sm">
               <WalletIcon className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight leading-none">
+              <h1 className="text-lg font-bold text-[var(--text-primary)] tracking-tight leading-none">
                 Cashback
               </h1>
               <p className="text-[10px] font-black text-[var(--accent-color)] uppercase tracking-widest mt-0.5">
@@ -472,19 +441,18 @@ export default function App() {
               user={user}
               isSyncing={isSyncing}
               onLogoutClick={() => setIsLogoutModalOpen(true)}
-              theme={theme}
             />
             <button
               onClick={toggleTheme}
-              className="w-9 h-9 rounded-full bg-slate-50 dark:bg-[var(--surface-1)] border border-slate-100 dark:border-[var(--border-strong)] text-slate-500 dark:text-[var(--text-secondary)] hover:bg-slate-100 dark:hover:bg-white/10 transition-all active:scale-95 cursor-pointer flex items-center justify-center shadow-sm"
+              className="w-9 h-9 rounded-full bg-[var(--surface-0)] dark:bg-[var(--surface-1)] border border-[var(--border-hairline)] text-[var(--text-secondary)] hover:bg-[var(--fill-hover)] transition-[background-color,transform] active:scale-95 cursor-pointer flex items-center justify-center shadow-sm"
               title={
-                theme === 'light'
-                  ? 'Включить темную тему'
-                  : 'Включить светлую тему'
+                theme === "light"
+                  ? "Включить темную тему"
+                  : "Включить светлую тему"
               }
             >
               <AnimatePresence mode="wait" initial={false}>
-                {theme === 'light' ? (
+                {theme === "light" ? (
                   <motion.span
                     key="moon"
                     initial={{ opacity: 0, scale: 0.5 }}
@@ -520,7 +488,7 @@ export default function App() {
       >
         <div className="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 pt-2 pb-3 lg:pt-0 lg:pb-8">
           <AnimatePresence mode="wait" initial={false}>
-            {activeTab === 'current' ? (
+            {activeTab === "current" ? (
               <motion.div
                 key="current"
                 initial={{ opacity: 0, y: 10 }}
@@ -529,7 +497,7 @@ export default function App() {
                 transition={{ duration: 0.2, ease: "easeOut" }}
               >
                 <CurrentMonth
-                  isExiting={activeTab !== 'current'}
+                  isExiting={activeTab !== "current"}
                   data={currentMonthData}
                   selectedMonthId={selectedMonthId}
                   onMonthChange={setSelectedMonthId}
@@ -544,10 +512,9 @@ export default function App() {
                   onDeleteCustomBank={handleDeleteCustomBank}
                   onAddCustomCategory={handleAddCustomCategory}
                   globalLogoShape={settings.logoShape}
-                  allMonthIds={allData.map((d) => d.monthId)}
                 />
               </motion.div>
-            ) : activeTab === 'archive' ? (
+            ) : activeTab === "archive" ? (
               <motion.div
                 key="archive"
                 initial={{ opacity: 0, y: 10 }}
@@ -590,10 +557,12 @@ export default function App() {
 
       <div
         className={clsx(
-          'md:hidden fixed left-0 right-0 z-50 px-3 flex justify-center transition-all duration-300',
-          !navVisible && navExpanded && 'translate-y-[200%]',
+          "md:hidden fixed left-0 right-0 z-50 px-3 flex justify-center transition-transform duration-300",
+          !navVisible && navExpanded && "translate-y-[200%]",
         )}
-        style={{ bottom: 'max(0.75rem, calc(env(safe-area-inset-bottom) - 0.25rem))' }}
+        style={{
+          bottom: "max(0.75rem, calc(env(safe-area-inset-bottom) - 0.25rem))",
+        }}
       >
         <motion.nav
           initial={false}
@@ -603,29 +572,29 @@ export default function App() {
             height: navExpanded ? 68 : 56,
           }}
           transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-          className="w-full bg-white/90 dark:bg-[var(--surface-2)]/90 backdrop-blur-2xl border border-slate-100 dark:border-[var(--border-hairline)] shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.4)] flex items-center px-1 overflow-hidden"
+          className="w-full bg-white dark:bg-[var(--surface-1)] border border-[var(--border-hairline)] shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.4)] flex items-center px-1 overflow-hidden"
           onClick={() => !navExpanded && setNavExpanded(true)}
         >
           <button
             onClick={(e) => {
               e.stopPropagation();
-              handleTabClick('current');
+              handleTabClick("current");
             }}
             className={clsx(
-              'flex-1 flex flex-col items-center justify-center h-full relative group cursor-pointer min-w-0',
-              activeTab === 'current'
-                ? 'text-[var(--accent-color)]'
-                : 'text-slate-500 dark:text-[var(--text-secondary)] hover:text-slate-900 dark:hover:text-[var(--text-primary)]',
+              "flex-1 flex flex-col items-center justify-center h-full relative group cursor-pointer min-w-0",
+              activeTab === "current"
+                ? "text-[var(--accent-color)]"
+                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]",
             )}
           >
             <motion.div
               className={clsx(
-                'p-1.5 rounded-xl flex items-center justify-center',
-                activeTab === 'current'
-                  ? 'bg-[var(--accent-color)]/10 text-[var(--accent-color)]'
-                  : 'bg-transparent text-slate-500 dark:text-[var(--text-secondary)]',
+                "p-1.5 rounded-control flex items-center justify-center",
+                activeTab === "current"
+                  ? "bg-[var(--accent-color)]/10 text-[var(--accent-color)]"
+                  : "bg-transparent text-[var(--text-secondary)]",
               )}
-              animate={{ scale: activeTab === 'current' ? 1.1 : 1 }}
+              animate={{ scale: activeTab === "current" ? 1.1 : 1 }}
               transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
             >
               <motion.div
@@ -642,7 +611,7 @@ export default function App() {
                 height: navExpanded ? 14 : 0,
                 marginTop: navExpanded ? 1 : 0,
                 scale: navExpanded ? 1 : 0.8,
-                width: navExpanded ? 'auto' : 0,
+                width: navExpanded ? "auto" : 0,
               }}
               transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
               className="overflow-hidden flex items-center justify-center"
@@ -656,23 +625,23 @@ export default function App() {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              handleTabClick('archive');
+              handleTabClick("archive");
             }}
             className={clsx(
-              'flex-1 flex flex-col items-center justify-center h-full relative group cursor-pointer min-w-0',
-              activeTab === 'archive'
-                ? 'text-[var(--accent-color)]'
-                : 'text-slate-500 dark:text-[var(--text-secondary)] hover:text-slate-900 dark:hover:text-[var(--text-primary)]',
+              "flex-1 flex flex-col items-center justify-center h-full relative group cursor-pointer min-w-0",
+              activeTab === "archive"
+                ? "text-[var(--accent-color)]"
+                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]",
             )}
           >
             <motion.div
               className={clsx(
-                'p-1.5 rounded-xl flex items-center justify-center',
-                activeTab === 'archive'
-                  ? 'bg-[var(--accent-color)]/10 text-[var(--accent-color)]'
-                  : 'bg-transparent text-slate-500 dark:text-[var(--text-secondary)]',
+                "p-1.5 rounded-control flex items-center justify-center",
+                activeTab === "archive"
+                  ? "bg-[var(--accent-color)]/10 text-[var(--accent-color)]"
+                  : "bg-transparent text-[var(--text-secondary)]",
               )}
-              animate={{ scale: activeTab === 'archive' ? 1.1 : 1 }}
+              animate={{ scale: activeTab === "archive" ? 1.1 : 1 }}
               transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
             >
               <motion.div
@@ -689,7 +658,7 @@ export default function App() {
                 height: navExpanded ? 14 : 0,
                 marginTop: navExpanded ? 1 : 0,
                 scale: navExpanded ? 1 : 0.8,
-                width: navExpanded ? 'auto' : 0,
+                width: navExpanded ? "auto" : 0,
               }}
               transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
               className="overflow-hidden flex items-center justify-center"
@@ -703,23 +672,23 @@ export default function App() {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              handleTabClick('settings');
+              handleTabClick("settings");
             }}
             className={clsx(
-              'flex-1 flex flex-col items-center justify-center h-full relative group cursor-pointer min-w-0',
-              activeTab === 'settings'
-                ? 'text-[var(--accent-color)]'
-                : 'text-slate-500 dark:text-[var(--text-secondary)] hover:text-slate-900 dark:hover:text-[var(--text-primary)]',
+              "flex-1 flex flex-col items-center justify-center h-full relative group cursor-pointer min-w-0",
+              activeTab === "settings"
+                ? "text-[var(--accent-color)]"
+                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]",
             )}
           >
             <motion.div
               className={clsx(
-                'p-1.5 rounded-xl flex items-center justify-center',
-                activeTab === 'settings'
-                  ? 'bg-[var(--accent-color)]/10 text-[var(--accent-color)]'
-                  : 'bg-transparent text-slate-500 dark:text-[var(--text-secondary)]',
+                "p-1.5 rounded-control flex items-center justify-center",
+                activeTab === "settings"
+                  ? "bg-[var(--accent-color)]/10 text-[var(--accent-color)]"
+                  : "bg-transparent text-[var(--text-secondary)]",
               )}
-              animate={{ scale: activeTab === 'settings' ? 1.1 : 1 }}
+              animate={{ scale: activeTab === "settings" ? 1.1 : 1 }}
               transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
             >
               <motion.div
@@ -736,7 +705,7 @@ export default function App() {
                 height: navExpanded ? 14 : 0,
                 marginTop: navExpanded ? 1 : 0,
                 scale: navExpanded ? 1 : 0.8,
-                width: navExpanded ? 'auto' : 0,
+                width: navExpanded ? "auto" : 0,
               }}
               transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
               className="overflow-hidden flex items-center justify-center"

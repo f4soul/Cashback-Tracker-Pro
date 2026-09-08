@@ -1,21 +1,21 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Search, X } from 'lucide-react';
-import { Modal } from './ui/Modal';
-import { MCC_DATA, MccItemType } from '../utils/mccData';
+import React, { useState, useMemo, useEffect, useRef } from "react";
+import { Search, X } from "lucide-react";
+import { Modal } from "./ui/Modal";
+import { MCC_DATA, MccItemType } from "../utils/mccData";
 
 const MccItem: React.FC<{ item: MccItemType }> = ({ item }) => {
   return (
-    <div
-      className="w-full bg-[var(--fill)] p-3.5 rounded-[var(--radius-sm)] border border-slate-100 dark:border-[var(--border-hairline)] flex items-center gap-3 shadow-[var(--elevation-highlight),0_2px_4px_rgb(0,0,0,0.02)] text-left hover:border-[var(--accent-color)]/30 transition-all hover:bg-[var(--fill-hover)] hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)]"
-    >
-      <div className="w-14 h-12 rounded-[var(--radius-sm)] bg-[var(--fill-hover)] flex items-center justify-center shrink-0">
-        <span className="text-sm font-black text-slate-900 dark:text-white">{item.code}</span>
+    <div className="w-full bg-[var(--fill)] p-3.5 rounded-control border border-[var(--border-hairline)] flex items-center gap-3 shadow-[var(--elevation-highlight),0_2px_4px_rgb(0,0,0,0.02)] text-left hover:border-[var(--accent-color)]/30 transition-[border-color,background-color,box-shadow] hover:bg-[var(--fill-hover)] hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)]">
+      <div className="w-14 h-12 rounded-control bg-[var(--fill-hover)] flex items-center justify-center shrink-0">
+        <span className="text-sm font-black text-[var(--text-primary)]">
+          {item.code}
+        </span>
       </div>
       <div className="flex-1 min-w-0">
-        <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+        <h3 className="text-sm font-bold text-[var(--text-primary)]">
           {item.name}
         </h3>
-        <p className="text-xs font-semibold text-slate-500 dark:text-[var(--text-secondary)] mt-0.5">
+        <p className="text-xs font-semibold text-[var(--text-secondary)] mt-0.5">
           {item.group}
         </p>
       </div>
@@ -28,22 +28,26 @@ interface MccDirectoryProps {
   onClose: () => void;
 }
 
-export const MccDirectory: React.FC<MccDirectoryProps> = ({ isOpen, onClose }) => {
-  const [searchQuery, setSearchQuery] = useState('');
+export const MccDirectory: React.FC<MccDirectoryProps> = ({
+  isOpen,
+  onClose,
+}) => {
+  const [searchQuery, setSearchQuery] = useState("");
   const [displayLimit, setDisplayLimit] = useState(30);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (!isOpen) {
-      setSearchQuery('');
+  const handleClose = () => {
+    onClose();
+    setTimeout(() => {
+      setSearchQuery("");
       setDisplayLimit(30);
-    }
-  }, [isOpen]);
+    }, 300);
+  };
 
-  // Reset limit when query changes
-  useEffect(() => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
     setDisplayLimit(30);
-  }, [searchQuery]);
+  };
 
   const filteredMcc = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
@@ -53,7 +57,7 @@ export const MccDirectory: React.FC<MccDirectoryProps> = ({ isOpen, onClose }) =
       (item) =>
         item.code.includes(query) ||
         item.name.toLowerCase().includes(query) ||
-        item.group.toLowerCase().includes(query)
+        item.group.toLowerCase().includes(query),
     );
   }, [searchQuery]);
 
@@ -71,7 +75,7 @@ export const MccDirectory: React.FC<MccDirectoryProps> = ({ isOpen, onClose }) =
           setDisplayLimit((prev) => Math.min(prev + 30, filteredMcc.length));
         }
       },
-      { rootMargin: '150px' }
+      { rootMargin: "150px" },
     );
 
     const currentSentinel = sentinelRef.current;
@@ -87,20 +91,23 @@ export const MccDirectory: React.FC<MccDirectoryProps> = ({ isOpen, onClose }) =
   }, [isOpen, displayLimit, filteredMcc.length]);
 
   const searchHeader = (
-    <div className="px-4 py-3 border-b border-slate-100 dark:border-[var(--border-hairline)] shrink-0 bg-transparent">
+    <div className="px-4 py-3 border-b border-[var(--border-hairline)] shrink-0 bg-transparent">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-tertiary)]" />
         <input
           type="text"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={handleSearchChange}
           placeholder="Поиск по коду или названию..."
-          className="w-full pl-10 pr-10 py-3 bg-[var(--fill)] border-none rounded-full text-sm font-bold text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 transition-all"
+          className="w-full pl-10 pr-10 py-3 bg-[var(--fill)] border-none rounded-full text-sm font-bold text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 transition-shadow"
         />
         {searchQuery && (
           <button
-            onClick={() => setSearchQuery('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-[var(--text-primary)] rounded-full hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
+            onClick={() => {
+              setSearchQuery("");
+              setDisplayLimit(30);
+            }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] rounded-full hover:bg-[var(--fill-hover)] transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -112,11 +119,12 @@ export const MccDirectory: React.FC<MccDirectoryProps> = ({ isOpen, onClose }) =
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       title="Справочник МСС-кодов"
       headerContent={searchHeader}
       isBottomSheet={true}
       isFixedHeight={true}
+      size="wide"
     >
       <div className="space-y-2 pb-8 sm:pb-0">
         {displayedMcc.length > 0 ? (
@@ -125,19 +133,27 @@ export const MccDirectory: React.FC<MccDirectoryProps> = ({ isOpen, onClose }) =
               <MccItem key={item.code} item={item} />
             ))}
             {displayLimit < filteredMcc.length && (
-              <div ref={sentinelRef} className="h-10 w-full flex items-center justify-center text-xs text-slate-400 font-semibold py-2">
+              <div
+                ref={sentinelRef}
+                className="h-10 w-full flex items-center justify-center text-xs text-[var(--text-tertiary)] font-semibold py-2"
+              >
                 Загрузка...
               </div>
             )}
           </>
         ) : (
           <div className="text-center py-10 space-y-4">
-            <p className="text-sm font-medium text-gray-500 dark:text-[var(--text-secondary)]">
+            <p className="text-sm font-medium text-[var(--text-secondary)]">
               Ничего не найдено
             </p>
             <button
-              onClick={() => window.open(`https://www.google.com/search?q=MCC+код+${searchQuery}`, '_blank')}
-              className="px-4 py-2 bg-[var(--accent-color)] text-white rounded-[var(--radius-app)] text-sm font-bold shadow-md shadow-[var(--accent-color)]/20 hover:brightness-110 transition-all cursor-pointer active:scale-95"
+              onClick={() =>
+                window.open(
+                  `https://www.google.com/search?q=MCC+код+${searchQuery}`,
+                  "_blank",
+                )
+              }
+              className="px-4 py-2 bg-[var(--accent-color)] text-white rounded-control text-sm font-bold shadow-md shadow-[var(--accent-color)]/20 hover:brightness-110 transition-[filter,transform] cursor-pointer active:scale-95"
             >
               Поиск в Google
             </button>

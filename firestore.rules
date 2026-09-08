@@ -3,69 +3,85 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ====================== ФУНКЦИИ ======================
+    // ====================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ======================
+    
+    // Проверка, что пользователь авторизован в Firebase Auth
     function isAuthenticated() {
       return request.auth != null;
     }
 
+    // Проверка, что запрос исходит от владельца документа
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
+    // Проверка прав администратора через Custom Claims (Firebase Admin SDK)
     function isAdmin() {
-      return isAuthenticated() &&
-             (request.auth.token.email == "admin@example.com" // REPLACE WITH YOUR ADMIN EMAIL &&
-              request.auth.token.email_verified == true);
-             // || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      return isAuthenticated() && request.auth.token.admin == true;
     }
 
-    // ====================== ВАЛИДАТОРЫ ======================
+    // ====================== ВАЛИДАТОРЫ СТРУКТУРЫ ======================
+    
+    // Проверка корректности начальной структуры профиля пользователя
     function isValidUser(data) {
       return data.settings is map &&
              data.customBanks is list &&
              data.customCategories is list;
     }
 
+    // Проверка структуры документа месяца кэшбека
     function isValidMonth(data) {
       return data.uid is string &&
              data.monthId is string &&
              data.entries is list;
     }
 
-    // ====================== ПРАВИЛА ======================
+    // ====================== ПРАВИЛА КОЛЛЕКЦИЙ ======================
 
-    // Пользователи
+    // Профили пользователей и настройки
     match /users/{userId} {
-      allow read,   update: if isOwner(userId) || isAdmin();
+      // Чтение: владелец профиля или администратор
+      allow read: if isOwner(userId) || isAdmin();
+
+      // Создание: только владелец при наличии валидной структуры
       allow create: if isOwner(userId) && isValidUser(request.resource.data);
+
+      // Обновление: ТОЛЬКО владелец; если поле uid передано, оно обязано совпадать с userId
+      allow update: if isOwner(userId) &&
+                      (!('uid' in request.resource.data) || request.resource.data.uid == userId);
+
+      // Удаление: только администратор
       allow delete: if isAdmin();
     }
 
-    // Основная коллекция месяцев
+    // Коллекция месяцев кэшбека
     match /months/{monthDocId} {
       
-      // Чтение: свои данные + админ видит всё
+      // Чтение: владелец данных видит свои месяцы, администратор видит все
       allow read: if isAuthenticated() && 
                     (resource.data.uid == request.auth.uid || isAdmin());
 
-      // Создание — самое важное для тестовых данных
+      // Создание: владелец с id документа вида {uid}_{monthId} или администратор
       allow create: if isAuthenticated() && 
                       isValidMonth(request.resource.data) &&
                       (isAdmin() || 
                        (request.resource.data.uid == request.auth.uid && 
                         monthDocId.startsWith(request.auth.uid + "_")));
 
-      // Обновление — только свои данные
+      // Обновление: только владелец; ключевые поля (uid, monthId) строго иммутабельны
       allow update: if isAuthenticated() && 
                       resource.data.uid == request.auth.uid &&
+                      request.resource.data.uid == resource.data.uid &&
+                      request.resource.data.monthId == resource.data.monthId &&
                       isValidMonth(request.resource.data);
 
-      // Удаление — только свои или админ
+      // Удаление: только владелец месяца или администратор
       allow delete: if isAuthenticated() && 
                       (resource.data.uid == request.auth.uid || isAdmin());
     }
 
     // ====================== ЗАПРЕТ ВСЕГО ОСТАЛЬНОГО ======================
+    // Любые другие пути и коллекции закрыты для всех операций
     match /{document=**} {
       allow read, write: if false;
     }

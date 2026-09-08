@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 export function useScrollVisibility() {
   const [headerVisible, setHeaderVisible] = useState(true);
@@ -17,15 +17,19 @@ export function useScrollVisibility() {
           const isScrollingDown = currentScrollY > lastScrollY;
 
           if (currentScrollY > 100) {
-            setHeaderVisible(prev => prev === !isScrollingDown ? prev : !isScrollingDown);
-            setNavVisible(prev => prev === !isScrollingDown ? prev : !isScrollingDown);
+            setHeaderVisible((prev) =>
+              prev === !isScrollingDown ? prev : !isScrollingDown,
+            );
+            setNavVisible((prev) =>
+              prev === !isScrollingDown ? prev : !isScrollingDown,
+            );
             if (isScrollingDown) {
-              setNavExpanded(prev => prev === false ? prev : false);
+              setNavExpanded((prev) => (prev === false ? prev : false));
             }
           } else {
-            setHeaderVisible(prev => prev === true ? prev : true);
-            setNavVisible(prev => prev === true ? prev : true);
-            setNavExpanded(prev => prev === true ? prev : true);
+            setHeaderVisible((prev) => (prev === true ? prev : true));
+            setNavVisible((prev) => (prev === true ? prev : true));
+            setNavExpanded((prev) => (prev === true ? prev : true));
           }
 
           lastScrollY = currentScrollY;
@@ -35,9 +39,8 @@ export function useScrollVisibility() {
       }
     };
 
-    
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return {

@@ -11,7 +11,7 @@ export interface Bank {
   logoUrl?: string;
 }
 
-export type LogoShape = 'circle' | 'square' | 'rectangle';
+export type LogoShape = "circle" | "square" | "rectangle";
 
 export interface PlaceholderUser {
   uid: string;
@@ -44,3 +44,13 @@ export interface MonthData {
   entries: CashbackEntry[];
 }
 
+export interface BackupData {
+  allData: MonthData[];
+  customBanks?: Bank[];
+  deletedCustomBanks?: Bank[];
+  customCategories?: string[];
+  settings?: AppSettings;
+  theme?: "light" | "dark";
+  version?: string;
+  exportDate?: string;
+}
