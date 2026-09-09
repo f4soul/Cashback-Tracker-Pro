@@ -71,9 +71,15 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
               e.stopPropagation();
               onClose();
             }}
-            className="absolute inset-0 bg-black/60 dark:bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-950/30 dark:bg-[#02040A]/70 backdrop-blur-sm"
             aria-hidden="true"
-          />
+          >
+            <div
+              aria-hidden
+              className="absolute top-0 inset-x-0 pointer-events-none bg-[var(--surface-0)]"
+              style={{ height: "env(safe-area-inset-top, 0px)" }}
+            />
+          </motion.div>
           <motion.div
             initial={{ opacity: 0, scale: 0.96, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}

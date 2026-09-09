@@ -4,8 +4,8 @@
   "description": "Умный трекер кэшбека.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FAFAFA",
-  "theme_color": "#FAFAFA",
+  "background_color": "#05080F",
+  "theme_color": "#05080F",
   "icons": [
     {
       "src": "/pwa-192x192.png",

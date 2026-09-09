@@ -2,6 +2,9 @@ import { useEffect } from "react";
 import { useLocalStorage } from "./useLocalStorage";
 import { AppSettings } from "../types";
 
+let lastAppliedThemeColor: string | null = null;
+let inlineBackgroundCleaned = false;
+
 export function useThemeSync() {
   const [theme, setTheme] = useLocalStorage<"light" | "dark">("theme", "light");
 
@@ -13,7 +16,7 @@ export function useThemeSync() {
     fontColor: "#6b7280", // gray-500
   });
 
-  // Apply theme and custom styles to document with extra robustness for iOS Safari / PWA status bar
+  // 1. Theme sync: DOM class (.dark) + meta theme-color (deps: [theme])
   useEffect(() => {
     const root = document.documentElement;
     const isDark = theme === "dark";
@@ -24,7 +27,42 @@ export function useThemeSync() {
       root.classList.remove("dark");
     }
 
-    // Apply custom CSS variables
+    // Clean up inline background set by index.html on first paint so CSS transition takes over
+    if (!inlineBackgroundCleaned) {
+      root.style.removeProperty("background-color");
+      if (document.body) {
+        document.body.style.removeProperty("background-color");
+      }
+      inlineBackgroundCleaned = true;
+    }
+
+    const targetColor = isDark ? "#05080F" : "#FAFAFA";
+
+    // Remove any meta theme-color tags with 'media' attribute to prevent Safari conflicts
+    document
+      .querySelectorAll('meta[name="theme-color"][media]')
+      .forEach((el) => el.remove());
+
+    // Update or create single theme-color meta tag only if value actually changed
+    if (lastAppliedThemeColor !== targetColor) {
+      let metaThemeColor = document.querySelector(
+        'meta[name="theme-color"]:not([media])',
+      );
+      if (!metaThemeColor) {
+        metaThemeColor = document.createElement("meta");
+        metaThemeColor.setAttribute("name", "theme-color");
+        document.head.appendChild(metaThemeColor);
+      }
+      metaThemeColor.setAttribute("content", targetColor);
+      lastAppliedThemeColor = targetColor;
+    }
+  }, [theme]);
+
+  // 2. Custom CSS variables (deps: [settings, theme])
+  useEffect(() => {
+    const root = document.documentElement;
+    const isDark = theme === "dark";
+
     root.style.setProperty("--accent-color", settings.accentColor);
     if (isDark) {
       root.style.setProperty(
@@ -40,53 +78,7 @@ export function useThemeSync() {
       root.style.setProperty("--percent-text", settings.percentBlockText);
     }
     root.style.setProperty("--app-font-color", settings.fontColor);
-
-    const targetColor = isDark ? "#05080F" : "#FAFAFA";
-
-    const syncColorsAndMetaTags = () => {
-      // Style both root document and body elements to prevent unstyled body backgrounds on iOS elastic scrolls
-      root.style.backgroundColor = targetColor;
-      if (document.body) {
-        document.body.style.backgroundColor = targetColor;
-      }
-
-      // Remove any meta theme-color tags with 'media' attribute to prevent Safari conflicts
-      document
-        .querySelectorAll('meta[name="theme-color"][media]')
-        .forEach((el) => el.remove());
-
-      // Update or create the main theme-color meta tag
-      let metaThemeColor = document.querySelector(
-        'meta[name="theme-color"]:not([media])',
-      );
-      if (!metaThemeColor) {
-        metaThemeColor = document.createElement("meta");
-        metaThemeColor.setAttribute("name", "theme-color");
-        document.head.appendChild(metaThemeColor);
-      }
-      metaThemeColor.setAttribute("content", targetColor);
-
-      // Force apple-mobile-web-app-status-bar-style metadata refresh
-      let metaAppleStyle = document.querySelector(
-        'meta[name="apple-mobile-web-app-status-bar-style"]',
-      );
-      if (!metaAppleStyle) {
-        metaAppleStyle = document.createElement("meta");
-        metaAppleStyle.setAttribute(
-          "name",
-          "apple-mobile-web-app-status-bar-style",
-        );
-        document.head.appendChild(metaAppleStyle);
-      }
-      metaAppleStyle.setAttribute("content", "default");
-
-      // Set helper CSS variable
-      root.style.setProperty("--theme-color", targetColor);
-    };
-
-    // Run immediately on active tab switch or theme change
-    syncColorsAndMetaTags();
-  }, [theme, settings]);
+  }, [settings, theme]);
 
   return {
     theme,

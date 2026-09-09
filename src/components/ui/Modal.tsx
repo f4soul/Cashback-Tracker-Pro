@@ -77,8 +77,14 @@ export const Modal: React.FC<ModalProps> = ({
               e.stopPropagation();
               onClose();
             }}
-            className="fixed inset-0 md:left-[280px] bg-black/65 dark:bg-black/65 backdrop-blur-sm z-[60] transform translate-z-0"
-          />
+            className="fixed inset-0 md:left-[280px] bg-slate-950/30 dark:bg-[#02040A]/70 backdrop-blur-sm z-[60] transform translate-z-0"
+          >
+            <div
+              aria-hidden
+              className="absolute top-0 inset-x-0 pointer-events-none bg-[var(--surface-0)]"
+              style={{ height: "env(safe-area-inset-top, 0px)" }}
+            />
+          </motion.div>
           <div
             className={`fixed inset-0 md:left-[280px] flex justify-center z-[70] pointer-events-none overflow-hidden ${
               isActuallyBottomSheet
@@ -100,7 +106,7 @@ export const Modal: React.FC<ModalProps> = ({
                 isActuallyBottomSheet
                   ? "relative rounded-t-modal rounded-b-none border-t md:border-t md:border-x border-[var(--border-hairline)]"
                   : "relative rounded-t-modal md:rounded-modal border-t md:border border-[var(--border-hairline)]"
-              } ${size === 'wide' ? 'md:max-w-[640px]' : 'md:max-w-[500px]'} ${isActuallyBottomSheet && isFixedHeight ? "h-[90vh]" : "max-h-[90vh] md:max-h-[80vh]"}`}
+              } ${size === 'wide' ? 'md:max-w-[640px]' : 'md:max-w-[500px]'} ${isActuallyBottomSheet && isFixedHeight ? "h-[90vh]" : "max-h-[90vh]"}`}
             >
               <div className="flex items-center justify-between p-4 sm:p-5 border-b border-[var(--border-hairline)] bg-transparent shrink-0">
                 <h3 className="text-base sm:text-lg font-bold text-[var(--text-primary)] tracking-tight">

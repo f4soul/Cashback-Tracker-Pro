@@ -14,7 +14,6 @@ interface ModalStackItem {
 
 let lockCount = 0;
 let originalBodyOverflow = "";
-let originalHtmlOverflow = "";
 const modalStack: ModalStackItem[] = [];
 
 function handleGlobalKeyDown(e: KeyboardEvent) {
@@ -35,9 +34,7 @@ export function acquireScrollLock(): () => void {
 
   if (lockCount === 0) {
     originalBodyOverflow = document.body.style.overflow;
-    originalHtmlOverflow = document.documentElement.style.overflow;
     document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden";
   }
   lockCount++;
 
@@ -58,7 +55,6 @@ export function releaseScrollLock(): void {
   lockCount = Math.max(0, lockCount - 1);
   if (lockCount === 0) {
     document.body.style.overflow = originalBodyOverflow;
-    document.documentElement.style.overflow = originalHtmlOverflow;
   }
 }
 

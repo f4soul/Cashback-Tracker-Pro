@@ -41,6 +41,28 @@
   border-radius: var(--radius-modal);
 }
 
+
+html {
+  background-color: var(--surface-0);
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+body {
+  font-size: var(--app-font-size, 16px);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+  background-color: var(--surface-0);
+  color: var(--text-primary);
+  line-height: 1.5;
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  overscroll-behavior-y: none;
+}
+
 @layer utilities {
   .clip-octagon {
     clip-path: polygon(
@@ -56,14 +78,6 @@
   }
 }
 
-html {
-  font-size: var(--app-font-size, 16px);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  scroll-behavior: smooth;
-  background-color: var(--surface-0);
-}
 
 @media (min-width: 768px) {
   html {
@@ -71,9 +85,6 @@ html {
   }
 }
 
-html.dark {
-  background-color: var(--surface-0);
-}
 
 /* Форсирование аппаратного ускорения (GPU Composite) во всех современных браузерах */
 .gpu-accelerated {
@@ -87,20 +98,7 @@ html.dark {
   -webkit-tap-highlight-color: transparent;
 }
 
-body {
-  background-color: var(--surface-0);
-  color: var(--text-primary);
-  font-size: 1rem;
-  line-height: 1.5;
-  transition:
-    background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
 
-.dark body {
-  background-color: var(--surface-0);
-  color: var(--text-primary);
-}
 
 h1,
 h2,
@@ -244,7 +242,7 @@ h6 {
 }
 
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
   --surface-0: #fafafa;
   --surface-1: #ffffff;
   --surface-2: #ffffff;
@@ -265,9 +263,10 @@ h6 {
 }
 
 .dark {
+  color-scheme: dark;
   --surface-0: #05080F;
   --surface-1: #0B1220;
-  --surface-2: #111A2E;
+  --surface-2: #0f1626;
   --surface-raised: var(--surface-2);
   --border-hairline: rgba(130, 165, 235, 0.10);
   --border-strong: rgba(130, 165, 235, 0.16);
@@ -286,20 +285,6 @@ h6 {
   background-color: var(--surface-raised);
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-}
-
-html {
-  -webkit-text-size-adjust: 100%;
-  -webkit-tap-highlight-color: transparent;
-}
-
-body {
-  background-color: var(--surface-0);
-}
-
-html.dark body,
-html.dark {
-  background-color: var(--surface-0);
 }
 
 /* Safe area для iPhone с notch */
@@ -327,11 +312,6 @@ html.dark {
   .pwa-fab-bottom {
     bottom: 2rem !important;
   }
-}
-
-html,
-body {
-  overscroll-behavior-y: none;
 }
 
 button,
