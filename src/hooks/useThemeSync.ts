@@ -5,6 +5,26 @@ import { AppSettings } from "../types";
 let lastAppliedThemeColor: string | null = null;
 let inlineBackgroundCleaned = false;
 
+// Форс-обновление статус-бара: вместо мутации существующего узла
+// полностью пересоздаём мета-элемент. Новый узел WebKit обрабатывает
+// немедленно; мутацию на проскролленной странице — лениво.
+export function forceThemeColorMeta(color: string): void {
+  if (lastAppliedThemeColor === color) return;
+  const head = document.head;
+  const metas = head.getElementsByTagName("meta");
+  for (let i = metas.length - 1; i >= 0; i--) {
+    const m = metas.item(i);
+    if (m && m.getAttribute("name") === "theme-color") {
+      m.remove();
+    }
+  }
+  const fresh = document.createElement("meta");
+  fresh.setAttribute("name", "theme-color");
+  fresh.setAttribute("content", color);
+  head.appendChild(fresh);
+  lastAppliedThemeColor = color;
+}
+
 export function useThemeSync() {
   const [theme, setTheme] = useLocalStorage<"light" | "dark">("theme", "light");
 
@@ -27,7 +47,6 @@ export function useThemeSync() {
       root.classList.remove("dark");
     }
 
-    // Clean up inline background set by index.html on first paint so CSS transition takes over
     if (!inlineBackgroundCleaned) {
       root.style.removeProperty("background-color");
       if (document.body) {
@@ -36,26 +55,7 @@ export function useThemeSync() {
       inlineBackgroundCleaned = true;
     }
 
-    const targetColor = isDark ? "#05080F" : "#FAFAFA";
-
-    // Remove any meta theme-color tags with 'media' attribute to prevent Safari conflicts
-    document
-      .querySelectorAll('meta[name="theme-color"][media]')
-      .forEach((el) => el.remove());
-
-    // Update or create single theme-color meta tag only if value actually changed
-    if (lastAppliedThemeColor !== targetColor) {
-      let metaThemeColor = document.querySelector(
-        'meta[name="theme-color"]:not([media])',
-      );
-      if (!metaThemeColor) {
-        metaThemeColor = document.createElement("meta");
-        metaThemeColor.setAttribute("name", "theme-color");
-        document.head.appendChild(metaThemeColor);
-      }
-      metaThemeColor.setAttribute("content", targetColor);
-      lastAppliedThemeColor = targetColor;
-    }
+    forceThemeColorMeta(isDark ? "#05080F" : "#FAFAFA");
   }, [theme]);
 
   // 2. Custom CSS variables (deps: [settings, theme])

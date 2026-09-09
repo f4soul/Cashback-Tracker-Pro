@@ -24,7 +24,7 @@ import { MonthData, Bank, AppSettings, BackupData } from "../types";
 import { getCurrentMonthId } from "../utils/date";
 import { db, handleFirestoreError, OperationType } from "../firebase";
 import { useAuth } from "../hooks/useAuth";
-import { useThemeSync } from "../hooks/useThemeSync";
+import { useThemeSync, forceThemeColorMeta } from "../hooks/useThemeSync";
 
 export interface CashbackState {
   allData: MonthData[];
@@ -962,6 +962,8 @@ export function CashbackStoreProvider({ children }: { children: ReactNode }) {
 
   const toggleTheme = useCallback(() => {
     const newTheme = theme === "light" ? "dark" : "light";
+    // Синхронно ДО setState: панель получает новый цвет в кадре тапа
+    forceThemeColorMeta(newTheme === "dark" ? "#05080F" : "#FAFAFA");
     setTheme(newTheme);
     const user = currentUserRef.current;
     if (user && !("isPlaceholder" in user)) {
