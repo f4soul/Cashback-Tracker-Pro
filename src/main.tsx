@@ -3,17 +3,24 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import { registerSW } from "virtual:pwa-register";
+import { toast } from "sonner";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { CashbackStoreProvider } from "./store/CashbackStoreProvider";
 
 const updateSW = registerSW({
   onNeedRefresh() {
-    if (confirm("New content available. Reload?")) {
-      updateSW(true);
-    }
+    toast.info("Доступно обновление приложения", {
+      description: "Нажмите «Обновить», чтобы загрузить свежую версию",
+      action: {
+        label: "Обновить",
+        onClick: () => updateSW(true),
+      },
+      duration: 15000,
+      id: "pwa-update-available",
+    });
   },
   onOfflineReady() {
-    console.log("App is ready to work offline");
+    // Приложение готово к оффлайн-работе
   },
 });
 

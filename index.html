@@ -20,8 +20,9 @@
           const root = document.documentElement;
           if (isDark) root.classList.add('dark');
           else root.classList.remove('dark');
+          root.style.colorScheme = isDark ? 'dark' : 'light';
           const color = isDark ? '#05080F' : '#FAFAFA';
-          root.style.setProperty('background-color', color, 'important');
+          root.style.backgroundColor = color;
           const metas = document.head.getElementsByTagName('meta');
           for (let i = metas.length - 1; i >= 0; i--) {
             const m = metas.item(i);

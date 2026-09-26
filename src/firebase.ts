@@ -5,7 +5,11 @@ import {
   signInWithPopup,
   signOut,
 } from "firebase/auth";
-import { initializeFirestore } from "firebase/firestore";
+import {
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+} from "firebase/firestore";
 import { toast } from "sonner";
 
 // Firebase конфигурация из .env / Vercel
@@ -31,6 +35,9 @@ const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 export const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({
+    tabManager: persistentMultipleTabManager(),
+  }),
   experimentalAutoDetectLongPolling: true,
 });
 export const googleProvider = new GoogleAuthProvider();

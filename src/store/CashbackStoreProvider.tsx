@@ -24,7 +24,7 @@ import { MonthData, Bank, AppSettings, BackupData } from "../types";
 import { getCurrentMonthId } from "../utils/date";
 import { db, handleFirestoreError, OperationType } from "../firebase";
 import { useAuth } from "../hooks/useAuth";
-import { useThemeSync, forceThemeColorMeta } from "../hooks/useThemeSync";
+import { useThemeSync, applyThemeToDom } from "../hooks/useThemeSync";
 
 export interface CashbackState {
   allData: MonthData[];
@@ -423,6 +423,7 @@ export function CashbackStoreProvider({ children }: { children: ReactNode }) {
             setSystemSettings(data.settings);
           }
           if (data.theme) {
+            applyThemeToDom(data.theme);
             dispatch({ type: "SET_THEME", payload: data.theme });
             setSystemTheme(data.theme);
           }
@@ -710,11 +711,13 @@ export function CashbackStoreProvider({ children }: { children: ReactNode }) {
       value:
         ("light" | "dark") | ((prev: "light" | "dark") => "light" | "dark"),
     ) => {
-      setSystemTheme(value);
+      const nextTheme =
+        typeof value === "function" ? value(stateRef.current.theme) : value;
+      applyThemeToDom(nextTheme);
+      setSystemTheme(nextTheme);
       dispatch({
         type: "SET_THEME",
-        payload:
-          typeof value === "function" ? value(stateRef.current.theme) : value,
+        payload: nextTheme,
       });
     },
     [setSystemTheme],
@@ -962,8 +965,8 @@ export function CashbackStoreProvider({ children }: { children: ReactNode }) {
 
   const toggleTheme = useCallback(() => {
     const newTheme = theme === "light" ? "dark" : "light";
-    // Синхронно ДО setState: панель получает новый цвет в кадре тапа
-    forceThemeColorMeta(newTheme === "dark" ? "#05080F" : "#FAFAFA");
+    // Синхронно ДО setState: обновляем класс .dark, цвет фона html/body, colorScheme и meta theme-color
+    applyThemeToDom(newTheme);
     setTheme(newTheme);
     const user = currentUserRef.current;
     if (user && !("isPlaceholder" in user)) {

@@ -271,7 +271,7 @@ export default function App() {
 
   return (
     <div
-      className="min-h-[100dvh] bg-[var(--surface-0)] dark:bg-[var(--surface-0)] font-sans transition-colors duration-300 flex flex-col md:flex-row relative"
+      className="min-h-[100dvh] bg-[var(--surface-0)] dark:bg-[var(--surface-0)] font-sans flex flex-col md:flex-row relative"
       style={theme === 'dark' ? {
         backgroundImage: 'radial-gradient(640px 420px at 50% -12%, rgba(56, 120, 255, 0.10), transparent 70%)',
       } : undefined}
