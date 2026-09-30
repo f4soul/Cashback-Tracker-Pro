@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, getRedirectResult } from "../firebase";
 import { PlaceholderUser } from "../types";
 
 export function useAuth() {
@@ -23,8 +23,14 @@ export function useAuth() {
 
   const [isAuthReady, setIsAuthReady] = useState(false);
 
-  // Auth listener
+  // Check redirect result on mount & subscribe to auth state
   useEffect(() => {
+    getRedirectResult(auth).catch((err) => {
+      if (err?.code !== "auth/credential-already-in-use") {
+        console.warn("Redirect auth result:", err);
+      }
+    });
+
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       if (u) {
         setUser(u);

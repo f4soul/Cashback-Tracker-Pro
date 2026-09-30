@@ -3,6 +3,8 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut,
 } from "firebase/auth";
 import {
@@ -153,16 +155,46 @@ export const loginWithGoogle = async () => {
     console.error(
       "Firebase is not configured. Please add keys to environment.",
     );
+    toast.error("Firebase не настроен. Проверьте переменные окружения.");
     return null;
   }
   try {
     const result = await signInWithPopup(auth, googleProvider);
     return result.user;
-  } catch (error) {
+  } catch (error: unknown) {
+    const err = error as { code?: string; message?: string };
+    if (err?.code === "auth/popup-blocked") {
+      console.warn("Popup blocked by browser, falling back to signInWithRedirect...");
+      toast.info(
+        "Всплывающее окно заблокировано браузером. Перенаправляем на вход Google...",
+        {
+          duration: 4000,
+          id: "auth-redirect-notice",
+        },
+      );
+      await signInWithRedirect(auth, googleProvider);
+      return null;
+    }
+    if (err?.code === "auth/popup-closed-by-user") {
+      // Пользователь закрыл окно авторизации вручную
+      return null;
+    }
+    if (err?.code === "auth/unauthorized-domain") {
+      toast.error(
+        "Текущий домен не добавлен в список авторизованных в Firebase Console (Authentication -> Settings -> Authorized domains).",
+        {
+          duration: 8000,
+        },
+      );
+      return null;
+    }
     console.error("Login error:", error);
+    toast.error("Ошибка при авторизации через Google.");
     throw error;
   }
 };
+
+export { getRedirectResult };
 
 export const logout = () => signOut(auth);
 
