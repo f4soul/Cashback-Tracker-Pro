@@ -595,17 +595,21 @@ export const BankForm: React.FC<BankFormProps> = memo(
                           {cat.name}
                         </span>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
                         <input
                           type="number"
+                          inputMode="decimal"
+                          min="0"
+                          max="100"
+                          step="any"
                           placeholder="0"
                           value={cat.percent}
                           onChange={(e) =>
                             updateCategoryPercent(cat.name, e.target.value)
                           }
-                          className="w-14 px-2 py-1 text-right bg-[var(--fill)] hover:bg-[var(--fill-hover)] focus:bg-[var(--fill-hover)] border-none rounded-control text-xs focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 text-[var(--text-primary)]"
+                          className="w-14 px-2 py-1 text-center bg-[var(--fill)] hover:bg-[var(--fill-hover)] focus:bg-[var(--fill-hover)] border border-[var(--border-hairline)] rounded-control text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 text-[var(--text-primary)] transition-[background-color,border-color,box-shadow] no-spinner"
                         />
-                        <span className="text-[var(--text-secondary)] text-xs font-medium">
+                        <span className="text-[var(--text-secondary)] text-xs font-medium select-none">
                           %
                         </span>
                       </div>
