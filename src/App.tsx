@@ -133,7 +133,7 @@ const AuthButton = ({
     <button
       onClick={loginWithGoogle}
       className={clsx(
-        "flex items-center gap-2 rounded-[var(--radius-sm)] transition-[filter,transform] font-bold text-sm cursor-pointer shadow-lg shadow-[var(--accent-color)]/20 hover:bg-[var(--accent-color)] hover:brightness-110 active:scale-95 shrink-0",
+        "flex items-center gap-2 rounded-control transition-[filter,transform] font-bold text-sm cursor-pointer shadow-lg shadow-[var(--accent-color)]/20 hover:bg-[var(--accent-color)] hover:brightness-110 active:scale-95 shrink-0",
         isMobile
           ? "h-8 px-4 bg-[var(--accent-color)] text-white"
           : "px-4 py-3 w-full bg-[var(--accent-color)] text-white justify-center",
@@ -213,6 +213,7 @@ export default function App() {
     handleDeleteCustomBank,
     handleAddCustomBank,
     handleAddCustomCategory,
+    handleDeleteCustomCategory,
     saveToFirestore,
     isSyncing,
     hasInitialSync,
@@ -410,6 +411,13 @@ export default function App() {
         </div>
       </aside>
 
+      {/* Защитная шторка статус-бара для мобильных устройств (перекрывает скроллящийся контент под часами/Dynamic Island при скрытии шапки) */}
+      <div
+        className="md:hidden fixed top-0 inset-x-0 z-[55] pointer-events-none bg-[var(--surface-0)] transition-colors duration-300"
+        style={{ height: "calc(env(safe-area-inset-top, 0px) + 12px)" }}
+        aria-hidden="true"
+      />
+
       {/* Floating Header */}
       <header
         className={clsx(
@@ -511,6 +519,7 @@ export default function App() {
                   onAddCustomBank={handleAddCustomBank}
                   onDeleteCustomBank={handleDeleteCustomBank}
                   onAddCustomCategory={handleAddCustomCategory}
+                  onDeleteCustomCategory={handleDeleteCustomCategory}
                   globalLogoShape={settings.logoShape}
                 />
               </motion.div>
@@ -561,7 +570,7 @@ export default function App() {
           !navVisible && navExpanded && "translate-y-[200%]",
         )}
         style={{
-          bottom: "max(0.75rem, calc(env(safe-area-inset-bottom) - 0.25rem))",
+          bottom: "max(0.75rem, env(safe-area-inset-bottom, 0px))",
         }}
       >
         <motion.nav

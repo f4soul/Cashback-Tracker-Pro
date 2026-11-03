@@ -1,10 +1,12 @@
 import { DEFAULT_BANK_LOGO } from "../assets/bankLogos";
-import React, { useState, useMemo, useCallback, memo } from "react";
+import React, { useState, useMemo, useCallback, useRef, memo } from "react";
 import { MonthData, Bank, LogoShape } from "../types";
 import { formatMonthId, capitalize } from "../utils/date";
 import { pluralize } from "../utils/format";
 import { CashbackTable } from "../components/CashbackTable";
 import { ConfirmModal } from "../components/ui/ConfirmModal";
+import { DropdownPortal } from "../components/ui/DropdownPortal";
+import { Modal } from "../components/ui/Modal";
 import { exportToPDF, exportToExcel, exportToImage } from "../utils/export";
 import {
   FileSpreadsheet,
@@ -15,14 +17,15 @@ import {
   ChevronDown,
   Trash2,
   X,
+  RotateCcw,
+  Check,
+  Tag,
+  Landmark,
 } from "lucide-react";
 import { BANKS, COMMON_CATEGORIES, getBankDetails } from "../constants";
 import { BankLogo } from "../components/BankLogo";
 import { clsx } from "clsx";
-import { motion, AnimatePresence } from "motion/react";
-
-
-import { Modal } from "../components/ui/Modal";
+import { motion } from "motion/react";
 
 interface MonthCardProps {
   month: MonthData;
@@ -30,47 +33,50 @@ interface MonthCardProps {
   onDeleteClick: (e: React.MouseEvent) => void;
 }
 
-const MonthCard: React.FC<MonthCardProps> = memo(({ month, onClick, onDeleteClick }) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.98, y: 6 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ type: "spring", stiffness: 350, damping: 25 }}
-      onClick={onClick}
-      className="bg-white dark:bg-[var(--surface-1)] rounded-card border border-[var(--border-hairline)] shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:border-[var(--accent-color)]/30 transition-[box-shadow,border-color] duration-300 cursor-pointer p-4 sm:p-5 flex flex-col group relative overflow-hidden"
-    >
-      <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent-color)]/0 to-[var(--accent-color)]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      
-      <div className="flex items-center justify-between relative z-10">
-        <div className="flex items-center gap-3 sm:gap-4">
-          <div className="w-12 h-12 rounded-full bg-[var(--accent-color)]/10 dark:bg-[var(--accent-color)]/20 text-[var(--accent-color)] flex items-center justify-center font-bold text-lg shrink-0 shadow-sm">
-            {month.monthId.split("-")[1]}
+const MonthCard: React.FC<MonthCardProps> = memo(
+  ({ month, onClick, onDeleteClick }) => {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.98, y: 6 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 350, damping: 25 }}
+        onClick={onClick}
+        className="bg-white dark:bg-[var(--surface-1)] rounded-card border border-[var(--border-hairline)] shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:border-[var(--accent-color)]/30 transition-[box-shadow,border-color] duration-300 cursor-pointer p-4 sm:p-5 flex flex-col group relative overflow-hidden isolate"
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent-color)]/0 to-[var(--accent-color)]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+        <div className="flex items-center justify-between relative z-10">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-12 h-12 rounded-full bg-[var(--accent-color)]/10 dark:bg-[var(--accent-color)]/20 text-[var(--accent-color)] flex items-center justify-center font-bold text-lg shrink-0 shadow-sm">
+              {month.monthId.split("-")[1]}
+            </div>
+            <div className="text-left min-w-0">
+              <h3 className="text-lg font-bold text-[var(--text-primary)] leading-tight truncate tracking-tight">
+                {capitalize(formatMonthId(month.monthId))}
+              </h3>
+              <p className="text-sm text-[var(--text-secondary)] mt-0.5 font-medium">
+                {month.entries.length}{" "}
+                {pluralize(month.entries.length, ["банк", "банка", "банков"])}
+              </p>
+            </div>
           </div>
-          <div className="text-left min-w-0">
-            <h3 className="text-lg font-bold text-[var(--text-primary)] leading-tight truncate tracking-tight">
-              {capitalize(formatMonthId(month.monthId))}
-            </h3>
-            <p className="text-sm text-[var(--text-secondary)] mt-0.5 font-medium">
-              {month.entries.length} {pluralize(month.entries.length, ["банк", "банка", "банков"])}
-            </p>
-          </div>
+
+          <button
+            type="button"
+            onClick={onDeleteClick}
+            className="p-2 text-[var(--text-tertiary)] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/40 rounded-control transition-[color,background-color,transform] cursor-pointer active:scale-90"
+            title="Удалить месяц"
+          >
+            <Trash2 className="w-5 h-5" />
+          </button>
         </div>
-        
-        <button
-          onClick={onDeleteClick}
-          className="p-2 text-[var(--text-tertiary)] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/40 rounded-control transition-[color,background-color,transform] cursor-pointer active:scale-90"
-          title="Удалить месяц"
-        >
-          <Trash2 className="w-5 h-5" />
-        </button>
-      </div>
-    </motion.div>
-  );
-});
+      </motion.div>
+    );
+  },
+);
 MonthCard.displayName = "MonthCard";
 
-
-interface ArchiveProps {
+export interface ArchiveProps {
   allData: MonthData[];
   customBanks: Bank[];
   deletedCustomBanks?: Bank[];
@@ -89,7 +95,6 @@ export const Archive: React.FC<ArchiveProps> = memo(
     onDeleteMonth,
     globalLogoShape,
   }) => {
-    
     const [selectedMonthId, setSelectedMonthId] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedBankFilter, setSelectedBankFilter] = useState<string>("");
@@ -101,6 +106,9 @@ export const Archive: React.FC<ArchiveProps> = memo(
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [monthToDelete, setMonthToDelete] = useState<string | null>(null);
 
+    const bankTriggerRef = useRef<HTMLDivElement>(null);
+    const categoryTriggerRef = useRef<HTMLDivElement>(null);
+
     const allCustomBanks = useMemo(
       () => [...customBanks, ...deletedCustomBanks],
       [customBanks, deletedCustomBanks],
@@ -110,20 +118,48 @@ export const Archive: React.FC<ArchiveProps> = memo(
       () => [...BANKS, ...allCustomBanks],
       [allCustomBanks],
     );
+
+    const banksMap = useMemo(
+      () => new Map(allBanks.map((b) => [b.id, b])),
+      [allBanks],
+    );
+
+    const selectedBankObj = selectedBankFilter
+      ? banksMap.get(selectedBankFilter)
+      : undefined;
+
     const allCategories = useMemo(
       () => Array.from(new Set([...COMMON_CATEGORIES, ...customCategories])),
       [customCategories],
     );
 
+    const hasDropdownFilters = Boolean(
+      selectedBankFilter || selectedCategoryFilter,
+    );
+    const hasAnyActiveFilter = Boolean(
+      searchQuery || selectedBankFilter || selectedCategoryFilter,
+    );
+    const activeFilterCount =
+      (selectedBankFilter ? 1 : 0) + (selectedCategoryFilter ? 1 : 0);
+    const totalActiveFilters =
+      activeFilterCount + (searchQuery.trim() ? 1 : 0);
+
+    const handleResetFilters = useCallback(() => {
+      setSearchQuery("");
+      setSelectedBankFilter("");
+      setSelectedCategoryFilter("");
+      setOpenBankDropdown(false);
+      setOpenCategoryDropdown(false);
+    }, []);
+
     // Filter the data
     const filteredData = useMemo(() => {
       return allData
         .map((month) => {
-          // Filter entries within the month
           const filteredEntries = month.entries.filter((entry) => {
             let bank = getBankDetails(entry.bankId, entry.customBankName);
             if (!bank && entry.bankId.startsWith("custom_")) {
-              bank = allCustomBanks.find((b) => b.id === entry.bankId);
+              bank = banksMap.get(entry.bankId);
             }
             if (!bank) {
               bank = {
@@ -137,11 +173,9 @@ export const Archive: React.FC<ArchiveProps> = memo(
               };
             }
 
-            // Bank filter
             if (selectedBankFilter && entry.bankId !== selectedBankFilter)
               return false;
 
-            // Category filter
             if (
               selectedCategoryFilter &&
               !entry.categories.some((c) => {
@@ -151,7 +185,6 @@ export const Archive: React.FC<ArchiveProps> = memo(
             )
               return false;
 
-            // Search query (checks bank name and categories)
             if (searchQuery) {
               const q = searchQuery.toLowerCase();
               const matchesBank = bank?.name.toLowerCase().includes(q);
@@ -167,17 +200,20 @@ export const Archive: React.FC<ArchiveProps> = memo(
 
           return { ...month, entries: filteredEntries };
         })
-        .filter((month) => month.entries.length > 0); // Only keep months that have matching entries
+        .filter((month) => month.entries.length > 0);
     }, [
       allData,
       searchQuery,
       selectedBankFilter,
       selectedCategoryFilter,
-      allCustomBanks,
+      banksMap,
     ]);
 
-    const selectedMonth = useMemo(() => filteredData.find(m => m.monthId === selectedMonthId), [filteredData, selectedMonthId]);
-    
+    const selectedMonth = useMemo(
+      () => filteredData.find((m) => m.monthId === selectedMonthId),
+      [filteredData, selectedMonthId],
+    );
+
     const handleExport = useCallback(async (monthId: string) => {
       await exportToPDF(`archive-table-${monthId}`, `Кэшбек_${monthId}.pdf`);
     }, []);
@@ -210,10 +246,14 @@ export const Archive: React.FC<ArchiveProps> = memo(
       }
     }, [monthToDelete, onDeleteMonth]);
 
+    const showBottomFilterSummary =
+      (!showFilters && hasDropdownFilters) ||
+      (showFilters && totalActiveFilters >= 2 && filteredData.length > 0);
+
     return (
       <div className="flex flex-col gap-3">
         {/* Filters Section */}
-        <div className="bg-white dark:bg-[var(--surface-1)] rounded-card border border-[var(--border-hairline)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] p-3 sm:p-4 flex flex-col gap-3 sm:gap-4">
+        <div className="relative z-20 bg-white dark:bg-[var(--surface-1)] rounded-card border border-[var(--border-hairline)] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] p-3 sm:p-4 flex flex-col">
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-tertiary)]" />
@@ -228,7 +268,7 @@ export const Archive: React.FC<ArchiveProps> = memo(
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] rounded-full hover:bg-[var(--fill-hover)] transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] rounded-full hover:bg-[var(--fill-hover)] transition-colors cursor-pointer"
                   title="Очистить поиск"
                 >
                   <X className="w-4 h-4" />
@@ -236,205 +276,395 @@ export const Archive: React.FC<ArchiveProps> = memo(
               )}
             </div>
             <button
-              onClick={() => setShowFilters(!showFilters)}
+              type="button"
+              onClick={() => {
+                const next = !showFilters;
+                setShowFilters(next);
+                if (!next) {
+                  setOpenBankDropdown(false);
+                  setOpenCategoryDropdown(false);
+                }
+              }}
+              title={showFilters ? "Скрыть фильтры" : "Показать фильтры"}
               className={clsx(
-                "p-2.5 rounded-control border transition-[background-color,border-color,color,box-shadow,transform] flex items-center justify-center cursor-pointer active:scale-95",
-                showFilters || selectedBankFilter || selectedCategoryFilter
+                "relative p-2.5 rounded-control border transition-[background-color,border-color,color,box-shadow,transform] flex items-center justify-center cursor-pointer active:scale-95 shrink-0",
+                showFilters || hasDropdownFilters
                   ? "bg-[var(--accent-color)] border-[var(--accent-color)] shadow-md shadow-[var(--accent-color)]/20 text-white"
                   : "bg-[var(--surface-0)] dark:bg-[var(--surface-2)] border border-[var(--border-hairline)] text-[var(--text-secondary)] hover:bg-[var(--fill-hover)] shadow-sm",
               )}
             >
               <Filter className="w-5 h-5" />
+              {activeFilterCount > 0 && (
+                <span className="-top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-white text-[var(--accent-color)] border border-[var(--accent-color)]/30 text-[10px] font-bold flex items-center justify-center shadow-sm leading-none absolute">
+                  {activeFilterCount}
+                </span>
+              )}
             </button>
           </div>
 
-          {showFilters && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-[var(--border-strong)] animate-fade-down">
-              {/* Bank Filter Dropdown */}
-              <div className="flex flex-col gap-1.5 relative">
-                <label className="text-[10px] font-semibold text-[var(--text-secondary)]">
-                  Фильтр по банку
-                </label>
-                <button
-                  onClick={() => {
-                    setOpenBankDropdown(!openBankDropdown);
-                    setOpenCategoryDropdown(false);
-                  }}
-                  className="w-full flex items-center justify-between px-3 py-2.5 bg-[var(--surface-0)] dark:bg-[var(--surface-2)] border border-[var(--border-hairline)] rounded-control text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] text-[var(--text-primary)] transition-[background-color,border-color,box-shadow] cursor-pointer shadow-none hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] hover:bg-[var(--fill-hover)]"
-                >
-                  <div className="flex items-center gap-2 overflow-hidden">
-                    {selectedBankFilter ? (
-                      <>
-                        <BankLogo
-                          bank={allBanks.find(
-                            (b) => b.id === selectedBankFilter,
-                          )!}
-                          logoShape={globalLogoShape}
-                          size="sm"
-                        />
-                        <span className="truncate">
-                          {
-                            allBanks.find((b) => b.id === selectedBankFilter)
-                              ?.name
-                          }
-                        </span>
-                      </>
-                    ) : (
-                      <span className="text-[var(--text-tertiary)]">
-                        Все банки
-                      </span>
-                    )}
-                  </div>
-                  <ChevronDown
-                    className={clsx(
-                      "w-4 h-4 text-[var(--text-tertiary)] transition-transform",
-                      openBankDropdown && "rotate-180",
-                    )}
-                  />
-                </button>
-
-                <AnimatePresence>
-                  {openBankDropdown && (
-                    <>
-                      <div
-                        className="fixed inset-0 z-10"
-                        onClick={() => setOpenBankDropdown(false)}
-                      />
-                      <motion.div
-                        initial={{ opacity: 0, y: 4, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 4, scale: 0.95 }}
-                        className="absolute top-full left-0 right-0 mt-2 z-20 bg-white dark:bg-[var(--surface-2)] border border-[var(--border-hairline)] rounded-card shadow-[var(--elevation-highlight),0_8px_30px_rgba(0,0,0,0.12)] max-h-64 overflow-y-auto scrollbar-hide p-1.5"
-                      >
+          {/* CSS Grid Accordion (0fr -> 1fr) для раскрытия панели фильтров без рывков */}
+          <div
+            className={clsx(
+              "grid transition-[grid-template-rows,opacity] duration-300 ease-out",
+              showFilters
+                ? "grid-rows-[1fr] opacity-100 pointer-events-auto"
+                : "grid-rows-[0fr] opacity-0 pointer-events-none",
+            )}
+          >
+            <div className="overflow-hidden min-h-0">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-3.5 mt-3 border-t border-[var(--border-hairline)]">
+                {/* Bank Filter Dropdown */}
+                <div className="flex flex-col gap-1.5 relative">
+                  <label className="text-[11px] font-semibold text-[var(--text-secondary)] px-0.5">
+                    Фильтр по банку
+                  </label>
+                  <div ref={bankTriggerRef} className="relative flex items-center">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpenBankDropdown((prev) => !prev);
+                        setOpenCategoryDropdown(false);
+                      }}
+                      className={clsx(
+                        "w-full h-11 flex items-center justify-between pl-3 pr-10 bg-[var(--surface-0)] dark:bg-[var(--surface-2)] border rounded-control text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] text-[var(--text-primary)] transition-[background-color,border-color,box-shadow] cursor-pointer hover:bg-[var(--fill-hover)]",
+                        selectedBankFilter
+                          ? "border-[var(--accent-color)]/40 font-medium"
+                          : "border-[var(--border-hairline)]",
+                      )}
+                    >
+                      <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
+                        {selectedBankObj ? (
+                          <>
+                            <BankLogo
+                              bank={selectedBankObj}
+                              logoShape={globalLogoShape}
+                              size="sm"
+                            />
+                            <span className="truncate">
+                              {selectedBankObj.name}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <div className="w-6 h-6 rounded-control bg-[var(--fill)] flex items-center justify-center shrink-0 text-[var(--text-tertiary)]">
+                              <Landmark className="w-3.5 h-3.5" />
+                            </div>
+                            <span className="text-[var(--text-tertiary)]">
+                              Все банки
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </button>
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 pointer-events-none">
+                      {selectedBankFilter && (
                         <button
-                          onClick={() => {
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setSelectedBankFilter("");
                             setOpenBankDropdown(false);
                           }}
+                          className="p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--fill-hover)] rounded-full transition-[color,background-color,transform] active:scale-90 cursor-pointer pointer-events-auto"
+                          title="Очистить фильтр по банку"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      <ChevronDown
+                        className={clsx(
+                          "w-4 h-4 text-[var(--text-tertiary)] transition-transform duration-300 ease-out mr-1",
+                          openBankDropdown && "rotate-180",
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  <DropdownPortal
+                    isOpen={openBankDropdown}
+                    triggerRef={bankTriggerRef}
+                    onClose={() => setOpenBankDropdown(false)}
+                    className="bg-white dark:bg-[var(--surface-2)] border border-[var(--border-strong)] rounded-card shadow-[var(--elevation-highlight),0_16px_40px_rgba(0,0,0,0.16)] dark:shadow-[var(--elevation-highlight),0_24px_48px_rgba(0,0,0,0.75)] max-h-64 overflow-y-auto overscroll-contain scrollbar-hide p-1.5"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedBankFilter("");
+                        setOpenBankDropdown(false);
+                      }}
+                      className={clsx(
+                        "w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-control text-sm transition-colors cursor-pointer",
+                        !selectedBankFilter
+                          ? "bg-[var(--percent-bg)] text-[var(--accent-color)] font-semibold"
+                          : "hover:bg-[var(--fill-hover)] text-[var(--text-primary)] font-medium",
+                      )}
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="w-6 h-6 rounded-full bg-[var(--fill)] flex items-center justify-center shrink-0">
+                          <Landmark className="w-3.5 h-3.5" />
+                        </div>
+                        <span className="truncate">Все банки</span>
+                      </div>
+                      {!selectedBankFilter && (
+                        <Check className="w-4 h-4 shrink-0 text-[var(--accent-color)]" />
+                      )}
+                    </button>
+                    {allBanks.map((b) => {
+                      const isSelected = selectedBankFilter === b.id;
+                      return (
+                        <button
+                          type="button"
+                          key={b.id}
+                          onClick={() => {
+                            setSelectedBankFilter(b.id);
+                            setOpenBankDropdown(false);
+                          }}
                           className={clsx(
-                            "w-full flex items-center gap-2 px-3 py-2 rounded-control text-sm transition-colors cursor-pointer",
-                            !selectedBankFilter
-                              ? "bg-[var(--percent-bg)] text-[var(--accent-color)]"
-                              : "hover:bg-[var(--fill-hover)] text-[var(--text-secondary)]",
+                            "w-full flex items-center justify-between gap-2 px-3 py-2 rounded-control text-sm transition-colors mt-0.5 cursor-pointer",
+                            isSelected
+                              ? "bg-[var(--percent-bg)] text-[var(--accent-color)] font-semibold"
+                              : "hover:bg-[var(--fill-hover)] text-[var(--text-primary)] font-medium",
                           )}
                         >
-                          <div className="w-5 h-5 rounded-full bg-[var(--fill)] flex items-center justify-center shrink-0">
-                            <Filter className="w-3 h-3" />
-                          </div>
-                          Все банки
-                        </button>
-                        {allBanks.map((b) => (
-                          <button
-                            key={b.id}
-                            onClick={() => {
-                              setSelectedBankFilter(b.id);
-                              setOpenBankDropdown(false);
-                            }}
-                            className={clsx(
-                              "w-full flex items-center gap-2 px-3 py-2 rounded-control text-sm transition-colors mt-0.5 cursor-pointer",
-                              selectedBankFilter === b.id
-                                ? "bg-[var(--percent-bg)] text-[var(--accent-color)]"
-                                : "hover:bg-[var(--fill-hover)] text-[var(--text-secondary)]",
-                            )}
-                          >
+                          <div className="flex items-center gap-2.5 min-w-0">
                             <BankLogo
                               bank={b}
                               logoShape={globalLogoShape}
                               size="sm"
                             />
                             <span className="truncate">{b.name}</span>
-                          </button>
-                        ))}
-                      </motion.div>
-                    </>
-                  )}
-                </AnimatePresence>
-              </div>
+                          </div>
+                          {isSelected && (
+                            <Check className="w-4 h-4 shrink-0 text-[var(--accent-color)]" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </DropdownPortal>
+                </div>
 
-              {/* Category Filter Dropdown */}
-              <div className="flex flex-col gap-1.5 relative">
-                <label className="text-[10px] font-semibold text-[var(--text-secondary)]">
-                  Фильтр по категории
-                </label>
-                <button
-                  onClick={() => {
-                    setOpenCategoryDropdown(!openCategoryDropdown);
-                    setOpenBankDropdown(false);
-                  }}
-                  className="w-full flex items-center justify-between px-3 py-2.5 bg-[var(--surface-0)] dark:bg-[var(--surface-2)] border border-[var(--border-hairline)] rounded-control text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] text-[var(--text-primary)] transition-[background-color,border-color,box-shadow] cursor-pointer shadow-none hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] hover:bg-[var(--fill-hover)]"
-                >
-                  <span
-                    className={clsx(
-                      "truncate",
-                      !selectedCategoryFilter && "text-[var(--text-tertiary)]",
-                    )}
+                {/* Category Filter Dropdown */}
+                <div className="flex flex-col gap-1.5 relative">
+                  <label className="text-[11px] font-semibold text-[var(--text-secondary)] px-0.5">
+                    Фильтр по категории
+                  </label>
+                  <div
+                    ref={categoryTriggerRef}
+                    className="relative flex items-center"
                   >
-                    {selectedCategoryFilter || "Все категории"}
-                  </span>
-                  <ChevronDown
-                    className={clsx(
-                      "w-4 h-4 text-[var(--text-tertiary)] transition-transform",
-                      openCategoryDropdown && "rotate-180",
-                    )}
-                  />
-                </button>
-
-                <AnimatePresence>
-                  {openCategoryDropdown && (
-                    <>
-                      <div
-                        className="fixed inset-0 z-10"
-                        onClick={() => setOpenCategoryDropdown(false)}
-                      />
-                      <motion.div
-                        initial={{ opacity: 0, y: 4, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 4, scale: 0.95 }}
-                        className="absolute top-full left-0 right-0 mt-2 z-20 bg-white dark:bg-[var(--surface-2)] border border-[var(--border-hairline)] rounded-card shadow-[var(--elevation-highlight),0_8px_30px_rgba(0,0,0,0.12)] max-h-64 overflow-y-auto scrollbar-hide p-1.5"
-                      >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpenCategoryDropdown((prev) => !prev);
+                        setOpenBankDropdown(false);
+                      }}
+                      className={clsx(
+                        "w-full h-11 flex items-center justify-between pl-3 pr-10 bg-[var(--surface-0)] dark:bg-[var(--surface-2)] border rounded-control text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] text-[var(--text-primary)] transition-[background-color,border-color,box-shadow] cursor-pointer hover:bg-[var(--fill-hover)]",
+                        selectedCategoryFilter
+                          ? "border-[var(--accent-color)]/40 font-medium"
+                          : "border-[var(--border-hairline)]",
+                      )}
+                    >
+                      <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
+                        {selectedCategoryFilter ? (
+                          <>
+                            <div className="w-6 h-6 rounded-control bg-[var(--accent-color)]/10 text-[var(--accent-color)] flex items-center justify-center shrink-0">
+                              <Tag className="w-3.5 h-3.5" />
+                            </div>
+                            <span className="truncate">
+                              {selectedCategoryFilter}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <div className="w-6 h-6 rounded-control bg-[var(--fill)] flex items-center justify-center shrink-0 text-[var(--text-tertiary)]">
+                              <Tag className="w-3.5 h-3.5" />
+                            </div>
+                            <span className="text-[var(--text-tertiary)]">
+                              Все категории
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </button>
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 pointer-events-none">
+                      {selectedCategoryFilter && (
                         <button
-                          onClick={() => {
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setSelectedCategoryFilter("");
                             setOpenCategoryDropdown(false);
                           }}
+                          className="p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--fill-hover)] rounded-full transition-[color,background-color,transform] active:scale-90 cursor-pointer pointer-events-auto"
+                          title="Очистить фильтр по категории"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      <ChevronDown
+                        className={clsx(
+                          "w-4 h-4 text-[var(--text-tertiary)] transition-transform duration-300 ease-out mr-1",
+                          openCategoryDropdown && "rotate-180",
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  <DropdownPortal
+                    isOpen={openCategoryDropdown}
+                    triggerRef={categoryTriggerRef}
+                    onClose={() => setOpenCategoryDropdown(false)}
+                    className="bg-white dark:bg-[var(--surface-2)] border border-[var(--border-strong)] rounded-card shadow-[var(--elevation-highlight),0_16px_40px_rgba(0,0,0,0.16)] dark:shadow-[var(--elevation-highlight),0_24px_48px_rgba(0,0,0,0.75)] max-h-64 overflow-y-auto overscroll-contain scrollbar-hide p-1.5"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedCategoryFilter("");
+                        setOpenCategoryDropdown(false);
+                      }}
+                      className={clsx(
+                        "w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-control text-sm transition-colors cursor-pointer",
+                        !selectedCategoryFilter
+                          ? "bg-[var(--percent-bg)] text-[var(--accent-color)] font-semibold"
+                          : "hover:bg-[var(--fill-hover)] text-[var(--text-primary)] font-medium",
+                      )}
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="w-6 h-6 rounded-full bg-[var(--fill)] flex items-center justify-center shrink-0">
+                          <Tag className="w-3.5 h-3.5" />
+                        </div>
+                        <span className="truncate">Все категории</span>
+                      </div>
+                      {!selectedCategoryFilter && (
+                        <Check className="w-4 h-4 shrink-0 text-[var(--accent-color)]" />
+                      )}
+                    </button>
+                    {allCategories.map((c) => {
+                      const isSelected = selectedCategoryFilter === c;
+                      return (
+                        <button
+                          type="button"
+                          key={c}
+                          onClick={() => {
+                            setSelectedCategoryFilter(c);
+                            setOpenCategoryDropdown(false);
+                          }}
                           className={clsx(
-                            "w-full flex items-center gap-2 px-3 py-2 rounded-control text-sm transition-colors cursor-pointer",
-                            !selectedCategoryFilter
-                              ? "bg-[var(--percent-bg)] text-[var(--accent-color)]"
-                              : "hover:bg-[var(--fill-hover)] text-[var(--text-secondary)]",
+                            "w-full flex items-center justify-between gap-2 px-3 py-2 rounded-control text-sm transition-colors mt-0.5 cursor-pointer",
+                            isSelected
+                              ? "bg-[var(--percent-bg)] text-[var(--accent-color)] font-semibold"
+                              : "hover:bg-[var(--fill-hover)] text-[var(--text-primary)] font-medium",
                           )}
                         >
-                          Все категории
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div
+                              className={clsx(
+                                "w-6 h-6 rounded-control flex items-center justify-center shrink-0 transition-colors",
+                                isSelected
+                                  ? "bg-[var(--accent-color)]/10 text-[var(--accent-color)]"
+                                  : "bg-[var(--fill)] text-[var(--text-secondary)]",
+                              )}
+                            >
+                              <Tag className="w-3.5 h-3.5" />
+                            </div>
+                            <span className="truncate text-left">{c}</span>
+                          </div>
+                          {isSelected && (
+                            <Check className="w-4 h-4 shrink-0 text-[var(--accent-color)]" />
+                          )}
                         </button>
-                        {allCategories.map((c) => (
-                          <button
-                            key={c}
-                            onClick={() => {
-                              setSelectedCategoryFilter(c);
-                              setOpenCategoryDropdown(false);
-                            }}
-                            className={clsx(
-                              "w-full flex items-center gap-2 px-3 py-2 rounded-control text-sm transition-colors mt-0.5 cursor-pointer",
-                              selectedCategoryFilter === c
-                                ? "bg-[var(--percent-bg)] text-[var(--accent-color)]"
-                                : "hover:bg-[var(--fill-hover)] text-[var(--text-secondary)]",
-                            )}
-                          >
-                            {c}
-                          </button>
-                        ))}
-                      </motion.div>
-                    </>
-                  )}
-                </AnimatePresence>
+                      );
+                    })}
+                  </DropdownPortal>
+                </div>
               </div>
             </div>
-          )}
+          </div>
+
+          {/* Compact chips when filter panel is collapsed OR single bulk-reset when 2+ filters are active with results */}
+          <div
+            className={clsx(
+              "grid transition-[grid-template-rows,opacity] duration-300 ease-out",
+              showBottomFilterSummary
+                ? "grid-rows-[1fr] opacity-100 pointer-events-auto"
+                : "grid-rows-[0fr] opacity-0 pointer-events-none",
+            )}
+          >
+            <div className="overflow-hidden min-h-0">
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-2.5 mt-3 border-t border-[var(--border-hairline)]">
+                {!showFilters && hasDropdownFilters ? (
+                  <div className="flex flex-wrap items-center gap-2 min-w-0">
+                    {selectedBankObj && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedBankFilter("");
+                          setOpenBankDropdown(false);
+                        }}
+                        className="h-9 inline-flex items-center gap-2 pl-2 pr-2.5 rounded-[min(10px,var(--radius-sm))] bg-[var(--fill)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] text-xs font-semibold text-[var(--text-primary)] transition-[background-color,transform] active:scale-95 cursor-pointer max-w-full"
+                        title="Убрать фильтр по банку"
+                      >
+                        <BankLogo
+                          bank={selectedBankObj}
+                          logoShape={globalLogoShape}
+                          size="xs"
+                        />
+                        <span className="truncate max-w-[140px] sm:max-w-[200px]">
+                          {selectedBankObj.name}
+                        </span>
+                        <X className="w-3.5 h-3.5 text-[var(--text-tertiary)] shrink-0 ml-0.5" />
+                      </button>
+                    )}
+                    {selectedCategoryFilter && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedCategoryFilter("");
+                          setOpenCategoryDropdown(false);
+                        }}
+                        className="h-9 inline-flex items-center gap-2 pl-2 pr-2.5 rounded-[min(10px,var(--radius-sm))] bg-[var(--fill)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] text-xs font-semibold text-[var(--text-primary)] transition-[background-color,transform] active:scale-95 cursor-pointer max-w-full"
+                        title="Убрать фильтр по категории"
+                      >
+                        <div className="w-5 h-5 rounded-[min(6px,var(--radius-sm))] bg-[var(--accent-color)]/10 text-[var(--accent-color)] flex items-center justify-center shrink-0">
+                          <Tag className="w-3 h-3" />
+                        </div>
+                        <span className="truncate max-w-[140px] sm:max-w-[200px]">
+                          {selectedCategoryFilter}
+                        </span>
+                        <X className="w-3.5 h-3.5 text-[var(--text-tertiary)] shrink-0 ml-0.5" />
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <span className="text-xs text-[var(--text-secondary)] font-medium pl-0.5">
+                    Найдено: {filteredData.length}{" "}
+                    {pluralize(filteredData.length, [
+                      "месяц",
+                      "месяца",
+                      "месяцев",
+                    ])}
+                  </span>
+                )}
+
+                {totalActiveFilters >= 2 && filteredData.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleResetFilters}
+                    className="h-8 inline-flex items-center gap-1.5 px-2.5 rounded-control text-xs font-semibold text-[var(--accent-color)] hover:bg-[var(--fill-hover)] transition-[background-color,transform] active:scale-95 cursor-pointer shrink-0 ml-auto"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Сбросить все</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Grid View */}
         {filteredData.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 pb-[80px] md:pb-0">
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 pb-[80px] md:pb-0">
             {filteredData.map((month) => (
               <MonthCard
                 key={month.monthId}
@@ -448,7 +678,7 @@ export const Archive: React.FC<ArchiveProps> = memo(
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-12 px-4 text-center pb-[100px] md:pb-12 animate-fade-down bg-white dark:bg-[var(--surface-1)] rounded-card border border-[var(--border-hairline)] shadow-sm">
+          <div className="relative z-10 flex flex-col items-center justify-center py-12 px-4 text-center mb-[90px] md:mb-0 bg-white dark:bg-[var(--surface-1)] rounded-card border border-[var(--border-hairline)] shadow-sm">
             <div className="w-16 h-16 bg-[var(--surface-0)] dark:bg-[var(--surface-2)] border border-[var(--border-hairline)] rounded-full flex items-center justify-center mb-4 shadow-sm">
               <Search className="w-8 h-8 text-[var(--text-tertiary)]" />
             </div>
@@ -458,15 +688,27 @@ export const Archive: React.FC<ArchiveProps> = memo(
             <p className="text-[var(--text-secondary)] text-sm max-w-[280px]">
               Попробуйте изменить параметры поиска или фильтрации
             </p>
+            {hasAnyActiveFilter && (
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-control bg-[var(--fill)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] text-[var(--accent-color)] font-semibold text-sm transition-[background-color,transform] active:scale-95 cursor-pointer"
+              >
+                <RotateCcw className="w-4 h-4" />
+                <span>Сбросить фильтры</span>
+              </button>
+            )}
           </div>
         )}
-        
-        {/* Month Details Modal */}
+
+        {/* Month Details Modal (режим просмотра данных — pointer-fine:items-center) */}
         <Modal
           isOpen={!!selectedMonthId}
           onClose={() => setSelectedMonthId(null)}
-          title={selectedMonth ? capitalize(formatMonthId(selectedMonth.monthId)) : ""}
-          isBottomSheet={true}
+          title={
+            selectedMonth ? capitalize(formatMonthId(selectedMonth.monthId)) : ""
+          }
+          adaptiveMode="view"
           size="wide"
         >
           {selectedMonth && (
@@ -477,39 +719,54 @@ export const Archive: React.FC<ArchiveProps> = memo(
                 </h4>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {selectedMonth.entries.map((entry) => {
-                    let bank = getBankDetails(entry.bankId, entry.customBankName);
-                    if (!bank && entry.bankId.startsWith('custom_')) {
-                      bank = allCustomBanks.find(b => b.id === entry.bankId);
+                    let bank = getBankDetails(
+                      entry.bankId,
+                      entry.customBankName,
+                    );
+                    if (!bank && entry.bankId.startsWith("custom_")) {
+                      bank = allCustomBanks.find((b) => b.id === entry.bankId);
                     }
                     if (!bank) {
                       bank = {
                         id: entry.bankId,
-                        name: entry.customBankName || 'Удаленный банк',
-                        color: entry.customBankColor || '#64748b',
-                        logoText: entry.customBankLogoText || (entry.customBankName || 'Б').substring(0, 2).toUpperCase(),
-                        logoUrl: entry.customLogo
+                        name: entry.customBankName || "Удаленный банк",
+                        color: entry.customBankColor || "#64748b",
+                        logoText:
+                          entry.customBankLogoText ||
+                          (entry.customBankName || "Б")
+                            .substring(0, 2)
+                            .toUpperCase(),
+                        logoUrl: entry.customLogo,
                       };
                     }
 
                     return (
                       <div
                         key={entry.id}
-                        className="flex items-center gap-2.5 p-2.5 rounded-[var(--radius-sm)] bg-[var(--surface-0)] dark:bg-[var(--surface-1)] border border-[var(--border-hairline)] shadow-sm hover:border-[var(--accent-color)]/30 hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] transition-[border-color,box-shadow,background-color] duration-200 group isolate"
+                        className="flex items-center gap-2.5 p-2.5 rounded-control bg-[var(--fill)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] shadow-sm hover:border-[var(--accent-color)]/30 transition-[border-color,background-color] duration-200 group isolate"
                       >
                         <div className="shrink-0">
-                          <BankLogo 
-                            bank={bank} 
-                            customLogo={entry.customLogo} 
-                            logoShape={globalLogoShape} 
+                          <BankLogo
+                            bank={bank}
+                            customLogo={entry.customLogo}
+                            logoShape={globalLogoShape}
                             size="sm"
                           />
                         </div>
                         <div className="min-w-0 flex-1 flex flex-col justify-center">
-                          <h4 className="font-bold text-[13px] text-[var(--text-primary)] truncate leading-tight group-hover:text-[var(--accent-color)] transition-colors" title={bank.name}>
+                          <h4
+                            className="font-bold text-[13px] text-[var(--text-primary)] truncate leading-tight group-hover:text-[var(--accent-color)] transition-colors"
+                            title={bank.name}
+                          >
                             {bank.name}
                           </h4>
                           <p className="text-[9px] font-semibold text-[var(--text-secondary)] mt-0.5 truncate">
-                            {entry.categories.length} {pluralize(entry.categories.length, ["категория", "категории", "категорий"])}
+                            {entry.categories.length}{" "}
+                            {pluralize(entry.categories.length, [
+                              "категория",
+                              "категории",
+                              "категорий",
+                            ])}
                           </p>
                         </div>
                       </div>
@@ -519,53 +776,57 @@ export const Archive: React.FC<ArchiveProps> = memo(
               </div>
 
               <div className="flex p-1 gap-1 bg-[var(--fill)] rounded-control border border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] translate-z-0">
-                  <button
-                    onClick={() => handleExportImage(selectedMonth.monthId)}
-                    className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-control hover:bg-[var(--fill-hover)] hover:shadow-sm border border-transparent transition-[background-color,border-color,box-shadow,transform] group cursor-pointer active:scale-95"
-                    title="Изображение (PNG)"
-                  >
-                    <ImageIcon className="w-4 h-4 text-blue-500 group-hover:scale-110 transition-transform mb-0.5" />
-                    <span className="text-[9px] font-semibold text-[var(--text-secondary)] leading-none">
-                      PNG
-                    </span>
-                  </button>
+                <button
+                  type="button"
+                  onClick={() => handleExportImage(selectedMonth.monthId)}
+                  className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-control hover:bg-[var(--fill-hover)] hover:shadow-sm border border-transparent transition-[background-color,border-color,box-shadow,transform] group cursor-pointer active:scale-95"
+                  title="Изображение (PNG)"
+                >
+                  <ImageIcon className="w-4 h-4 text-blue-500 group-hover:scale-110 transition-transform mb-0.5" />
+                  <span className="text-[9px] font-semibold text-[var(--text-secondary)] leading-none">
+                    PNG
+                  </span>
+                </button>
 
-                  <button
-                    onClick={() => handleExportExcel(selectedMonth)}
-                    className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-control hover:bg-[var(--fill-hover)] hover:shadow-sm border border-transparent transition-[background-color,border-color,box-shadow,transform] group cursor-pointer active:scale-90"
-                    title="Таблица (Excel)"
-                  >
-                    <FileSpreadsheet className="w-4 h-4 text-[var(--accent-color)] group-hover:scale-110 transition-transform mb-0.5" />
-                    <span className="text-[9px] font-semibold text-[var(--text-secondary)] leading-none">
-                      Excel
-                    </span>
-                  </button>
+                <button
+                  type="button"
+                  onClick={() => handleExportExcel(selectedMonth)}
+                  className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-control hover:bg-[var(--fill-hover)] hover:shadow-sm border border-transparent transition-[background-color,border-color,box-shadow,transform] group cursor-pointer active:scale-90"
+                  title="Таблица (Excel)"
+                >
+                  <FileSpreadsheet className="w-4 h-4 text-[var(--accent-color)] group-hover:scale-110 transition-transform mb-0.5" />
+                  <span className="text-[9px] font-semibold text-[var(--text-secondary)] leading-none">
+                    Excel
+                  </span>
+                </button>
 
-                  <button
-                    onClick={() => handleExport(selectedMonth.monthId)}
-                    className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-control hover:bg-[var(--fill-hover)] hover:shadow-sm border border-transparent transition-[background-color,border-color,box-shadow,transform] group cursor-pointer active:scale-95"
-                    title="Документ (PDF)"
-                  >
-                    <FileText className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform mb-0.5" />
-                    <span className="text-[9px] font-semibold text-[var(--text-secondary)] leading-none">
-                      PDF
-                    </span>
-                  </button>
-                </div>
-                
-                <CashbackTable
-                  id={`archive-table-${selectedMonth.monthId}`}
-                  monthId={selectedMonth.monthId}
-                  entries={selectedMonth.entries}
-                  customBanks={allCustomBanks}
-                  globalLogoShape={globalLogoShape}
-                  onExportPDF={() => handleExport(selectedMonth.monthId)}
-                  onExportExcel={() => handleExportExcel(selectedMonth)}
-                  onExportImage={() => handleExportImage(selectedMonth.monthId)}
-                />
+                <button
+                  type="button"
+                  onClick={() => handleExport(selectedMonth.monthId)}
+                  className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-control hover:bg-[var(--fill-hover)] hover:shadow-sm border border-transparent transition-[background-color,border-color,box-shadow,transform] group cursor-pointer active:scale-95"
+                  title="Документ (PDF)"
+                >
+                  <FileText className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform mb-0.5" />
+                  <span className="text-[9px] font-semibold text-[var(--text-secondary)] leading-none">
+                    PDF
+                  </span>
+                </button>
+              </div>
+
+              <CashbackTable
+                id={`archive-table-${selectedMonth.monthId}`}
+                monthId={selectedMonth.monthId}
+                entries={selectedMonth.entries}
+                customBanks={allCustomBanks}
+                globalLogoShape={globalLogoShape}
+                onExportPDF={() => handleExport(selectedMonth.monthId)}
+                onExportExcel={() => handleExportExcel(selectedMonth)}
+                onExportImage={() => handleExportImage(selectedMonth.monthId)}
+              />
             </div>
           )}
         </Modal>
+
         {/* Delete Confirmation Modal */}
         <ConfirmModal
           isOpen={isDeleteModalOpen}

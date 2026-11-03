@@ -70,6 +70,7 @@ interface CurrentMonthProps {
   onAddCustomBank: (bank: Bank) => void;
   onDeleteCustomBank: (id: string) => void;
   onAddCustomCategory: (category: string) => void;
+  onDeleteCustomCategory: (category: string) => void;
   globalLogoShape: LogoShape;
   isExiting?: boolean;
 }
@@ -265,6 +266,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     onAddCustomBank,
     onDeleteCustomBank,
     onAddCustomCategory,
+    onDeleteCustomCategory,
     globalLogoShape,
     isExiting = false,
   }) => {
@@ -344,7 +346,13 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     useEffect(() => {
       const handleInteraction = (e: Event) => {
         if (window.innerWidth >= 1150) return; // Don't hide FAB on Desktop. Tablets and Mobile will hide.
-        if (isDraggingFab.current || isDraggingRestore.current || isFabHidden)
+        if (
+          isDraggingFab.current ||
+          isDraggingRestore.current ||
+          isFabHidden ||
+          isModalOpen ||
+          isDeleteModalOpen
+        )
           return;
 
         const target = e.target as HTMLElement;
@@ -366,7 +374,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
       return () => {
         window.removeEventListener("scroll", handleInteraction, true);
       };
-    }, [isFabHidden]);
+    }, [isFabHidden, isModalOpen, isDeleteModalOpen]);
 
     useEffect(() => {
       const updateConstraints = () => {
@@ -545,7 +553,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
         {mounted &&
           !isExiting &&
           createPortal(
-            <AnimatePresence mode="wait">
+            <AnimatePresence initial={false}>
               {!isFabHidden ? (
                 <motion.div
                   key="fab-container"
@@ -554,26 +562,40 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   dragConstraints={dragConstraints}
                   dragElastic={0.1}
                   dragMomentum={false}
-                  initial={{ opacity: 0, scale: 0.8, x: 0, y: yOffset }}
+                  initial={{
+                    opacity: 0,
+                    scale: 0.65,
+                    x: rightPos + 36,
+                    y: yOffset,
+                  }}
                   animate={{
                     opacity: 1,
                     scale: 1,
                     x: 0,
                     y: yOffset,
                   }}
-                  transition={{
-                    duration: 0.4,
-                    ease: [0.32, 0.72, 0, 1],
-                  }}
                   exit={{
                     opacity: 0,
-                    scale: 0.5,
-                    transition: { duration: 0.15 },
+                    scale: 0.65,
+                    x: rightPos + 36,
+                    y: yOffset,
+                    transition: {
+                      type: "spring",
+                      stiffness: 450,
+                      damping: 38,
+                      mass: 0.7,
+                    },
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 38,
+                    mass: 0.8,
                   }}
                   onDragStart={() => {
                     isDraggingFab.current = true;
                   }}
-                  onDragEnd={(e, info) => {
+                  onDragEnd={(_e, info) => {
                     setTimeout(() => {
                       isDraggingFab.current = false;
                     }, 100);
@@ -592,7 +614,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                     );
                     setYOffset(snappedY);
                   }}
-                  className="fixed pwa-fab-bottom z-50 touch-none select-none"
+                  className="fixed pwa-fab-bottom z-50 touch-none select-none transform-gpu"
                   style={{
                     right: rightPos,
                     willChange: "transform, opacity",
@@ -600,6 +622,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   }}
                 >
                   <button
+                    type="button"
                     onClick={(e) => {
                       if (isDraggingFab.current) {
                         e.preventDefault();
@@ -609,7 +632,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                       setIsModalOpen(true);
                     }}
                     title="Добавить банк"
-                    className="w-14 h-14 bg-[var(--accent-color)] text-white rounded-[var(--radius-sm)] flex items-center justify-center shadow-lg shadow-[var(--accent-color)]/30 hover:shadow-[var(--accent-color)]/40 transition-[box-shadow,transform] cursor-pointer active:scale-95"
+                    className="w-14 h-14 bg-[var(--accent-color)] text-white rounded-full flex items-center justify-center shadow-lg shadow-[var(--accent-color)]/30 hover:shadow-[var(--accent-color)]/40 hover:brightness-110 transition-[filter,box-shadow,transform] cursor-pointer active:scale-95 border border-white/20"
                   >
                     <Plus className="w-7 h-7" />
                   </button>
@@ -622,23 +645,30 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   dragConstraints={restoreConstraints}
                   dragElastic={0.1}
                   dragMomentum={false}
-                  initial={{ opacity: 0, x: 20, y: yOffset }}
+                  initial={{ opacity: 0, x: 24, y: yOffset }}
                   animate={{
-                    opacity: 0.5,
-                    scale: 1,
+                    opacity: 0.75,
                     x: 0,
                     y: yOffset,
                   }}
-                  whileHover={{ opacity: 1 }}
-                  transition={{
-                    duration: 0.4,
-                    ease: [0.32, 0.72, 0, 1],
-                  }}
+                  whileHover={{ opacity: 1, x: -3 }}
                   whileTap={{ scale: 0.95 }}
                   exit={{
                     opacity: 0,
-                    scale: 0.5,
-                    transition: { duration: 0.15 },
+                    x: 24,
+                    y: yOffset,
+                    transition: {
+                      type: "spring",
+                      stiffness: 450,
+                      damping: 38,
+                      mass: 0.7,
+                    },
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 38,
+                    mass: 0.8,
                   }}
                   onClick={() => {
                     if (isDraggingRestore.current) return;
@@ -647,7 +677,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   onDragStart={() => {
                     isDraggingRestore.current = true;
                   }}
-                  onDragEnd={(e, info) => {
+                  onDragEnd={(_e, info) => {
                     setTimeout(() => {
                       isDraggingRestore.current = false;
                     }, 100);
@@ -666,15 +696,16 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                     );
                     setYOffset(snappedY);
                   }}
-                  className="fixed pwa-fab-bottom w-5 h-14 bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-2xl hover:scale-95 transition-transform duration-300 touch-none select-none"
+                  className="fixed pwa-fab-bottom w-8 pr-3 h-14 bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-control rounded-r-none touch-none select-none transform-gpu"
                   style={{
-                    right: 0,
+                    right: -12,
+                    transformOrigin: "right center",
                     willChange: "transform, opacity",
                     touchAction: "none",
                   }}
                   title="Показать кнопку (перетащите вертикально)"
                 >
-                  <div className="flex flex-col items-center gap-0.5 opacity-70 group-hover:opacity-100 transition-opacity">
+                  <div className="flex flex-col items-center gap-0.5 opacity-85 group-hover:opacity-100 transition-opacity">
                     <ChevronUp className="w-3 h-3" />
                     <Plus className="w-3 h-3" />
                     <ChevronDown className="w-3 h-3" />
@@ -894,6 +925,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
             onAddCustomBank={onAddCustomBank}
             onDeleteCustomBank={onDeleteCustomBank}
             onAddCustomCategory={onAddCustomCategory}
+            onDeleteCustomCategory={onDeleteCustomCategory}
             globalLogoShape={globalLogoShape}
           />
         </Modal>

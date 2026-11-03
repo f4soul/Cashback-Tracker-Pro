@@ -2,6 +2,7 @@
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
+@custom-variant pointer-fine (@media (pointer: fine));
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
@@ -33,12 +34,22 @@
   border-radius: var(--radius-control);
 }
 
+@utility rounded-l-control {
+  border-top-left-radius: var(--radius-control);
+  border-bottom-left-radius: var(--radius-control);
+}
+
 @utility rounded-card {
   border-radius: var(--radius-card);
 }
 
 @utility rounded-modal {
   border-radius: var(--radius-modal);
+}
+
+@utility rounded-t-modal {
+  border-top-left-radius: var(--radius-modal);
+  border-top-right-radius: var(--radius-modal);
 }
 
 
@@ -287,7 +298,7 @@ h6 {
   color-scheme: dark;
   --surface-0: #05080F;
   --surface-1: #0B1220;
-  --surface-2: #0f1626;
+  --surface-2: #111A2E;
   --surface-raised: var(--surface-2);
   --border-hairline: rgba(130, 165, 235, 0.10);
   --border-strong: rgba(130, 165, 235, 0.16);
@@ -318,10 +329,6 @@ h6 {
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);
   }
-}
-
-.backdrop-blur-md {
-  -webkit-backdrop-filter: blur(12px); /* Safari */
 }
 
 /* Custom highly optimized bottom positioning for FAB that respects safe areas and PWA bottom bars */
@@ -375,7 +382,7 @@ button,
   }
 
   [data-sonner-toaster][data-y-position="top"] {
-    top: max(1rem, env(safe-area-inset-top, 0px)) !important;
+    top: max(1rem, calc(env(safe-area-inset-top, 0px) + 0.5rem)) !important;
   }
 
   [data-sonner-toaster] [data-sonner-toast] {

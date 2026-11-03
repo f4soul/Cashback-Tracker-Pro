@@ -50,20 +50,20 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--surface-0)]">
-          <div className="max-w-md w-full bg-white dark:bg-[var(--surface-2)] rounded-modal p-8 shadow-[var(--elevation-highlight),0_20px_40px_rgb(0,0,0,0.1)] dark:shadow-[var(--elevation-highlight),0_20px_60px_rgb(0,0,0,0.4)] border border-[var(--border-hairline)] text-center">
-            <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-control flex items-center justify-center mx-auto mb-6">
+        <div className="min-h-[100dvh] flex items-end sm:items-center justify-center p-0 sm:p-4 pt-[max(1rem,env(safe-area-inset-top))] bg-[var(--surface-0)]">
+          <div className="sm:max-w-md w-full bg-white dark:bg-[var(--surface-2)] rounded-t-modal rounded-b-none sm:rounded-modal p-6 pb-[max(1.5rem,calc(env(safe-area-inset-bottom)+0.75rem))] sm:p-8 shadow-[var(--elevation-highlight),0_-10px_40px_rgb(0,0,0,0.12)] dark:shadow-[var(--elevation-highlight),0_-10px_40px_rgb(0,0,0,0.45)] sm:shadow-[var(--elevation-highlight),0_20px_40px_rgb(0,0,0,0.1)] dark:sm:shadow-[var(--elevation-highlight),0_20px_60px_rgb(0,0,0,0.4)] border-t sm:border border-[var(--border-hairline)] text-center">
+            <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-5">
               <AlertCircle className="w-8 h-8 text-red-500" />
             </div>
             <h2 className="text-xl font-black uppercase tracking-tight text-[var(--text-primary)] mb-2">
               Упс! Что-то пошло не так
             </h2>
-            <p className="text-[var(--text-secondary)] mb-8 text-sm font-semibold leading-relaxed">
+            <p className="text-[var(--text-secondary)] mb-6 text-sm font-semibold leading-relaxed">
               {errorMessage}
             </p>
             <button
               onClick={this.handleReset}
-              className="flex items-center justify-center gap-2 w-full py-4 bg-[var(--accent-color)] text-white rounded-control font-bold hover:brightness-110 transition-[filter,transform] shadow-md shadow-[var(--accent-color)]/30 active:scale-95 cursor-pointer"
+              className="flex items-center justify-center gap-2 w-full py-3.5 px-4 bg-[var(--accent-color)] text-white rounded-control font-bold hover:brightness-110 transition-[filter,transform] shadow-md shadow-[var(--accent-color)]/30 active:scale-95 cursor-pointer"
             >
               <RefreshCcw className="w-5 h-5" />
               Перезагрузить приложение

@@ -57,6 +57,7 @@ export type CashbackAction =
   | { type: "ADD_CUSTOM_BANK"; payload: Bank }
   | { type: "DELETE_CUSTOM_BANK"; payload: string }
   | { type: "ADD_CUSTOM_CATEGORY"; payload: string }
+  | { type: "DELETE_CUSTOM_CATEGORY"; payload: string }
   | {
       type: "IMPORT_DATA";
       payload: {
@@ -203,6 +204,15 @@ function cashbackReducer(
       };
     }
 
+    case "DELETE_CUSTOM_CATEGORY": {
+      return {
+        ...state,
+        customCategories: state.customCategories.filter(
+          (c) => c !== action.payload,
+        ),
+      };
+    }
+
     case "IMPORT_DATA":
       return {
         ...state,
@@ -274,6 +284,7 @@ export interface CashbackStoreContextValue {
   handleDeleteCustomBank: (bankId: string) => void;
   handleAddCustomBank: (bank: Bank) => void;
   handleAddCustomCategory: (category: string) => void;
+  handleDeleteCustomCategory: (category: string) => void;
   saveToFirestore: (type: "settings" | "month", payload: unknown) => void;
   handleExportAllData: () => void;
   handleImportAllData: (jsonData: unknown) => Promise<boolean>;
@@ -808,6 +819,22 @@ export function CashbackStoreProvider({ children }: { children: ReactNode }) {
     [saveToFirestore],
   );
 
+  const handleDeleteCustomCategory = useCallback(
+    (category: string) => {
+      if (stateRef.current.customCategories.includes(category)) {
+        const newCategories = stateRef.current.customCategories.filter(
+          (c) => c !== category,
+        );
+        dispatch({ type: "DELETE_CUSTOM_CATEGORY", payload: category });
+        if (currentUserRef.current) {
+          saveToFirestore("settings", { customCategories: newCategories });
+        }
+        toast.success(`Категория «${category}» удалена`);
+      }
+    },
+    [saveToFirestore],
+  );
+
   const handleExportAllData = useCallback(() => {
     const currentState = stateRef.current;
     const exportData = {
@@ -1037,6 +1064,7 @@ export function CashbackStoreProvider({ children }: { children: ReactNode }) {
       handleDeleteCustomBank,
       handleAddCustomBank,
       handleAddCustomCategory,
+      handleDeleteCustomCategory,
       saveToFirestore,
       handleExportAllData,
       handleImportAllData,
@@ -1068,6 +1096,7 @@ export function CashbackStoreProvider({ children }: { children: ReactNode }) {
       handleDeleteCustomBank,
       handleAddCustomBank,
       handleAddCustomCategory,
+      handleDeleteCustomCategory,
       saveToFirestore,
       handleExportAllData,
       handleImportAllData,

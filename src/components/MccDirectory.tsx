@@ -126,7 +126,7 @@ export const MccDirectory: React.FC<MccDirectoryProps> = ({
       isFixedHeight={true}
       size="wide"
     >
-      <div className="space-y-2 pb-8 sm:pb-0">
+      <div className="space-y-2">
         {displayedMcc.length > 0 ? (
           <>
             {displayedMcc.map((item) => (

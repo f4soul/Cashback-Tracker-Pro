@@ -6,38 +6,43 @@
 
 ## 1. Стек и инварианты
 
-- React 19 + TypeScript (strict) + Vite 6 + Tailwind CSS 4 (`@tailwindcss/vite`, без отдельного `tailwind.config`, токены через `@theme` в `index.css`).
-- Анимации — `motion` (импорт `from 'motion/react'`, **не** `framer-motion`).
+- React 19 + TypeScript (strict) + Vite 6 + Tailwind CSS 4 (`@tailwindcss/vite`, без отдельного `tailwind.config`, токены и `@utility` через `@theme` в `src/index.css`).
+- Модальные примитивы и доступность — `@headlessui/react` (`Dialog`, `Dialog.Panel`, `Dialog.Title`) в связке с `motion/react` и React Portal (`createPortal`).
+- Анимации — `motion` (импорт `from 'motion/react'`, **не** `framer-motion`) и аппаратные CSS Grid-переходы (`grid-rows-[0fr]` → `grid-rows-[1fr]`).
 - Drag & Drop — `@dnd-kit/*` (core/sortable/modifiers/utilities).
-- Backend — Firebase (Auth: Google Sign-In, Firestore: `users/{uid}`, `months/{uid}_{monthId}`).
-- Экспорт — `html-to-image` (PNG/PDF-рендер), `jspdf` (PDF-контейнер), `xlsx` + `file-saver` (Excel). `html2canvas` исключён из зависимостей — не возвращать.
+- Backend — Firebase (Auth: Google Sign-In через `signInWithPopup` с автоматическим fallback на `signInWithRedirect` + `getRedirectResult` при блокировке всплывающих окон `auth/popup-blocked`; Firestore: `users/{uid}`, `months/{uid}_{monthId}`).
+- Экспорт — `html-to-image` (PNG/PDF-рендер), `jspdf` (PDF-контейнер), `xlsx` + `file-saver` (Excel). Модули экспорта подгружаются лениво (`preloadExportModule` по `onPointerDown`). `html2canvas` исключён из зависимостей — не возвращать.
 - Тосты — `sonner`. Иконки — `lucide-react`.
-- PWA: `vite-plugin-pwa`, safe-area-aware UI, mobile-first.
+- PWA: `vite-plugin-pwa` (`registerType: 'prompt'`), safe-area-aware UI, mobile-first.
 - Приложение полностью на русском языке (UI-текст). Код, имена переменных/функций/компонентов — на английском.
 
 ---
 
 ## 2. Архитектура и границы компонентов
 
-`App.tsx` — **только композиция**: layout shell (sidebar/header/bottom-nav), вызов хуков, передача данных в `views/`. Любая stateful-логика (auth, sync, CRUD, тема, видимость скролла) — в `src/hooks/`, не в `App.tsx`.
+`App.tsx` — **только композиция**: layout shell (sidebar / плавающий header / Status Bar Shield / bottom-nav / баннер обновления PWA), вызов хуков и передача данных из `useCashbackStore()` в `views/`. Любая stateful-логика (auth, глобальный стор и облачная синхронизация, тема, скролл-лок, видимость при скролле) вынесена в `src/store/` и `src/hooks/`.
 
-Текущие хуки и их единственная зона ответственности — **не смешивать**:
+### Глобальное хранилище (`src/store/`)
+| Модуль | Отвечает за |
+|---|---|
+| `CashbackStoreProvider` (`useCashbackStore`) | Единый `useReducer` + Context стор приложения: CRUD над `allData` / `customBanks` / `deletedCustomBanks` / `customCategories`, обе подписки `onSnapshot` (`users/{uid}` и коллекция `months`), debounced `saveToFirestore` (500ms, раздельные таймеры `'settings'` и `'month'`), батчевый импорт (`writeBatch` чанками по 500) / экспорт JSON-бэкапа и debounced-персист в `localStorage`. |
 
+### Хуки (`src/hooks/`) — единственная зона ответственности каждого:
 | Хук | Отвечает за |
 |---|---|
-| `useAuth` | Firebase Auth listener, placeholder-user из localStorage до резолва auth |
-| `useCloudSync` | оба `onSnapshot` (users/months), debounced `saveToFirestore`, import/export всего бэкапа |
-| `useCashbackData` | CRUD над `allData`/`customBanks`/`deletedCustomBanks`/`customCategories` |
-| `useThemeSync` | применение CSS-переменных темы, meta theme-color, dark-class |
-| `useScrollVisibility` | показ/скрытие header и bottom-nav при скролле |
-| `useLocalStorage` | debounced персист в localStorage (generic) |
+| `useAuth` | Firebase Auth listener, обработка `getRedirectResult`, placeholder-user из `localStorage` до резолва авторизации |
+| `useThemeSync` | Синхронное применение CSS-переменных темы (`applyThemeToDom`), динамическое обновление `<meta name="theme-color">` и класса `.dark` |
+| `useModalScrollLock` | Блокировка прокрутки фона при открытых модалках через перехват `touchmove`/`wheel` без мутации `overflow: hidden` на `body`/`html` (предотвращает 100ms layout reflow фриз в iOS Safari) |
+| `useScrollVisibility` | Показ/скрытие плавающего header и мобильного bottom-nav при скролле с гистерезисом |
+| `useLogoPreloader` | Фоновая предзагрузка (`requestIdleCallback`) и декодирование SVG-логотипов банков |
+| `useLocalStorage` | Generic debounced-персист состояния в `localStorage` |
 
-Новый stateful concern → новый хук в `src/hooks/`, а не расширение существующего файла или `App.tsx`.
+Новый stateful concern → новый хук в `src/hooks/` (или экшен в `CashbackStoreProvider`, если это бизнес-данные кэшбека), а не расширение `App.tsx`.
 
-Слои:
-- `views/*` — экраны (`CurrentMonth`, `Archive`, `Settings`). Знают про бизнес-данные, не знают про Firestore напрямую.
-- `components/*` — переиспользуемые UI-юниты (`CashbackTable`, `BankForm`, `BankLogo`, `ui/Modal`, `ui/ConfirmModal`). Без побочных эффектов синхронизации с облаком.
-- `utils/*` — чистые функции, без React и без побочных эффектов (`date.ts`, `sorting.ts`, `format.ts`, `export.ts`).
+### Слои приложения:
+- `views/*` — экраны (`CurrentMonth`, `Archive`, `Settings`). Знают про бизнес-данные, не обращаются к Firestore напрямую.
+- `components/*` — переиспользуемые UI-юниты (`CashbackTable`, `BankForm`, `BankLogo`, `MccDirectory`, `VersionHistory`, `ui/Modal`, `ui/ConfirmModal`, `ui/DropdownPortal`). Без побочных эффектов синхронизации с облаком.
+- `utils/*` — чистые функции и инфраструктурные утилиты без React-состояния (`date.ts`, `sorting.ts`, `format.ts`, `export.ts`, `bank.ts`, `cropImage.ts`, `mccData.ts`, `scrollLock.ts`).
 - `constants.ts` — статичные справочники (`BANKS`, `BANKS_MAP`, `COMMON_CATEGORIES`, `getBankDetails`).
 
 ---
@@ -46,54 +51,63 @@
 
 - `tsconfig.json` держит `"strict": true` — **никогда не ослаблять**.
 - Никаких новых `any`. Если тип действительно неизвестен — `unknown` + явное узкое сужение.
-- Разнородные состояния — discriminated union, не optional-флаги вперемешку. Пример уже в проекте: `FirebaseUser | PlaceholderUser | null`, где `PlaceholderUser` несёт `isPlaceholder: true` как discriminant.
+- Разнородные состояния — discriminated union, не optional-флаги вперемешку. Пример в проекте: `FirebaseUser | PlaceholderUser | null`, где `PlaceholderUser` несёт `isPlaceholder: true` как discriminant.
 - Каждый экспортируемый компонент — явный `interface XProps`, без inline-типов в деструктуризации параметров.
-- `npm run lint` (`tsc --noEmit`) должен проходить без ошибок перед коммитом изменений.
+- `npm run lint` и `npm run build` должны проходить без ошибок перед завершением любого шага.
 
 ---
 
 ## 4. Производительность и данные (data-heavy правила)
 
-- **Debounce на любую запись в Firestore**, инициированную continuous-инпутом (color picker, range slider, text input с live-preview). Эталон — `useCloudSync.saveToFirestore` (раздельные таймеры на `'settings'`/`'month'`, 500ms). Новые источники записи обязаны идти через этот метод, не создавать параллельный `setDoc`.
-- Lookup по `id` в hot-path (рендер списков/таблиц) — через `Map`, не `Array.find`. Эталон — `BANKS_MAP`.
-- `localStorage` — только debounced запись (см. `useLocalStorage`), никогда синхронный `JSON.stringify` всего state на каждое изменение.
-- Тяжёлые поддеревья внутри сворачиваемых/табовых UI (полные таблицы, списки с логотипами) — монтировать только когда видимы; при сворачивании — размонтировать, а не скрывать через `display:none`/`overflow:hidden` с DOM, остающимся в дереве.
-- Импорт/массовая запись данных — `writeBatch`, никогда `for...await setDoc(...)` в цикле.
+- **Debounce на любую запись в Firestore**, инициированную continuous-инпутом (color picker, range slider, text input). Эталон — `saveToFirestore` в `CashbackStoreProvider` (раздельные таймеры на `'settings'` и `'month'`, 500ms). Новые источники записи обязаны идти через этот метод, не создавая параллельный `setDoc`.
+- Lookup по `id` в hot-path (рендер списков/таблиц) — через `Map`, не `Array.find`. Эталон — `BANKS_MAP` и мемоизированный `banksMap`.
+- `localStorage` — только debounced-запись (`useDebouncedStorage` / `useLocalStorage`), никогда синхронный `JSON.stringify` всего state на каждый рендер.
+- Импорт/массовая запись данных — `writeBatch` (с разбивкой по 500 документов), никогда `for...await setDoc(...)` в цикле.
 - `onSnapshot`-колбэки обязаны игнорировать обновления с `snapshot.metadata.hasPendingWrites === true` — иначе собственная оптимистичная запись «эхом» возвращается с сервера и может перетереть более свежий локальный state.
-- Все импорты `firebase/firestore` — статические в начале файла. Никакого `import('firebase/firestore').then(...)` ради двух функций.
+- Все импорты `firebase/firestore` — статические в начале файла. Никакого `import('firebase/firestore').then(...)` ради двух функций. Импорт из `firebase/storage` запрещён правилом ESLint.
 
 ---
 
-## 5. Анимация (`motion/react`)
+## 5. Анимация (`motion/react` и CSS Grid)
 
-- Для списков, где элемент при раскрытии меняет высоту и сдвигает соседей: каждый элемент списка — `motion.div` с `layout="position"` (не полный `layout`, не CSS `grid-template-rows`/`max-height` хаки). Высота самого раскрывающегося блока — отдельным `AnimatePresence` + `animate={{ height: 'auto' }}` на внутреннем wrapper.
-- Не комбинировать `layout` (full) с собственной height-анимацией на одном и том же узле — конфликт интерполяции (контент "сжимается/тянется").
-- Списки с переменным числом одновременно раскрытых элементов — оборачивать в `<LayoutGroup>`.
-- Единая кривая для синхронных по смыслу анимаций (раскрытие, появление модалок, табы): `cubic-bezier(0.32, 0.72, 0, 1)`. Длительности: ~350–400ms для контейнеров/layout, ~200–250ms для fade/opacity. Если два слоя анимируются одновременно как часть одного жеста — длительности должны совпадать, не «плюс-минус».
-- `type: 'spring'` — для transform/position-анимаций (drag, layout-репозиционирование). Для `height: 'auto'` — duration-based tween, не spring.
-- `AnimatePresence mode="wait"` — только при переключении взаимоисключающих вью (табы), не при списках с независимыми элементами.
+- **Монолитные модальные окна (`Modal`, `ConfirmModal`)**:
+  - Анимируется единый композитный узел (`Dialog.Panel` → `motion.div` с `transform translate-z-0 will-change-transform`) через пружинную физику: `type: 'spring', stiffness: 380, damping: 32, mass: 0.8` (`initial={{ opacity: 0, y: 48, scale: 0.98 }}` → `animate={{ opacity: 1, y: 0, scale: 1 }}`).
+  - Закрытие (`exit`) — быстрый tween `duration: 0.18, ease: 'easeInOut'`, чтобы окно мгновенно освобождало экран.
+  - Запрещено вешать `layout` или `layout="size"` на саму карточку модального окна — это вызывает принудительный пересчёт геометрии на первом кадре открытия и просадку FPS на мобильных устройствах.
+- **Аккордеоны и раскрывающиеся панели (`VersionHistory`, фильтры в `Archive`, список банков в `CurrentMonth`)**:
+  - Используется аппаратный CSS Grid паттерн: `grid transition-[grid-template-rows,opacity] duration-300 ease-out` с переключением `grid-rows-[0fr] opacity-0 pointer-events-none` ↔ `grid-rows-[1fr] opacity-100 pointer-events-auto` и внутренним контейнером `<div className="overflow-hidden min-h-0">`.
+- **Выпадающие меню (`DropdownPortal`)**:
+  - Рендерятся через `createPortal` в `document.body` (`z-[9999]`), используют условный цикл `requestAnimationFrame` **только** пока меню открыто (`isOpen === true`), поддерживают авто-переворот (`Auto-Flip`) вверх при нехватке места снизу и плавный CSS-переход `transition-[opacity,transform] duration-150 ease-out`.
+- **Плавающая кнопка (FAB) и интерактивные списки**:
+  - Для переключения состояний FAB и бокового ярлычка возврата используется синхронная пружинная физика (`type: 'spring', stiffness: 420, damping: 32, mass: 0.8`) без `mode="wait"` задержек, чтобы уход кнопки за край экрана и появление ярлычка происходили в едином физическом жесте.
+  - `AnimatePresence mode="wait"` применяется только при переключении взаимоисключающих полноэкранных вью (табы навигации).
 
 ---
 
 ## 6. Дизайн-система
 
-Направление — **Apple-минимализм**: нейтральные поверхности, единственный цветной акцент (`--accent-color`), минимум декоративного шума. Референс — системные экраны iOS (Settings, sheets), а не fintech-стиль с градиентами/неоном.
+Направление — **Apple-минимализм**: нейтральные поверхности, единственный цветной акцент (`--accent-color`), минимум декоративного шума. Референс — системные экраны iOS (Settings, sheets), а не fintech-стиль с градиентами и неоном.
 
 ### Скругления (Border Radius)
-- Два токена, оба заданы в `index.css` и управляются пользователем через Settings:
-  - `--radius-app` — крупные контейнеры: карточки секций, таблица, модалки, панели.
-  - `--radius-sm: max(10px, calc(var(--radius-app) * 0.5))` — мелкие элементы высотой <60px: строки таблицы, чипсы, переключатели, бейджи-контейнеры.
-- **Никогда** не хардкодить `rounded-3xl`/`rounded-2xl`/`rounded-[Nrem]` для контейнеров — только `rounded-[var(--radius-app)]` или `rounded-[var(--radius-sm)]`. Хардкод допустим только для чисто декоративных мелочей вроде `rounded-full` на аватарах/точках-индикаторах.
+- В `src/index.css` заданы базовые CSS-переменные и семантические утилиты Tailwind v4:
+  - `rounded-card` (`--radius-card: var(--radius-app)`) — крупные контейнеры: карточки секций, таблица, панели.
+  - `rounded-modal` (`--radius-modal: var(--radius-app)`) — модальные окна и диалоги.
+  - `rounded-control` (`--radius-control: var(--radius-sm)`, где `--radius-sm: max(10px, calc(var(--radius-app) * 0.5))`) — элементы управления высотой < 60px: инпуты, кнопки, строки таблицы, переключатели.
+- **Никогда** не использовать сырые Tailwind-радиусы `rounded-lg` / `rounded-xl` / `rounded-2xl` / `rounded-3xl` в компонентах (это блокируется ESLint `no-restricted-syntax`).
+- Исключения: `rounded-full` для круглых кнопок/аватаров/пилюль и адаптивный радиус `rounded-[min(10px,var(--radius-sm))]` для компактных чипов фильтрации, внутри которых отображается `BankLogo` с меняющейся формой.
 
-### Поверхности, заливки и elevation — самое частое место ошибок
+### Поверхности, заливки, elevation и Политика прозрачности
 - **Поверхности** (`var(--surface-0/1/2)`):
-  - `surface-0` — базовый фон страницы.
-  - `surface-1` — обычная карточка, сайдбар, несущие панели.
-  - `surface-2` — приподнятый слой (модалки, поповеры, dropdown) или элементы НА карточках (инпуты, чипы, сегменты).
-  - Правило: чем выше слой в визуальном стеке — тем **светлее** значение (в тёмной теме) или тем ближе к белому (в светлой). Инверсия (дочерний элемент темнее родителя) — баг, встречался уже трижды (Modal-чипсы, bank-карточки, MCC-список) и должен считаться критичной ошибкой ревью.
+  - `surface-0` — базовый фон страницы (`#fafafa` в светлой / `#05080F` в тёмной).
+  - `surface-1` — обычная карточка, сайдбар, несущие панели (`#ffffff` / `#0B1220`).
+  - `surface-2` — приподнятый слой: модалки, выпадающие списки, инпуты на карточках первого уровня (`#ffffff` / `#111A2E`).
+  - Правило: чем выше слой в визуальном стеке — тем **светлее** значение в тёмной теме. Инверсия (дочерний элемент темнее родителя) — критическая ошибка ревью.
+- **Политика прозрачности (Zero Backdrop-Blur)**:
+  - Все контейнеры, карточки, шапка, нижняя навигация, модальные окна и sticky-футеры обязаны использовать **сплошной непрозрачный фон** (`surface-solid` или сплошные токены `bg-white dark:bg-[var(--surface-1/2)]`).
+  - Использование `backdrop-blur-*` запрещено как на панелях интерфейса, так и на полноэкранных оверлеях модалок — это гарантирует стабильные 60fps без просадок GPU на мобильных устройствах.
+  - Оверлей (скрим) модалок: плотный матовый `bg-slate-950/60 dark:bg-[#02040A]/90`.
 
 ### Тёмная тема — палитра «Midnight Blue»
-Тёмная тема приложения базируется на следующих токенах:
 ```css
 .dark {
   --surface-0: #05080F;
@@ -109,77 +123,53 @@
   --fill-hover: rgba(130, 165, 235, 0.10);
 }
 ```
-- **`var(--fill)` / `var(--fill-hover)`** — заливка для интерактивных элементов, которые лежат *внутри* поверхности верхнего яруса (инпуты, чипсы, строки списка внутри модалки, кнопки вторичного действия). Это полупрозрачный оверлей (не фиксированный surface-tier), поэтому инверсия физически невозможна — заливка добавляет контраст к любой поверхности, а не вычитает.
-  - **Правило**: как только элемент находится внутри `Modal`/`ConfirmModal` (`surface-2`) и не является самостоятельной «карточкой», а именно вставленным контролом — использовать `--fill`/`--fill-hover`, никогда не брать `--surface-0/1/2` дочернего яруса.
-- **Границы**: `var(--border-hairline)` (тонкие разделители), `var(--border-strong)` (более явные).
-- **Текст**: `var(--text-primary)`, `var(--text-secondary)`, `var(--text-tertiary)`.
-- **Глубина приподнятых поверхностей**: `shadow-[var(--elevation-highlight),<обычная тень>]` — верхний блик + мягкая тень, не только тень.
-- Настраиваемые пользователем цвета: `var(--accent-color)`, `var(--percent-bg)`/`var(--percent-text)`, `var(--app-font-color)`.
-- Хардкод `gray-*`/`slate-*`/`blue-*` и т.п. в тёмной теме — запрещён, кроме семантических статусных цветов (см. ниже). Используются только `--surface-*`/`--fill*`/`--text-*`/`--border-*`/`--accent-color`.
-- **Семантические статусные цвета** — единственное осознанное исключение из «один акцент»: `red-*` (удаление/ошибка/`danger`), `amber-*` (предупреждение/`warning`). Не заменять на `--accent-color`. Вариант `primary` в `ConfirmModal` — не статусный, использует `--accent-color`/`--percent-bg`, не хардкод-синий.
-
-### Глассморфизм, Тени и Скрим
-- Стандартная панель: `bg-white/60 dark:bg-[var(--surface-1)]/60 backdrop-blur-md`. Глубокая панель (модалки, ключевые карточки): `bg-white/90 dark:bg-[var(--surface-2)]/95 backdrop-blur-2xl`.
-- `backdrop-blur` — только на элементах, которые реально перекрывают что-то движущееся/скроллящееся (модалки, sticky-панели). На статичных бейджах — не использовать, это просто лишняя GPU-нагрузка без визуального эффекта.
-- Оверлей (скрим) модалок: `bg-black/40 dark:bg-black/65 backdrop-blur-sm`.
-- Тени: `shadow-sm` для мелких элементов, приподнятые поверхности — через `elevation-highlight` (см. выше). Акцентное свечение у активных элементов — `shadow-[var(--accent-color)]/20`.
-- Границы: `border-[var(--border-hairline)]` или `border-[var(--border-strong)]`.
+- **`var(--fill)` / `var(--fill-hover)`** — полупрозрачная заливка для интерактивных элементов, лежащих *внутри* поверхности верхнего яруса (`Modal`, `ConfirmModal`). Любой вставленный контрол внутри модалки (инпут, чип категории, строка выбранной категории, кнопка закрытия) обязан использовать `--fill`/`--fill-hover`, а не `--surface-0/1/2`.
+- **Глубина приподнятых поверхностей**: `shadow-[var(--elevation-highlight),<обычная тень>]` — верхний внутренний блик + мягкая тень.
+- **Семантические статусные цвета** — единственное исключение из «один акцент»: `red-*` (удаление/ошибка/`danger`), `amber-*` (предупреждение/`warning`).
 
 ### Типографика
 - Шрифт — Inter. Заголовки — `font-bold`/`font-black` + `tracking-tight`.
-- **`uppercase tracking-widest`** — не дефолт для любого лейбла. Разрешён только для: табов нижней навигации; заголовков секций в `Settings.tsx`; год-бейджа в `CashbackTable.tsx`; заголовков алертов/диалогов подтверждения (`ErrorBoundary`, `ConfirmModal`) — здесь caps-lock осмыслен как сигнал важности. Во всех остальных местах (названия банков, счётчики категорий, подписи в карточках) — обычный `font-semibold`/`font-bold` без uppercase.
+- **`uppercase tracking-widest`** разрешён только для: табов нижней навигации; заголовков секций и кнопок-триггеров в `Settings.tsx`; год-бейджа в `CashbackTable.tsx`; заголовков секций внутри модалок и диалогов подтверждения (`ErrorBoundary`, `ConfirmModal`). Во всех остальных местах (названия банков, счётчики категорий, подписи в карточках) — обычный `font-semibold`/`font-bold` без uppercase.
 - Месяцы в заголовках — через `capitalize()`, **не** `uppercase`.
-- Множественное число числовых лейблов (банки, категории) — только через `pluralize()` из `utils/format.ts`, не хардкодить окончания.
+- Множественное число числовых лейблов (банки, категории, месяцы) — только через `pluralize()` из `utils/format.ts`.
 
 ### Логотипы банков (`BankLogo.tsx`)
-- Внутренний % заполнения (`shapeSizes`) различается по форме, а не единое значение для всех: круглая маска требует больше внутреннего отступа, чем квадратная/прямоугольная (иначе углы вписанного изображения визуально касаются окружности). Текущие эталонные значения: `circle: 60%`, `square/rectangle: 75%`. Не унифицировать обратно в одно число.
+- Внутренний масштаб (`shapeSizes`) различается по форме маски: `circle: 60%` (`scale-[0.60]`), `square/rectangle: 75%` (`scale-[0.75]`), `octagon: 58%`. Не унифицировать обратно в одно число.
 
-### Интерактивность
-- Карточки в сетках выбора (например, выбор банка) — **без постоянной рамки**. Кликабельность обозначается только через `hover:bg-[var(--fill)]` + `active:scale-95`, не через постоянный `border`/`shadow`. Постоянная рамка на каждой карточке в плотной сетке — визуальный шум, вопреки направлению минимализма.
-- Transition на интерактивных контейнерах — точечный (`transition-[background-color,border-color,box-shadow]` или `transition-colors`), не `transition-all` — чтобы не подхватывать непредусмотренные layout-анимации у соседних свойств.
-- Клик/нажатие — `active:scale-95` (или `active:scale-90` для маленьких icon-button).
-
-### Модалки — sticky-footer для форм
-- Любая форма внутри `Modal` с потенциально длинным контентом (много полей/категорий) — кнопки основного действия закрепляются через `sticky bottom-0` с собственным фоном (`bg-[var(--surface-0)]/95 dark:bg-[var(--surface-2)]/95 backdrop-blur-md`) и safe-area отступом, зашитым в сам footer (`pb-[max(0.75rem,env(safe-area-inset-bottom))]`), а не оставленным на уровне обёртки `Modal`. Кнопки действия никогда не должны требовать скролла, чтобы стать доступными.
+### Интерактивность и Модальные окна
+- Transition на интерактивных контейнерах — строго точечный (`transition-[background-color,border-color,box-shadow,transform]` или `transition-colors`), использование `transition-all` запрещено правилом ESLint.
+- Нажатие — `active:scale-95` (или `active:scale-90` для маленьких icon-button).
+- **Адаптивные режимы `Modal` (`adaptiveMode`)**:
+  - `"form"` (по умолчанию для форм ввода): мобильные `< 640px` = Bottom Sheet (`items-end`), с `sm` (`640px+`) = по центру (`sm:items-center`).
+  - `"view"` (просмотр таблиц и справочников): сенсорные устройства и узкие окна = Bottom Sheet (`items-end`), десктоп с мышью/трекпадом на `640px+` = по центру (`sm:pointer-fine:items-center`).
+  - `"sheet"`: Bottom Sheet на всех устройствах.
+- **Sticky-footer в формах внутри `Modal`**: кнопки основного действия закрепляются через `sticky -bottom-3 sm:-bottom-4 z-20` со сплошным фоном `bg-white dark:bg-[var(--surface-2)]` и safe-area отступом `pb-[max(0.75rem,env(safe-area-inset-bottom))]`.
 
 ---
 
 ## 7. Мобильный / PWA чек-лист для новых экранов
 
 - Любой элемент, закреплённый у края экрана (header, bottom-nav, FAB) — учитывает `env(safe-area-inset-*)`.
-- Touch target — минимум 44×44px для интерактивных элементов на мобильной раскладке.
-- Тяжёлые подэкраны/табы/аккордеоны — лениво монтируются и размонтируются при сворачивании, не остаются «скрытыми, но в DOM» для длинных списков.
-- Перед добавлением `content-visibility`/иных экспериментальных CSS-API — проверить поддержку в iOS Safari (WKWebView внутри PWA standalone использует тот же движок) — при сомнении предпочесть unmount-стратегию через React.
-- Цветовые/диапазонные input-контролы (color, range) — debounce перед любой сетевой записью (см. раздел 4).
+- Верхняя зона статус-бара на мобильных защищена фиксированной шторкой (`Status Bar Shield`: `h-[env(safe-area-inset-top,0px)] bg-[var(--surface-0)] z-40`), чтобы при скрытии плавающей шапки прокручиваемый контент не наезжал на системные часы и Dynamic Island.
+- Блокировка прокрутки фона в модалках работает исключительно через `useModalScrollLock` (перехват событий `touchmove`/`wheel`), без изменения `overflow` на `document.body`.
+- Числовые поля ввода используют `inputMode="decimal"` и скрывают нативные стрелки (`no-spinner` / `appearance: textfield`).
+- Цветовые и диапазонные контролы — только с debounce перед сетевой записью.
 
 ---
 
-## 8. Версионирование (`public/versions.json`)
+## 8. Версионирование (`src/versions.json`)
 
-- При любых функциональных изменениях, улучшениях или багфиксах — агент обязан добавить запись в `public/versions.json`.
-- Нумерация — SemVer `MAJOR.MINOR.PATCH`: `MAJOR` — критические изменения архитектуры/интерфейса/структуры данных; `MINOR` — новые фичи, разделы, крупные оптимизации; `PATCH` — точечные доработки, фиксы, чистка.
-- Описание изменений — на русском, лаконично, понятно пользователю. Группировка темы через двоеточие (например: «Архив: плавная анимация раскрытия карточек месяцев»).
+- Единственный источник правды для истории обновлений — файл `src/versions.json` (импортируется напрямую в `VersionHistory.tsx` для гарантированной работы в оффлайн-режиме PWA; дубликат в `public/` не создавать).
+- При любых функциональных изменениях, улучшениях или багфиксах агент обязан добавить запись в `src/versions.json`.
+- Нумерация — SemVer `MAJOR.MINOR.PATCH`: `MAJOR` — критические изменения архитектуры/структуры данных; `MINOR` — новые фичи, разделы, крупные оптимизации; `PATCH` — точечные доработки, фиксы, чистка.
+- Описание изменений — на русском, лаконично, понятно пользователю, с группировкой темы через двоеточие.
 
 ---
 
 ## 9. Гигиена кода
 
-- Не добавлять зависимость, если её функциональность уже покрыта существующей библиотекой (пример прошлой ошибки: `html2canvas` дублировал `html-to-image`).
-- Дублирующийся код (две почти одинаковые функции) — выносить в общий helper, не копипастить (пример: `captureElementAsPng` в `export.ts`).
-- Диагностический/временный код (тестовые `console.log`, неиспользуемые dev-проверки соединения) — удалять перед коммитом, не оставлять «на всякий случай».
-- Каждый новый `useEffect` с зависимостью от часто меняющегося state (например, всего массива данных) — явно обосновать, что пересчёт на каждое изменение необходим, а не побочный эффект невнимательности к зависимостям.
-- При добавлении нового вложенного/интерактивного элемента внутрь `Modal`/`ConfirmModal` — явно проверять, что он использует `--fill`/`--fill-hover`, а не «первый попавшийся» `--surface-*` (см. раздел 6) — это самая частая регрессия в проекте, повторялась минимум трижды.
-- Обязательно запускать `npm run lint` и `npm run build` перед "коммитом" (завершением шага). Ошибки сборки и lint-а должны быть устранены.
-- В проекте настроен ESLint Flat Config (`eslint.config.js`). Включены кастомные правила (`no-restricted-syntax`), которые жестко запрещают: `rounded-xl` / `rounded-2xl` / `rounded-lg` и т.д. (использовать `rounded-card` / `rounded-control` / `rounded-modal`), `transition-all` (использовать конкретные свойства, например `transition-[background-color,transform]`), а также импорт из `firebase/storage`.
-
----
-
-## Золотое правило
-
-Не использовать дефолты Tailwind «в лоб» (квадратные углы, плоские серые фоны, хардкод-радиусы, постоянные рамки на карточках в сетках). Любой крупный UI-блок — `rounded-[var(--radius-app)]` + правильный ярус поверхности (светлее — выше) + динамический акцент через `var(--accent-color)`. Любой вставленный контрол внутри модалки/диалога — `--fill`/`--fill-hover`, никогда «первый попавшийся» surface. Любая запись в облако — debounced и батчевая. Любая анимация списка, где элементы сдвигают друг друга — `layout="position"` + `AnimatePresence`, не CSS-хаки на layout-свойствах. Интерфейс должен быть лёгким на ощупь и держать 60fps на среднем Android-PWA, а не только на флагманском iPhone.
-
-### Политика прозрачности
-- Несущие поверхности: только solid (утилитный класс `surface-solid` или `bg-white dark:bg-[var(--surface-X)]`). Полупрозрачность запрещена для несущих панелей и карточек.
-- `backdrop-blur` разрешён ТОЛЬКО у оверлея-затемнения модалок (`Modal.tsx`, `ConfirmModal.tsx`).
-- Декоративные полупрозрачные фоны: не более 1 на экран, никогда под текстом.
-- Максимум 1 активный `backdrop-blur` слой на экран (для производительности на iOS).
+- Не добавлять зависимость, если её функциональность уже покрыта существующей библиотекой.
+- Дублирующийся код — выносить в общий helper (`utils/` или `hooks/`), не копипастить.
+- Диагностический и временный код удалять перед коммитом.
+- При добавлении вложенного интерактивного элемента внутрь `Modal`/`ConfirmModal` обязательно проверять использование `--fill`/`--fill-hover` вместо `--surface-*`.
+- Обязательно запускать `lint_applet` (`npm run lint`) и `compile_applet` (`npm run build`) в конце серии правок. Все кастомные правила ESLint (`no-restricted-syntax` на `rounded-xl/2xl/lg/3xl`, `transition-all` и `firebase/storage`) должны соблюдаться неукоснительно.

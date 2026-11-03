@@ -1,10 +1,10 @@
 /**
- * Реентерабельный менеджер scroll-lock и стека модальных окон.
+ * Реентерабельный менеджер стека модальных окон (LIFO Escape handling).
  *
- * 1. Блокировка скролла (overflow: hidden) устанавливается при первом вызове acquireScrollLock
- *    и снимается только тогда, когда все блокировки освобождены (lockCount === 0).
- * 2. Стек модальных окон гарантирует, что нажатие клавиши Escape и события закрытия
- *    обрабатываются строго в порядке LIFO — закрывается только верхняя активная модалка.
+ * ВАЖНО: Мы намеренно НЕ мутируем document.body.style.overflow = "hidden",
+ * чтобы избежать синхронного Reflow и разрушения WebKit ScrollingTree на iOS Safari
+ * при открытии модалки, когда window.scrollY > 0.
+ * Физическая блокировка скролла выполняется через хук useModalScrollLock.
  */
 
 interface ModalStackItem {
@@ -13,7 +13,6 @@ interface ModalStackItem {
 }
 
 let lockCount = 0;
-let originalBodyOverflow = "";
 const modalStack: ModalStackItem[] = [];
 
 function handleGlobalKeyDown(e: KeyboardEvent) {
@@ -27,15 +26,11 @@ function handleGlobalKeyDown(e: KeyboardEvent) {
 }
 
 /**
- * Захватывает блокировку скролла. Возвращает функцию освобождения блокировки.
+ * Захватывает счётчик блокировки скролла (без мутации DOM style.overflow).
  */
 export function acquireScrollLock(): () => void {
   if (typeof document === "undefined") return () => {};
 
-  if (lockCount === 0) {
-    originalBodyOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-  }
   lockCount++;
 
   let released = false;
@@ -47,19 +42,15 @@ export function acquireScrollLock(): () => void {
 }
 
 /**
- * Освобождает одну единицу блокировки скролла.
+ * Освобождает одну единицу счётчика блокировки скролла.
  */
 export function releaseScrollLock(): void {
   if (typeof document === "undefined") return;
-
   lockCount = Math.max(0, lockCount - 1);
-  if (lockCount === 0) {
-    document.body.style.overflow = originalBodyOverflow;
-  }
 }
 
 /**
- * Регистрирует модальное окно в общем стеке и захватывает scroll-lock.
+ * Регистрирует модальное окно в общем стеке LIFO.
  * При нажатии Escape закрывается только последняя (верхняя) модалка.
  *
  * @param id Уникальный идентификатор модалки
