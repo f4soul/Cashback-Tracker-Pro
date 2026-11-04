@@ -4,6 +4,7 @@ import React, { memo, useState, useEffect, useMemo } from "react";
 import { CashbackEntry, Bank, LogoShape } from "../types";
 import { getBankDetails } from "../constants";
 import { capitalize, formatMonthId } from "../utils/date";
+import { formatPercentValue } from "../utils/format";
 import { BankLogo } from "./BankLogo";
 import {
   FileText,
@@ -118,7 +119,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                   </span>
                 </h2>
               )}
-              <span className="text-[8px] font-black uppercase tracking-widest text-[var(--text-secondary)] bg-white/85 dark:bg-white/5 shadow-sm border border-[var(--border-strong)] px-2.5 py-1 rounded-control shrink-0 translate-y-[1px] leading-none text-center flex items-center justify-center">
+              <span className="text-[8px] font-black uppercase tracking-widest tabular-nums text-[var(--text-secondary)] bg-white/85 dark:bg-white/5 shadow-sm border border-[var(--border-strong)] px-2.5 py-1 rounded-control shrink-0 leading-none text-center inline-flex items-center justify-center">
                 {formatMonthId(monthId).split(" ")[1]}
               </span>
               <button
@@ -235,7 +236,9 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                         {entry.sortedCategories.map((cat, idx) => {
                           const name = typeof cat === "string" ? cat : cat.name;
                           const percent =
-                            typeof cat === "string" ? "" : cat.percent;
+                            typeof cat === "string"
+                              ? ""
+                              : formatPercentValue(cat.percent);
 
                           return (
                             <div
@@ -246,7 +249,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                                 {formatCategoryName(name)}
                               </span>
                               {percent && (
-                                <span className="text-[var(--percent-text)] font-semibold bg-[var(--percent-bg)] px-1.5 py-0.5 rounded-[4px] text-[10px] shrink-0 leading-none translate-z-0 [backface-visibility:hidden]">
+                                <span className="text-[var(--percent-text)] font-semibold tabular-nums bg-[var(--percent-bg)] px-1.5 py-0.5 rounded-[min(6px,var(--radius-sm))] text-[10px] shrink-0 leading-none inline-flex items-center justify-center translate-z-0 [backface-visibility:hidden]">
                                   {percent}%
                                 </span>
                               )}

@@ -196,7 +196,7 @@ export const Settings: React.FC<SettingsProps> = memo(
               <div className="w-8 h-8 rounded-control bg-[var(--accent-color)]/10 flex items-center justify-center">
                 <Search className="w-4 h-4 text-[var(--accent-color)]" />
               </div>
-              <h2 className="text-sm border-transparent mt-[1px]">
+              <h2 className="text-sm border-transparent leading-none">
                 Справочник МСС
               </h2>
             </div>
@@ -207,7 +207,7 @@ export const Settings: React.FC<SettingsProps> = memo(
                 className="w-full py-3.5 px-4 bg-[var(--surface-0)] dark:bg-[var(--surface-2)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] rounded-control text-[10px] font-black text-[var(--accent-color)] uppercase tracking-widest transition-[background-color,box-shadow,transform] cursor-pointer flex items-center justify-center gap-1.5 shadow-none hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] active:scale-95"
               >
                 <Search className="w-3.5 h-3.5 shrink-0" />
-                <span className="leading-none mt-[1px]">
+                <span className="leading-none">
                   Открыть справочник
                 </span>
               </button>
@@ -295,7 +295,7 @@ export const Settings: React.FC<SettingsProps> = memo(
               <div className="w-8 h-8 rounded-control bg-[var(--accent-color)]/10 flex items-center justify-center">
                 <Circle className="w-4 h-4 text-[var(--accent-color)]" />
               </div>
-              <h2 className="text-sm border-transparent mt-[1px]">
+              <h2 className="text-sm border-transparent leading-none">
                 Форма логотипов
               </h2>
             </div>
@@ -404,7 +404,7 @@ export const Settings: React.FC<SettingsProps> = memo(
               <div className="w-8 h-8 rounded-control bg-[var(--accent-color)]/10 flex items-center justify-center">
                 <Download className="w-4 h-4 text-[var(--accent-color)]" />
               </div>
-              <h2 className="text-sm border-transparent mt-[1px]">
+              <h2 className="text-sm border-transparent leading-none">
                 Экспорт данных
               </h2>
             </div>
@@ -494,7 +494,7 @@ export const Settings: React.FC<SettingsProps> = memo(
                 <div className="w-8 h-8 rounded-control bg-[var(--accent-color)]/10 flex items-center justify-center">
                   <FileText className="w-4 h-4 text-[var(--accent-color)]" />
                 </div>
-                <h2 className="text-sm border-transparent mt-[1px]">
+                <h2 className="text-sm border-transparent leading-none">
                   История версий
                 </h2>
               </div>
@@ -504,7 +504,7 @@ export const Settings: React.FC<SettingsProps> = memo(
                 className="w-full mt-auto py-3.5 px-4 bg-[var(--surface-0)] dark:bg-[var(--surface-2)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] rounded-control text-[10px] font-black text-[var(--accent-color)] uppercase tracking-widest transition-[background-color,box-shadow,transform] cursor-pointer flex items-center justify-center gap-1.5 shadow-none hover:shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:hover:shadow-[0_2px_8px_rgb(0,0,0,0.1)] active:scale-95"
               >
                 <FileText className="w-3.5 h-3.5 shrink-0" />
-                <span className="leading-none mt-[1px]">
+                <span className="leading-none">
                   Посмотреть обновления
                 </span>
               </button>

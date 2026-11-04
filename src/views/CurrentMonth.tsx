@@ -139,7 +139,7 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
 
           <div className="relative shrink-0">
             {index !== undefined && (
-              <div className="absolute -top-1.5 -left-1.5 z-10 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full surface-solid border border-[var(--border-strong)] text-[9px] font-bold text-[var(--text-secondary)] shadow-sm pointer-events-none">
+              <div className="absolute -top-1.5 -left-1.5 z-10 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full surface-solid border border-[var(--border-strong)] text-[9px] font-bold tabular-nums leading-none text-[var(--text-secondary)] shadow-sm pointer-events-none">
                 {index + 1}
               </div>
             )}
@@ -337,6 +337,13 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     const [rightPos, setRightPos] = useState(16);
     const isDraggingFab = useRef(false);
     const isDraggingRestore = useRef(false);
+    const lastScrollYRef = useRef(
+      typeof window !== "undefined" ? window.scrollY : 0,
+    );
+    const scrollDownStartYRef = useRef(
+      typeof window !== "undefined" ? window.scrollY : 0,
+    );
+    const fabHideLockedUntil = useRef(0);
 
     useEffect(() => {
       localStorage.setItem("fab_y_offset", yOffset.toString());
@@ -344,36 +351,45 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     }, [yOffset, isFabHidden]);
 
     useEffect(() => {
-      const handleInteraction = (e: Event) => {
-        if (window.innerWidth >= 1150) return; // Don't hide FAB on Desktop. Tablets and Mobile will hide.
+      const currentY = Math.max(0, window.scrollY);
+      lastScrollYRef.current = currentY;
+      scrollDownStartYRef.current = currentY;
+
+      const handleScroll = () => {
+        const y = Math.max(0, window.scrollY);
+
         if (
-          isDraggingFab.current ||
-          isDraggingRestore.current ||
+          window.innerWidth >= 1150 ||
           isFabHidden ||
           isModalOpen ||
-          isDeleteModalOpen
-        )
+          isDeleteModalOpen ||
+          isDraggingFab.current ||
+          isDraggingRestore.current ||
+          Date.now() < fabHideLockedUntil.current
+        ) {
+          lastScrollYRef.current = y;
+          scrollDownStartYRef.current = y;
           return;
-
-        const target = e.target as HTMLElement;
-        if (target && typeof target.closest === "function") {
-          if (
-            target.closest("#fab-container") ||
-            target.closest("#fab-restore")
-          ) {
-            return;
-          }
         }
 
-        setIsFabHidden(true);
+        if (y < lastScrollYRef.current) {
+          scrollDownStartYRef.current = y;
+        }
+        lastScrollYRef.current = y;
+
+        const downDelta = y - scrollDownStartYRef.current;
+
+        // Прячем ТОЛЬКО при уверенном непрерывном прокруте ВНИЗ.
+        // Микросдвиги при касании, скролл вверх и программные scrollTo порог не проходят.
+        if (downDelta >= 24 && y > 24) {
+          setIsFabHidden(true);
+        }
       };
 
-      // Use capture phase to ensure we catch events even if they are stopped elsewhere
-      window.addEventListener("scroll", handleInteraction, true);
-
-      return () => {
-        window.removeEventListener("scroll", handleInteraction, true);
-      };
+      // ВАЖНО: passive:true и БЕЗ capture — слушаем только страничный скролл,
+      // внутренние контейнеры (модалки, списки) скрытие не триггерят.
+      window.addEventListener("scroll", handleScroll, { passive: true });
+      return () => window.removeEventListener("scroll", handleScroll);
     }, [isFabHidden, isModalOpen, isDeleteModalOpen]);
 
     useEffect(() => {
@@ -623,6 +639,9 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                 >
                   <button
                     type="button"
+                    onPointerDown={() => {
+                      fabHideLockedUntil.current = Date.now() + 500;
+                    }}
                     onClick={(e) => {
                       if (isDraggingFab.current) {
                         e.preventDefault();
@@ -670,8 +689,12 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                     damping: 38,
                     mass: 0.8,
                   }}
+                  onPointerDown={() => {
+                    fabHideLockedUntil.current = Date.now() + 900;
+                  }}
                   onClick={() => {
                     if (isDraggingRestore.current) return;
+                    fabHideLockedUntil.current = Date.now() + 900;
                     setIsFabHidden(false);
                   }}
                   onDragStart={() => {
@@ -696,7 +719,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                     );
                     setYOffset(snappedY);
                   }}
-                  className="fixed pwa-fab-bottom w-8 pr-3 h-14 bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-control rounded-r-none touch-none select-none transform-gpu"
+                  className="fixed pwa-fab-bottom w-7 pr-3 h-12 bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-control rounded-r-none touch-none select-none transform-gpu"
                   style={{
                     right: -12,
                     transformOrigin: "right center",

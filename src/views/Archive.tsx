@@ -47,7 +47,7 @@ const MonthCard: React.FC<MonthCardProps> = memo(
 
         <div className="flex items-center justify-between relative z-10">
           <div className="flex items-center gap-3 sm:gap-4">
-            <div className="w-12 h-12 rounded-full bg-[var(--accent-color)]/10 dark:bg-[var(--accent-color)]/20 text-[var(--accent-color)] flex items-center justify-center font-bold text-lg shrink-0 shadow-sm">
+            <div className="w-12 h-12 rounded-full bg-[var(--accent-color)]/10 dark:bg-[var(--accent-color)]/20 text-[var(--accent-color)] flex items-center justify-center font-bold text-lg tabular-nums leading-none shrink-0 shadow-sm">
               {month.monthId.split("-")[1]}
             </div>
             <div className="text-left min-w-0">
@@ -295,7 +295,7 @@ export const Archive: React.FC<ArchiveProps> = memo(
             >
               <Filter className="w-5 h-5" />
               {activeFilterCount > 0 && (
-                <span className="-top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-white text-[var(--accent-color)] border border-[var(--accent-color)]/30 text-[10px] font-bold flex items-center justify-center shadow-sm leading-none absolute">
+                <span className="-top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-white text-[var(--accent-color)] border border-[var(--accent-color)]/30 text-[10px] font-bold tabular-nums flex items-center justify-center shadow-sm leading-none absolute">
                   {activeFilterCount}
                 </span>
               )}
@@ -400,7 +400,7 @@ export const Archive: React.FC<ArchiveProps> = memo(
                       )}
                     >
                       <div className="flex items-center gap-2 min-w-0">
-                        <div className="w-6 h-6 rounded-full bg-[var(--fill)] flex items-center justify-center shrink-0">
+                        <div className="w-6 h-6 rounded-control bg-[var(--fill)] flex items-center justify-center shrink-0">
                           <Landmark className="w-3.5 h-3.5" />
                         </div>
                         <span className="truncate">Все банки</span>
@@ -531,7 +531,7 @@ export const Archive: React.FC<ArchiveProps> = memo(
                       )}
                     >
                       <div className="flex items-center gap-2 min-w-0">
-                        <div className="w-6 h-6 rounded-full bg-[var(--fill)] flex items-center justify-center shrink-0">
+                        <div className="w-6 h-6 rounded-control bg-[var(--fill)] flex items-center justify-center shrink-0">
                           <Tag className="w-3.5 h-3.5" />
                         </div>
                         <span className="truncate">Все категории</span>

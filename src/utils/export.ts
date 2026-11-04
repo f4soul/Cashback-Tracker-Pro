@@ -1,5 +1,6 @@
 import { MonthData, Bank } from "../types";
 import { getBankDetails } from "../constants";
+import { formatPercentValue } from "./format";
 import { toast } from "sonner";
 
 /**
@@ -59,7 +60,7 @@ export const exportToExcel = async (
           rows.push({
             Банк: bankName,
             Категория: category.name,
-            Процент: category.percent,
+            Процент: formatPercentValue(category.percent),
           });
         });
       });

@@ -1,5 +1,12 @@
 import { DEFAULT_BANK_LOGO } from "../assets/bankLogos";
-import React, { useState, useRef, useCallback, useMemo, memo } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useMemo,
+  memo,
+} from "react";
 import { Bank, CashbackEntry, CategoryItem, LogoShape } from "../types";
 import { BANKS, COMMON_CATEGORIES } from "../constants";
 import { BankLogo } from "./BankLogo";
@@ -9,8 +16,9 @@ import {
   Upload,
   X,
   Crop,
-  ArrowLeftRight,
+  ChevronDown,
   Check,
+  Landmark,
 } from "lucide-react";
 import { clsx } from "clsx";
 import { motion, AnimatePresence } from "motion/react";
@@ -18,7 +26,11 @@ import Cropper from "react-easy-crop";
 import { getCroppedImg } from "../utils/cropImage";
 import { ConfirmModal } from "./ui/ConfirmModal";
 import { sortCategoriesAsc, sortCategoriesCustom } from "../utils/sorting";
-import { pluralize } from "../utils/format";
+import {
+  pluralize,
+  normalizePercentInput,
+  formatPercentValue,
+} from "../utils/format";
 
 export interface BankFormProps {
   initialEntry?: CashbackEntry;
@@ -40,33 +52,45 @@ interface Area {
   y: number;
 }
 
+const QUICK_PERCENTS = ["1", "2", "3", "5", "7", "10", "15"] as const;
+
 export const BankForm: React.FC<BankFormProps> = memo(
   ({
     initialEntry,
     customBanks,
     customCategories,
     onSave,
-    onCancel,
     onAddCustomBank,
     onDeleteCustomBank,
     onAddCustomCategory,
     onDeleteCustomCategory,
     globalLogoShape,
   }) => {
+    const initialCategories = useMemo(
+      () =>
+        sortCategoriesAsc(
+          (initialEntry?.categories || []).map((c) =>
+            typeof c === "string"
+              ? { name: c, percent: "" }
+              : { name: c.name, percent: formatPercentValue(c.percent) },
+          ),
+        ) as CategoryItem[],
+      [initialEntry?.categories],
+    );
+
     const [selectedBankId, setSelectedBankId] = useState<string>(
       initialEntry?.bankId || "",
     );
+    const [isBankPickerOpen, setIsBankPickerOpen] = useState<boolean>(false);
     const [customBankName, setCustomBankName] = useState<string>(
       initialEntry?.customBankName || "",
     );
-    const [selectedCategories, setSelectedCategories] = useState<
-      CategoryItem[]
-    >(
-      sortCategoriesAsc(
-        (initialEntry?.categories || []).map((c) =>
-          typeof c === "string" ? { name: c, percent: "" } : c,
-        ),
-      ) as CategoryItem[],
+    const [selectedCategories, setSelectedCategories] =
+      useState<CategoryItem[]>(initialCategories);
+    const [activeCategoryName, setActiveCategoryName] = useState<string | null>(
+      initialCategories.length > 0
+        ? initialCategories[initialCategories.length - 1].name
+        : null,
     );
     const [searchQuery, setSearchQuery] = useState("");
     const [categorySearchQuery, setCategorySearchQuery] = useState("");
@@ -74,6 +98,9 @@ export const BankForm: React.FC<BankFormProps> = memo(
       initialEntry?.customLogo,
     );
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const bankDropdownRef = useRef<HTMLDivElement>(null);
+    const bankSearchInputRef = useRef<HTMLInputElement>(null);
+    const categorySearchInputRef = useRef<HTMLInputElement>(null);
 
     // Confirm Modal state
     const [bankToDelete, setBankToDelete] = useState<string | null>(null);
@@ -89,6 +116,24 @@ export const BankForm: React.FC<BankFormProps> = memo(
     const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(
       null,
     );
+
+    // Закрытие выпадающего списка банков по клику вне области
+    useEffect(() => {
+      if (!isBankPickerOpen || bankToDelete) return;
+
+      const handlePointerDown = (e: PointerEvent) => {
+        if (
+          bankDropdownRef.current &&
+          !bankDropdownRef.current.contains(e.target as Node)
+        ) {
+          setIsBankPickerOpen(false);
+        }
+      };
+
+      document.addEventListener("pointerdown", handlePointerDown);
+      return () =>
+        document.removeEventListener("pointerdown", handlePointerDown);
+    }, [isBankPickerOpen, bankToDelete]);
 
     const allBanks = useMemo(() => [...BANKS, ...customBanks], [customBanks]);
     const filteredBanks = useMemo(
@@ -114,8 +159,8 @@ export const BankForm: React.FC<BankFormProps> = memo(
       [allCategories, categorySearchQuery],
     );
 
-    const selectedCategorySet = useMemo(
-      () => new Set(selectedCategories.map((c) => c.name)),
+    const selectedCategoryMap = useMemo(
+      () => new Map(selectedCategories.map((c) => [c.name, c])),
       [selectedCategories],
     );
 
@@ -134,12 +179,41 @@ export const BankForm: React.FC<BankFormProps> = memo(
       return allBanks.find((b) => b.id === selectedBankId);
     }, [selectedBankId, customBankName, allBanks, isCustomBank]);
 
+    const resolvedActiveCategoryName = useMemo(() => {
+      if (
+        activeCategoryName &&
+        selectedCategoryMap.has(activeCategoryName)
+      ) {
+        return activeCategoryName;
+      }
+      return selectedCategories.length > 0
+        ? selectedCategories[selectedCategories.length - 1].name
+        : null;
+    }, [activeCategoryName, selectedCategoryMap, selectedCategories]);
+
+    const activeCategoryObj = useMemo(
+      () =>
+        resolvedActiveCategoryName
+          ? selectedCategoryMap.get(resolvedActiveCategoryName)
+          : undefined,
+      [resolvedActiveCategoryName, selectedCategoryMap],
+    );
+
     const toggleCategory = useCallback((catName: string) => {
       setSelectedCategories((prev) => {
         const exists = prev.some((c) => c.name === catName);
         if (exists) {
-          return prev.filter((c) => c.name !== catName);
+          const next = prev.filter((c) => c.name !== catName);
+          setActiveCategoryName((currActive) =>
+            currActive === catName
+              ? next.length > 0
+                ? next[next.length - 1].name
+                : null
+              : currActive,
+          );
+          return next;
         } else {
+          setActiveCategoryName(catName);
           return [...prev, { name: catName, percent: "" }];
         }
       });
@@ -147,11 +221,35 @@ export const BankForm: React.FC<BankFormProps> = memo(
 
     const updateCategoryPercent = useCallback(
       (catName: string, percent: string) => {
+        const normalized = normalizePercentInput(percent);
         setSelectedCategories((prev) =>
-          prev.map((c) => (c.name === catName ? { ...c, percent } : c)),
+          prev.map((c) =>
+            c.name === catName ? { ...c, percent: normalized } : c,
+          ),
         );
       },
       [],
+    );
+
+    const handleApplyQuickPercent = useCallback(
+      (val: string) => {
+        const targetName =
+          resolvedActiveCategoryName ||
+          (selectedCategories.length > 0
+            ? selectedCategories[selectedCategories.length - 1].name
+            : null);
+        if (!targetName) return;
+
+        setActiveCategoryName(targetName);
+        setSelectedCategories((prev) =>
+          prev.map((c) => {
+            if (c.name !== targetName) return c;
+            const nextPercent = c.percent.trim() === val ? "" : val;
+            return { ...c, percent: nextPercent };
+          }),
+        );
+      },
+      [resolvedActiveCategoryName, selectedCategories],
     );
 
     const trimmedCategoryQuery = categorySearchQuery.trim();
@@ -165,9 +263,11 @@ export const BankForm: React.FC<BankFormProps> = memo(
       (e?: React.FormEvent) => {
         if (e) e.preventDefault();
         const name = categorySearchQuery.trim();
-        if (!name) return;
+        if (!name) {
+          categorySearchInputRef.current?.focus();
+          return;
+        }
 
-        // Если категория уже есть в списке (без учёта регистра), просто выбираем её
         const existing = allCategories.find(
           (c) => c.toLowerCase() === name.toLowerCase(),
         );
@@ -177,6 +277,7 @@ export const BankForm: React.FC<BankFormProps> = memo(
           if (prev.some((c) => c.name === resolvedName)) return prev;
           return [...prev, { name: resolvedName, percent: "" }];
         });
+        setActiveCategoryName(resolvedName);
 
         if (!existing) {
           onAddCustomCategory(resolvedName);
@@ -227,8 +328,12 @@ export const BankForm: React.FC<BankFormProps> = memo(
     const handleSave = useCallback(() => {
       if (!selectedBankId) return;
 
+      const normalizedCategories = selectedCategories.map((c) => ({
+        ...c,
+        percent: formatPercentValue(c.percent),
+      }));
       const sortedCategories = sortCategoriesAsc(
-        selectedCategories,
+        normalizedCategories,
       ) as CategoryItem[];
 
       if (isCustomBank && customBankName) {
@@ -273,10 +378,30 @@ export const BankForm: React.FC<BankFormProps> = memo(
       allBanks,
     ]);
 
+    const ctaSummaryText = useMemo(() => {
+      const count = selectedCategories.length;
+      if (count === 0) return "";
+      const countLabel = `${count} ${pluralize(count, [
+        "категория",
+        "категории",
+        "категорий",
+      ])}`;
+      const nums = selectedCategories
+        .map((c) => {
+          const cleaned = String(c.percent)
+            .replace(",", ".")
+            .replace(/[^0-9.]/g, "");
+          return parseFloat(cleaned);
+        })
+        .filter((n) => !Number.isNaN(n) && n > 0);
+      const maxP = nums.length > 0 ? Math.max(...nums) : null;
+      return maxP ? `${countLabel} · до ${maxP}%` : countLabel;
+    }, [selectedCategories]);
+
     const shapeClassesMedium = {
-      circle: "w-10 h-10 rounded-full",
-      square: "w-10 h-10 rounded-[22%]",
-      rectangle: "w-8 h-11 rounded-[15%]",
+      circle: "w-9 h-9 rounded-full",
+      square: "w-9 h-9 rounded-[22%]",
+      rectangle: "w-9 h-12 rounded-[15%]",
     };
 
     if (showCropper && imageSrc) {
@@ -357,86 +482,200 @@ export const BankForm: React.FC<BankFormProps> = memo(
     }
 
     return (
-      <div className="flex flex-col gap-3 flex-1">
-        {/* 1. Выбор банка ↔ Компактная плашка выбранного банка (синхронный CSS Grid переход) */}
-        <div className="flex flex-col">
-          {/* Состояние А: Сетка выбора банка */}
-          <div
-            className={clsx(
-              "grid transition-[grid-template-rows,opacity] duration-300 ease-out",
-              !selectedBankId
-                ? "grid-rows-[1fr] opacity-100 pointer-events-auto"
-                : "grid-rows-[0fr] opacity-0 pointer-events-none",
-            )}
-          >
-            <div className="overflow-hidden min-h-0">
-              <div className="space-y-2 pb-0.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-[var(--text-secondary)]">
+      <div className="flex flex-col gap-3.5 flex-1">
+        {/* Блок 1: Компактный выпадающий селектор банка */}
+        <div ref={bankDropdownRef} className="relative z-30">
+          {selectedBankId && currentBank ? (
+            <div
+              className={clsx(
+                "flex items-center justify-between gap-2.5 p-2.5 rounded-control border transition-[border-color,background-color] bg-[var(--fill)]",
+                isBankPickerOpen
+                  ? "border-[var(--accent-color)]/50"
+                  : "border-[var(--border-hairline)]",
+              )}
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="relative group cursor-pointer shrink-0"
+                  title="Изменить логотип"
+                >
+                  <BankLogo
+                    bank={currentBank}
+                    customLogo={customLogo}
+                    logoShape={globalLogoShape}
+                    size="md"
+                  />
+                  <div
+                    className={clsx(
+                      "absolute inset-0 bg-black/45 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity",
+                      shapeClassesMedium[globalLogoShape],
+                    )}
+                  >
+                    <Upload className="w-4 h-4 text-white" />
+                  </div>
+                </button>
+                <div className="min-w-0">
+                  <span className="font-bold text-[14px] text-[var(--text-primary)] block truncate tracking-tight leading-tight">
+                    {currentBank.name}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="text-[11px] font-semibold text-[var(--accent-color)] hover:underline cursor-pointer mt-0.5 inline-flex items-center gap-1"
+                  >
+                    <Upload className="w-3 h-3" />
+                    <span>Изменить логотип</span>
+                  </button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                  />
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsBankPickerOpen((prev) => !prev)}
+                className={clsx(
+                  "h-8 px-2.5 rounded-control border text-[12px] font-semibold transition-[background-color,border-color,color,transform] active:scale-95 cursor-pointer inline-flex items-center gap-1.5 shrink-0",
+                  isBankPickerOpen
+                    ? "bg-[var(--percent-bg)] border-[var(--accent-color)]/40 text-[var(--percent-text)]"
+                    : "bg-[var(--fill)] hover:bg-[var(--fill-hover)] border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]",
+                )}
+                title="Выбрать другой банк"
+              >
+                <span>Сменить</span>
+                <ChevronDown
+                  className={clsx(
+                    "w-3.5 h-3.5 transition-transform duration-200",
+                    isBankPickerOpen && "rotate-180",
+                  )}
+                />
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setIsBankPickerOpen((prev) => !prev)}
+              className={clsx(
+                "w-full flex items-center justify-between gap-2.5 p-2.5 rounded-control border text-left transition-[background-color,border-color,box-shadow,transform] active:scale-[0.99] cursor-pointer",
+                isBankPickerOpen
+                  ? "bg-[var(--fill-hover)] border-[var(--accent-color)] ring-2 ring-[var(--accent-color)]/20"
+                  : "bg-[var(--fill)] hover:bg-[var(--fill-hover)] border-[var(--border-hairline)]",
+              )}
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-9 h-9 rounded-control bg-[var(--accent-color)]/10 text-[var(--accent-color)] flex items-center justify-center shrink-0">
+                  <Landmark className="w-4 h-4" />
+                </div>
+                <div className="min-w-0">
+                  <span className="font-bold text-[14px] text-[var(--text-primary)] block truncate leading-tight">
                     Выберите банк
-                  </label>
-                  <span className="text-[11px] text-[var(--text-tertiary)]">
-                    {filteredBanks.length}{" "}
-                    {pluralize(filteredBanks.length, [
-                      "банк",
-                      "банка",
-                      "банков",
-                    ])}
+                  </span>
+                  <span className="text-[11px] font-medium text-[var(--text-tertiary)] block truncate mt-0.5">
+                    Из списка или создайте свой
                   </span>
                 </div>
+              </div>
+              <div className="h-8 px-2.5 rounded-control bg-[var(--fill)] border border-[var(--border-hairline)] text-[var(--text-secondary)] inline-flex items-center gap-1 text-[12px] font-semibold shrink-0">
+                <span>Список</span>
+                <ChevronDown
+                  className={clsx(
+                    "w-3.5 h-3.5 transition-transform duration-200",
+                    isBankPickerOpen && "rotate-180",
+                  )}
+                />
+              </div>
+            </button>
+          )}
+
+          {/* Выпадающее меню выбора банка */}
+          <AnimatePresence initial={false}>
+            {isBankPickerOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                transition={{ duration: 0.16, ease: "easeOut" }}
+                className="absolute left-0 right-0 top-full mt-1.5 z-40 rounded-card bg-white dark:bg-[var(--surface-2)] border border-[var(--border-strong)] shadow-[var(--elevation-highlight),0_16px_40px_rgba(0,0,0,0.18)] dark:shadow-[var(--elevation-highlight),0_24px_48px_rgba(0,0,0,0.75)] p-2 flex flex-col gap-1.5"
+              >
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-tertiary)] pointer-events-none" />
                   <input
+                    ref={bankSearchInputRef}
                     type="text"
                     placeholder="Поиск или название нового банка..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className={clsx(
-                      "w-full h-9 pl-9 bg-[var(--fill)] focus:bg-[var(--fill-hover)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] focus:border-[var(--accent-color)] rounded-control text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 text-[var(--text-primary)] placeholder-[var(--text-tertiary)] transition-[background-color,border-color,box-shadow]",
-                      searchQuery ? "pr-9" : "pr-3",
+                      "w-full h-9 pl-9 bg-[var(--fill)] focus:bg-[var(--fill-hover)] border border-[var(--border-hairline)] focus:border-[var(--accent-color)] rounded-control text-[13px] font-medium focus:outline-none text-[var(--text-primary)] placeholder-[var(--text-tertiary)] transition-[background-color,border-color]",
+                      searchQuery ? "pr-8" : "pr-3",
                     )}
                   />
-                  <AnimatePresence initial={false}>
-                    {searchQuery && (
-                      <motion.button
-                        key="clear-bank-search"
-                        type="button"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        transition={{ duration: 0.15 }}
-                        onClick={() => setSearchQuery("")}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] rounded-full hover:bg-[var(--fill-hover)] transition-colors cursor-pointer"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </motion.button>
-                    )}
-                  </AnimatePresence>
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] rounded-full hover:bg-[var(--fill-hover)] transition-colors cursor-pointer"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </div>
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5 max-h-52 overflow-y-auto overscroll-contain p-0.5 scrollbar-hide">
+
+                <div className="max-h-[216px] overflow-y-auto overscroll-contain scrollbar-hide flex flex-col gap-0.5 pr-0.5">
                   {filteredBanks.map((bank) => {
                     const isCustom = bank.id.startsWith("custom_");
+                    const isCurrent = bank.id === selectedBankId;
 
                     return (
-                      <div key={bank.id} className="relative group/bank">
+                      <div
+                        key={bank.id}
+                        className={clsx(
+                          "flex items-center justify-between gap-2 rounded-control transition-colors",
+                          isCurrent
+                            ? "bg-[var(--percent-bg)] text-[var(--accent-color)]"
+                            : "hover:bg-[var(--fill-hover)] text-[var(--text-primary)]",
+                        )}
+                      >
                         <button
                           type="button"
-                          onClick={() => setSelectedBankId(bank.id)}
-                          className="w-full aspect-square flex flex-col items-center justify-center gap-1.5 p-2 rounded-control hover:bg-[var(--fill)] active:scale-95 transition-[background-color,transform] duration-200 cursor-pointer group isolate transform-gpu"
+                          onClick={() => {
+                            if (bank.id !== selectedBankId) {
+                              setCustomLogo(undefined);
+                              setCustomBankName("");
+                            }
+                            setSelectedBankId(bank.id);
+                            setIsBankPickerOpen(false);
+                            setSearchQuery("");
+                          }}
+                          className="flex-1 min-w-0 flex items-center justify-between gap-2.5 px-2.5 py-2 text-left cursor-pointer"
                         >
-                          <BankLogo
-                            bank={bank}
-                            logoShape={globalLogoShape}
-                            size="md"
-                            className="group-hover:scale-105 transition-transform duration-300 ease-out origin-center"
-                          />
-                          <span
-                            className="text-[11px] font-semibold text-center text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors break-words leading-tight line-clamp-2 w-full px-0.5"
-                            title={bank.name}
-                          >
-                            {bank.name}
-                          </span>
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <BankLogo
+                              bank={bank}
+                              logoShape={globalLogoShape}
+                              size="sm"
+                            />
+                            <span
+                              className={clsx(
+                                "text-[13px] truncate",
+                                isCurrent ? "font-bold" : "font-semibold",
+                              )}
+                            >
+                              {bank.name}
+                            </span>
+                          </div>
+                          {isCurrent && (
+                            <Check className="w-4 h-4 shrink-0 text-[var(--accent-color)]" />
+                          )}
                         </button>
+
                         {isCustom && (
                           <button
                             type="button"
@@ -444,154 +683,172 @@ export const BankForm: React.FC<BankFormProps> = memo(
                               e.stopPropagation();
                               setBankToDelete(bank.id);
                             }}
-                            className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover/bank:opacity-100 transition-opacity shadow-md hover:bg-red-600 z-10 cursor-pointer"
+                            className="w-7 h-7 mr-1.5 rounded-full flex items-center justify-center text-[var(--text-tertiary)] hover:text-red-500 hover:bg-red-500/10 transition-colors shrink-0 cursor-pointer"
                             title="Удалить свой банк"
                           >
-                            <X className="w-3 h-3" />
+                            <X className="w-3.5 h-3.5" />
                           </button>
                         )}
                       </div>
                     );
                   })}
-                </div>
-                {filteredBanks.length === 0 && searchQuery.trim() && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedBankId("custom");
-                      setCustomBankName(searchQuery.trim());
-                    }}
-                    className="w-full py-2.5 px-3 border border-dashed border-[var(--accent-color)]/40 bg-[var(--fill)] hover:bg-[var(--fill-hover)] rounded-control text-[var(--accent-color)] text-xs sm:text-sm font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Добавить банк «{searchQuery.trim()}»</span>
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
 
-          {/* Состояние Б: Компактная плашка выбранного банка */}
-          <div
-            className={clsx(
-              "grid transition-[grid-template-rows,opacity] duration-300 ease-out",
-              selectedBankId
-                ? "grid-rows-[1fr] opacity-100 pointer-events-auto"
-                : "grid-rows-[0fr] opacity-0 pointer-events-none",
-            )}
-          >
-            <div className="overflow-hidden min-h-0">
-              {currentBank && (
-                <div className="flex items-center justify-between gap-2.5 p-2 sm:p-2.5 rounded-control border border-[var(--border-hairline)] bg-[var(--fill)]">
-                  <div className="flex items-center gap-2.5 min-w-0">
+                  {filteredBanks.length === 0 && searchQuery.trim() && (
                     <button
                       type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="relative group cursor-pointer shrink-0"
-                      title="Изменить логотип"
+                      onClick={() => {
+                        setSelectedBankId("custom");
+                        setCustomBankName(searchQuery.trim());
+                        setCustomLogo(undefined);
+                        setIsBankPickerOpen(false);
+                        setSearchQuery("");
+                      }}
+                      className="w-full py-2.5 px-3 border border-dashed border-[var(--accent-color)]/40 bg-[var(--fill)] hover:bg-[var(--fill-hover)] rounded-control text-[var(--accent-color)] text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                     >
-                      <BankLogo
-                        bank={currentBank}
-                        customLogo={customLogo}
-                        logoShape={globalLogoShape}
-                        size="md"
-                      />
-                      <div
-                        className={clsx(
-                          "absolute inset-0 bg-black/45 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity",
-                          shapeClassesMedium[globalLogoShape],
-                        )}
-                      >
-                        <Upload className="w-4 h-4 text-white" />
-                      </div>
+                      <Plus className="w-4 h-4" />
+                      <span>Добавить банк «{searchQuery.trim()}»</span>
                     </button>
-                    <div className="min-w-0">
-                      <span className="font-bold text-sm text-[var(--text-primary)] block truncate tracking-tight leading-tight">
-                        {currentBank.name}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="text-[11px] font-semibold text-[var(--accent-color)] hover:underline cursor-pointer mt-0.5 inline-flex items-center gap-1"
-                      >
-                        <Upload className="w-3 h-3" />
-                        <span>Изменить логотип</span>
-                      </button>
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        className="hidden"
-                        accept="image/*"
-                        onChange={handleLogoUpload}
-                      />
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedBankId("");
-                      setCustomBankName("");
-                      setCustomLogo(undefined);
-                    }}
-                    className="h-8 px-2.5 rounded-control bg-[var(--fill)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-[background-color,color,transform] active:scale-95 cursor-pointer inline-flex items-center gap-1.5 shrink-0"
-                    title="Выбрать другой банк"
-                  >
-                    <ArrowLeftRight className="w-3.5 h-3.5" />
-                    <span>Сменить</span>
-                  </button>
+                  )}
                 </div>
-              )}
-            </div>
-          </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        {/* 2. Секция категорий кэшбека */}
+        {/* Блок 2: Лоток выбранных категорий + однострочная панель пресетов % */}
         <div
           className={clsx(
-            "flex flex-col transition-opacity duration-300",
-            !selectedBankId && "opacity-45 pointer-events-none select-none",
+            "flex flex-col gap-2 transition-opacity duration-300",
+            !selectedBankId && "opacity-50 pointer-events-none select-none",
           )}
         >
-          {/* Единый заголовок секции категорий (без дублирования заголовков) */}
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between">
             <div className="flex items-baseline gap-1.5 min-w-0">
-              <label className="text-xs font-semibold text-[var(--text-secondary)]">
-                Категории кэшбека
-              </label>
-              <AnimatePresence initial={false}>
-                {selectedCategories.length > 0 && (
-                  <motion.span
-                    key="optional-hint"
-                    initial={{ opacity: 0, x: -4 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -4 }}
-                    transition={{ duration: 0.18 }}
-                    className="text-[11px] text-[var(--text-tertiary)] truncate"
-                  >
-                    · % необязателен
-                  </motion.span>
-                )}
-              </AnimatePresence>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-secondary)]">
+                Выбранные
+              </span>
+              <span className="text-[11px] text-[var(--text-tertiary)] truncate">
+                · % необязателен
+              </span>
             </div>
-            <motion.span
-              key={selectedCategories.length > 0 ? "has-selected" : "none"}
-              initial={{ scale: 0.92, opacity: 0.8 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 450, damping: 28 }}
+            <span
               className={clsx(
-                "text-[11px] font-semibold px-2 py-0.5 rounded-full transition-colors shrink-0",
+                "text-[11px] font-semibold tabular-nums leading-none px-2.5 py-1 rounded-full transition-colors inline-flex items-center justify-center shrink-0",
                 selectedCategories.length > 0
-                  ? "bg-[var(--percent-bg)] text-[var(--accent-color)]"
+                  ? "bg-[var(--percent-bg)] text-[var(--percent-text)]"
                   : "bg-[var(--fill)] text-[var(--text-tertiary)]",
               )}
             >
               {selectedCategories.length > 0
-                ? `Выбрано: ${selectedCategories.length}`
+                ? `${selectedCategories.length} ${pluralize(
+                    selectedCategories.length,
+                    ["категория", "категории", "категорий"],
+                  )}`
                 : "Не выбрано"}
-            </motion.span>
+            </span>
           </div>
 
-          {/* CSS Grid Аккордеон выбранных категорий (отступ внутри overflow-hidden, чтобы в закрытом виде не было пустого зазора) */}
+          {selectedCategories.length === 0 ? (
+            <div className="py-3 px-3 rounded-control bg-[var(--fill)] border border-dashed border-[var(--border-hairline)] text-center text-xs text-[var(--text-tertiary)]">
+              Выберите категории из списка ниже
+            </div>
+          ) : (
+            <div className="flex flex-col gap-1.5">
+              <AnimatePresence initial={false}>
+                {selectedCategories.map((cat) => {
+                  const isFocused = cat.name === resolvedActiveCategoryName;
+                  const hasPercentSign = cat.percent.includes("%");
+                  const inputCharWidth = Math.min(
+                    5,
+                    Math.max(1, cat.percent.length),
+                  );
+
+                  return (
+                    <motion.div
+                      key={cat.name}
+                      initial={{ opacity: 0, scale: 0.97, y: -4 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{
+                        opacity: 0,
+                        scale: 0.97,
+                        y: -4,
+                        transition: { duration: 0.14, ease: "easeInOut" },
+                      }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 420,
+                        damping: 32,
+                        mass: 0.75,
+                      }}
+                      onClick={() => setActiveCategoryName(cat.name)}
+                      className={clsx(
+                        "cursor-pointer flex items-center justify-between gap-2 pl-3 pr-1.5 py-1.5 rounded-control border transition-[background-color,border-color,box-shadow] transform-gpu",
+                        isFocused
+                          ? "bg-[var(--fill-hover)] border-[var(--accent-color)]/60 ring-1 ring-[var(--accent-color)]/20"
+                          : "bg-[var(--fill)] hover:bg-[var(--fill-hover)] border-[var(--border-hairline)]",
+                      )}
+                    >
+                      <span
+                        className="text-[13px] font-semibold text-[var(--text-primary)] truncate leading-tight flex-1 min-w-0"
+                        title={cat.name}
+                      >
+                        {cat.name}
+                      </span>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <label
+                          onClick={(e) => e.stopPropagation()}
+                          className={clsx(
+                            "inline-flex items-center justify-center w-[54px] h-7 px-1.5 rounded-control bg-[var(--percent-bg)] border transition-[border-color,box-shadow] cursor-text",
+                            isFocused
+                              ? "border-[var(--accent-color)]/50"
+                              : "border-[var(--accent-color)]/30 focus-within:border-[var(--accent-color)]",
+                          )}
+                        >
+                          <input
+                            type="text"
+                            inputMode="decimal"
+                            placeholder="—"
+                            value={cat.percent}
+                            onFocus={() => setActiveCategoryName(cat.name)}
+                            onChange={(e) =>
+                              updateCategoryPercent(cat.name, e.target.value)
+                            }
+                            aria-label={`Процент для категории ${cat.name}`}
+                            style={{
+                              width: cat.percent
+                                ? `${inputCharWidth}ch`
+                                : "100%",
+                            }}
+                            className="min-w-[1ch] max-w-[36px] bg-transparent text-center text-[13px] font-bold tabular-nums leading-none text-[var(--percent-text)] placeholder-[var(--text-tertiary)] focus:outline-none no-spinner"
+                          />
+                          {cat.percent.trim() !== "" && !hasPercentSign && (
+                            <span className="text-[10px] font-bold text-[var(--percent-text)]/80 leading-none ml-[1px] shrink-0 select-none pointer-events-none">
+                              %
+                            </span>
+                          )}
+                        </label>
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleCategory(cat.name);
+                          }}
+                          className="w-7 h-7 rounded-full flex items-center justify-center text-[var(--text-tertiary)] hover:text-red-500 hover:bg-red-500/10 transition-[background-color,color,transform] active:scale-90 cursor-pointer shrink-0"
+                          title={`Убрать «${cat.name}»`}
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+            </div>
+          )}
+
+          {/* Однострочная сетка быстрых пресетов % (7 равных колонок без переноса строк) */}
           <div
             className={clsx(
               "grid transition-[grid-template-rows,opacity] duration-300 ease-out",
@@ -601,90 +858,54 @@ export const BankForm: React.FC<BankFormProps> = memo(
             )}
           >
             <div className="overflow-hidden min-h-0">
-              <div className="pb-2">
-                <div className="p-1.5 rounded-control bg-[var(--fill)] border border-[var(--border-hairline)]">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-40 overflow-y-auto overscroll-contain scrollbar-hide">
-                    <AnimatePresence initial={false}>
-                      {selectedCategories.map((cat) => (
-                        <motion.div
-                          key={cat.name}
-                          initial={{ opacity: 0, scale: 0.95, y: -6 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{
-                            opacity: 0,
-                            scale: 0.95,
-                            y: -4,
-                            transition: { duration: 0.15, ease: "easeInOut" },
-                          }}
-                          transition={{
-                            type: "spring",
-                            stiffness: 420,
-                            damping: 32,
-                            mass: 0.75,
-                          }}
-                          className="flex items-center justify-between gap-2 pl-2.5 pr-1 py-1 bg-[var(--fill)] hover:bg-[var(--fill-hover)] rounded-control border border-[var(--accent-color)]/25 transition-colors transform-gpu"
-                        >
-                          <span
-                            className="text-xs font-semibold text-[var(--text-primary)] truncate flex-1 min-w-0"
-                            title={cat.name}
-                          >
-                            {cat.name}
-                          </span>
-                          <div className="flex items-center gap-1 shrink-0">
-                            <div className="relative flex items-center">
-                              <input
-                                type="number"
-                                inputMode="decimal"
-                                min="0"
-                                max="100"
-                                step="any"
-                                placeholder="—"
-                                value={cat.percent}
-                                onChange={(e) =>
-                                  updateCategoryPercent(
-                                    cat.name,
-                                    e.target.value,
-                                  )
-                                }
-                                aria-label={`Процент для категории ${cat.name}`}
-                                className="w-13 h-6.5 pl-1.5 pr-4 text-center bg-[var(--fill)] hover:bg-[var(--fill-hover)] focus:bg-[var(--fill-hover)] border border-[var(--border-hairline)] focus:border-[var(--accent-color)] rounded-control text-xs font-bold text-[var(--accent-color)] placeholder-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 transition-[background-color,border-color,box-shadow] no-spinner"
-                              />
-                              <span className="absolute right-1.5 text-[10px] font-semibold text-[var(--text-tertiary)] pointer-events-none select-none">
-                                %
-                              </span>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => toggleCategory(cat.name)}
-                              className="w-6 h-6 rounded-full flex items-center justify-center text-[var(--text-tertiary)] hover:text-red-500 hover:bg-red-500/10 transition-[background-color,color,transform] active:scale-90 cursor-pointer shrink-0"
-                              title={`Убрать «${cat.name}»`}
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </motion.div>
-                      ))}
-                    </AnimatePresence>
-                  </div>
-                </div>
+              <div className="grid grid-cols-7 gap-1 pt-0.5">
+                {QUICK_PERCENTS.map((val) => {
+                  const isMatch =
+                    activeCategoryObj &&
+                    activeCategoryObj.percent.trim() === val;
+
+                  return (
+                    <button
+                      key={val}
+                      type="button"
+                      onClick={() => handleApplyQuickPercent(val)}
+                      className={clsx(
+                        "h-7 rounded-control border text-[11.5px] font-bold tabular-nums leading-none inline-flex items-center justify-center active:scale-95 transition-[background-color,border-color,color,transform] cursor-pointer",
+                        isMatch
+                          ? "bg-[var(--percent-bg)] border-[var(--accent-color)]/50 text-[var(--percent-text)]"
+                          : "bg-[var(--fill)] hover:bg-[var(--fill-hover)] border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]",
+                      )}
+                    >
+                      {val}%
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Единая умная строка поиска + встроенная кнопка создания/выбора без скачка ширины поля */}
+        {/* Блок 3: Поиск / создание + 2-колоночная сетка всех категорий */}
+        <div
+          className={clsx(
+            "flex flex-col gap-2.5 transition-opacity duration-300",
+            !selectedBankId && "opacity-50 pointer-events-none select-none",
+          )}
+        >
           <form
             onSubmit={handleCreateCategoryFromSearch}
-            className="relative mb-2"
+            className="relative"
           >
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-tertiary)] pointer-events-none" />
             <input
+              ref={categorySearchInputRef}
               type="text"
-              placeholder="Поиск или своя категория..."
+              placeholder="Поиск или новая категория…"
               value={categorySearchQuery}
               onChange={(e) => setCategorySearchQuery(e.target.value)}
               className={clsx(
-                "w-full h-9 pl-9 bg-[var(--fill)] focus:bg-[var(--fill-hover)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] focus:border-[var(--accent-color)] rounded-control text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 text-[var(--text-primary)] placeholder-[var(--text-tertiary)] transition-[background-color,border-color,box-shadow]",
-                trimmedCategoryQuery ? "pr-28" : "pr-3",
+                "w-full h-10 pl-9 bg-[var(--fill)] focus:bg-[var(--fill-hover)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] focus:border-[var(--accent-color)] rounded-control text-[13.5px] font-medium focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 text-[var(--text-primary)] placeholder-[var(--text-tertiary)] transition-[background-color,border-color,box-shadow]",
+                trimmedCategoryQuery ? "pr-[122px]" : "pr-3",
               )}
             />
             <AnimatePresence initial={false}>
@@ -694,7 +915,7 @@ export const BankForm: React.FC<BankFormProps> = memo(
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.15, ease: "easeOut" }}
+                  transition={{ duration: 0.14 }}
                   className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1"
                 >
                   <button
@@ -707,14 +928,9 @@ export const BankForm: React.FC<BankFormProps> = memo(
                   </button>
                   <button
                     type="submit"
-                    className="h-6.5 px-2 bg-[var(--accent-color)] text-white rounded-control hover:brightness-110 transition-[filter,transform] cursor-pointer shadow-sm shadow-[var(--accent-color)]/20 active:scale-95 inline-flex items-center gap-1 text-[11px] font-semibold"
-                    title={
-                      canCreateFromQuery
-                        ? `Добавить свою категорию «${trimmedCategoryQuery}»`
-                        : `Выбрать «${trimmedCategoryQuery}»`
-                    }
+                    className="h-7 px-2.5 rounded-control bg-[var(--accent-color)] text-white text-[11px] font-bold leading-none inline-flex items-center justify-center gap-1 active:scale-95 transition-[filter,transform] hover:brightness-110 shadow-sm shadow-[var(--accent-color)]/20 cursor-pointer"
                   >
-                    <Plus className="w-3 h-3" />
+                    <Plus className="w-3 h-3 stroke-[2.8]" />
                     <span>{canCreateFromQuery ? "Создать" : "Выбрать"}</span>
                   </button>
                 </motion.div>
@@ -722,103 +938,103 @@ export const BankForm: React.FC<BankFormProps> = memo(
             </AnimatePresence>
           </form>
 
-          {/* Строгая 2-колоночная сетка доступных категорий (ровная геометрия без пустот и разнобоя) */}
-          <div className="grid grid-cols-2 gap-1.5 max-h-52 overflow-y-auto overscroll-contain p-0.5 scrollbar-hide">
-            {filteredCategories.map((cat) => {
-              const isSelected = selectedCategorySet.has(cat);
-              const isCustomCategory = !baseCategorySet.has(cat);
+          <div>
+            <div className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-secondary)] mb-2">
+              Все категории
+            </div>
+            <div className="grid grid-cols-2 gap-1.5">
+              {filteredCategories.map((cat) => {
+                const selectedItem = selectedCategoryMap.get(cat);
+                const isSelected = Boolean(selectedItem);
+                const isCustomCategory = !baseCategorySet.has(cat);
+                const normalizedPercent = formatPercentValue(
+                  selectedItem?.percent,
+                );
+                const formattedPercentBadge = normalizedPercent
+                  ? `${normalizedPercent}%`
+                  : null;
 
-              if (isCustomCategory) {
+                if (isCustomCategory && !isSelected) {
+                  return (
+                    <div
+                      key={cat}
+                      className="min-h-[38px] flex items-center rounded-control border bg-[var(--fill)] hover:bg-[var(--fill-hover)] text-[var(--text-secondary)] border-[var(--border-hairline)] transition-[background-color,color,border-color] overflow-hidden"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => toggleCategory(cat)}
+                        className="pl-2.5 pr-1 py-1.5 flex-1 min-w-0 h-full flex items-center text-left hover:text-[var(--text-primary)] cursor-pointer transition-[color,transform] active:scale-[0.98]"
+                        title={cat}
+                      >
+                        <span className="text-[12.5px] font-medium leading-tight truncate min-w-0 flex-1">
+                          {cat}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCategoryToDelete(cat);
+                        }}
+                        className="w-6 h-6 mr-1 rounded-full flex items-center justify-center text-[var(--text-tertiary)] hover:text-red-500 hover:bg-red-500/10 transition-[background-color,color,transform] active:scale-90 cursor-pointer shrink-0"
+                        title={`Удалить свою категорию «${cat}»`}
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  );
+                }
+
                 return (
-                  <div
+                  <button
+                    type="button"
                     key={cat}
+                    onClick={() => toggleCategory(cat)}
+                    title={cat}
                     className={clsx(
-                      "min-h-[36px] flex items-center rounded-control border transition-[background-color,color,border-color,box-shadow] overflow-hidden",
+                      "min-h-[38px] px-2.5 py-1.5 rounded-control text-left transition-[background-color,color,border-color,box-shadow,transform] active:scale-95 flex items-center justify-between gap-1.5 cursor-pointer border",
                       isSelected
                         ? "bg-[var(--accent-color)] text-white border-[var(--accent-color)] shadow-sm shadow-[var(--accent-color)]/20"
-                        : "bg-[var(--fill)] hover:bg-[var(--fill-hover)] text-[var(--text-secondary)] border-[var(--border-hairline)]",
+                        : "bg-[var(--fill)] hover:bg-[var(--fill-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border-[var(--border-hairline)]",
                     )}
                   >
-                    <button
-                      type="button"
-                      onClick={() => toggleCategory(cat)}
+                    <span
                       className={clsx(
-                        "pl-2.5 pr-1 py-1.5 flex-1 min-w-0 h-full flex items-center justify-between gap-1 text-left cursor-pointer transition-[color,transform] active:scale-[0.98]",
-                        !isSelected && "hover:text-[var(--text-primary)]",
+                        "text-[12.5px] leading-tight truncate min-w-0 flex-1",
+                        isSelected ? "font-semibold" : "font-medium",
                       )}
-                      title={cat}
                     >
-                      <span className="text-xs font-medium leading-[1.2] line-clamp-2 break-words min-w-0 flex-1">
-                        {cat}
+                      {cat}
+                    </span>
+                    {isSelected && (
+                      <span className="text-[10px] font-bold tabular-nums leading-none px-1.5 py-0.5 rounded-[min(6px,var(--radius-sm))] bg-white/20 inline-flex items-center justify-center shrink-0">
+                        {formattedPercentBadge || (
+                          <Check className="w-3 h-3 stroke-[2.6]" />
+                        )}
                       </span>
-                      {isSelected && (
-                        <Check className="w-3.5 h-3.5 shrink-0 ml-0.5" />
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setCategoryToDelete(cat);
-                      }}
-                      className={clsx(
-                        "w-6 h-6 mr-1 rounded-full flex items-center justify-center transition-[background-color,color,transform] active:scale-90 cursor-pointer shrink-0",
-                        isSelected
-                          ? "text-white/75 hover:text-white hover:bg-black/15"
-                          : "text-[var(--text-tertiary)] hover:text-red-500 hover:bg-red-500/10",
-                      )}
-                      title={`Удалить свою категорию «${cat}»`}
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
+                    )}
+                  </button>
                 );
-              }
+              })}
 
-              return (
+              {filteredCategories.length === 0 && trimmedCategoryQuery && (
                 <button
                   type="button"
-                  key={cat}
-                  onClick={() => toggleCategory(cat)}
-                  title={cat}
-                  className={clsx(
-                    "min-h-[36px] px-2.5 py-1.5 rounded-control text-left transition-[background-color,color,border-color,box-shadow,transform] active:scale-[0.98] flex items-center justify-between gap-1.5 cursor-pointer border",
-                    isSelected
-                      ? "bg-[var(--accent-color)] text-white border-[var(--accent-color)] shadow-sm shadow-[var(--accent-color)]/20"
-                      : "bg-[var(--fill)] hover:bg-[var(--fill-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border-[var(--border-hairline)]",
-                  )}
+                  onClick={() => handleCreateCategoryFromSearch()}
+                  className="col-span-2 w-full py-2.5 px-4 rounded-control border border-dashed border-[var(--accent-color)]/40 bg-[var(--fill)] hover:bg-[var(--fill-hover)] text-xs sm:text-sm font-semibold text-[var(--accent-color)] flex items-center justify-center gap-2 transition-colors cursor-pointer"
                 >
-                  <span className="text-xs font-medium leading-[1.2] line-clamp-2 break-words min-w-0 flex-1">
-                    {cat}
+                  <Plus className="w-4 h-4" />
+                  <span>
+                    Создать и выбрать категорию «{trimmedCategoryQuery}»
                   </span>
-                  {isSelected && <Check className="w-3.5 h-3.5 shrink-0" />}
                 </button>
-              );
-            })}
-            {filteredCategories.length === 0 && trimmedCategoryQuery && (
-              <button
-                type="button"
-                onClick={() => handleCreateCategoryFromSearch()}
-                className="col-span-2 w-full py-2.5 px-4 rounded-control border border-dashed border-[var(--accent-color)]/40 bg-[var(--fill)] hover:bg-[var(--fill-hover)] text-xs sm:text-sm font-semibold text-[var(--accent-color)] flex items-center justify-center gap-2 transition-colors cursor-pointer"
-              >
-                <Plus className="w-4 h-4" />
-                <span>
-                  Создать и выбрать категорию «{trimmedCategoryQuery}»
-                </span>
-              </button>
-            )}
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Sticky Footer действий */}
-        <div className="flex gap-2.5 pt-2.5 pb-[max(0.75rem,calc(env(safe-area-inset-bottom)+0.5rem))] sm:pb-[max(0.75rem,calc(env(safe-area-inset-bottom)+0.5rem))] border-t border-[var(--border-hairline)] mt-auto sticky -bottom-[max(0.75rem,calc(env(safe-area-inset-bottom)+0.5rem))] sm:-bottom-[max(1rem,calc(env(safe-area-inset-bottom)+0.5rem))] -mb-[max(0.75rem,calc(env(safe-area-inset-bottom)+0.5rem))] sm:-mb-[max(1rem,calc(env(safe-area-inset-bottom)+0.5rem))] -mx-3 sm:-mx-4 px-3 sm:px-4 bg-white dark:bg-[var(--surface-2)] z-10">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="flex-1 px-4 py-2.5 rounded-control font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--fill)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] transition-[background-color,color,transform] text-sm cursor-pointer shadow-sm active:scale-95"
-          >
-            Отмена
-          </button>
+        {/* Блок 4: Sticky-футер с одной полноширинной CTA и живой сводкой */}
+        <div className="pt-3 pb-[max(0.75rem,calc(env(safe-area-inset-bottom)+0.5rem))] border-t border-[var(--border-hairline)] mt-auto sticky -bottom-[max(0.75rem,calc(env(safe-area-inset-bottom)+0.5rem))] sm:-bottom-[max(1rem,calc(env(safe-area-inset-bottom)+0.5rem))] -mb-[max(0.75rem,calc(env(safe-area-inset-bottom)+0.5rem))] sm:-mb-[max(1rem,calc(env(safe-area-inset-bottom)+0.5rem))] -mx-3 sm:-mx-4 px-3 sm:px-4 bg-white dark:bg-[var(--surface-2)] z-20">
           <button
             type="button"
             onClick={handleSave}
@@ -827,9 +1043,16 @@ export const BankForm: React.FC<BankFormProps> = memo(
               selectedCategories.length === 0 ||
               (isCustomBank && !customBankName.trim())
             }
-            className="flex-1 px-4 py-2.5 rounded-control font-bold text-white bg-[var(--accent-color)] hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-[filter,opacity,transform] shadow-md shadow-[var(--accent-color)]/30 active:scale-95 text-sm cursor-pointer"
+            className="w-full h-11 px-4 rounded-control font-bold text-[15px] text-white bg-[var(--accent-color)] hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-[filter,opacity,transform] shadow-md shadow-[var(--accent-color)]/25 active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
           >
-            Сохранить
+            <span className="leading-none">
+              {initialEntry ? "Сохранить изменения" : "Сохранить банк"}
+            </span>
+            {ctaSummaryText && (
+              <span className="text-[12px] font-bold tabular-nums leading-none px-2 py-1 rounded-[min(6px,var(--radius-sm))] bg-white/20 inline-flex items-center justify-center">
+                {ctaSummaryText}
+              </span>
+            )}
           </button>
         </div>
 

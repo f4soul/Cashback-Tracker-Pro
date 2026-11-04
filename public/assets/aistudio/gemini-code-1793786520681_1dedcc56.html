@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="ru" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Гибридный концепт (A + C) — Cashback Tracker Pro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root, .cb {
+      --surface-0: #05080F;
+      --surface-1: #0B1220;
+      --surface-2: #111A2E;
+      --border-hairline: rgba(130, 165, 235, 0.10);
+      --border-strong: rgba(130, 165, 235, 0.16);
+      --text-primary: #E9EEF7;
+      --text-secondary: #8B96AD;
+      --text-tertiary: #57627A;
+      --elevation-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.04);
+      --fill: rgba(130, 165, 235, 0.06);
+      --fill-hover: rgba(130, 165, 235, 0.10);
+      --accent-color: #4A9DFF;
+      --percent-bg: rgba(74, 157, 255, 0.12);
+      --percent-text: #BAD8FF;
+      --radius-app: 22px;
+      --radius-sm: 12px;
+      color-scheme: dark;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+    }
+    /* Семантические радиусы из AGENTS.md */
+    .rounded-modal { border-radius: var(--radius-app); }
+    .rounded-card { border-radius: var(--radius-app); }
+    .rounded-control { border-radius: var(--radius-sm); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { scrollbar-width: none; }
+    input.no-spinner::-webkit-outer-spin-button,
+    input.no-spinner::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  </style>
+</head>
+<body class="bg-[#020409] min-h-screen flex flex-col items-center justify-center py-8 gap-4">
+
+  <!-- Панель подсказок для теста -->
+  <div class="text-xs text-[#8B96AD] bg-[#0B1220] border border-[rgba(130,165,235,0.12)] px-4 py-2 rounded-full flex items-center gap-3">
+    <span class="w-2 h-2 rounded-full bg-[#4A9DFF] animate-pulse"></span>
+    <span>Интерактивный стенд: нажимайте на «Сменить банк», строки категорий, «Быстрый %» и шаблоны ниже</span>
+  </div>
+
+  <!-- ===== Фрейм смартфона 390×844 ===== -->
+  <div class="cb relative w-[390px] h-[844px] rounded-[54px] border-[10px] border-[#1c2333] overflow-hidden shadow-2xl bg-[var(--surface-0)]">
+
+    <!-- Статус-бар -->
+    <div class="absolute top-0 inset-x-0 h-[54px] flex items-end justify-between px-8 pb-2 z-[60]">
+      <span class="text-[15px] font-semibold text-white tracking-tight">11:23</span>
+      <div class="absolute left-1/2 -translate-x-1/2 top-2.5 w-[122px] h-[35px] bg-black rounded-full"></div>
+      <div class="flex items-center gap-1.5 text-white">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="4.5" width="3" height="7.5" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 9.6a2 2 0 0 1 2 1.9L8 12l-2-.5a2 2 0 0 1 2-1.9Zm-4.6-2.9a6.5 6.5 0 0 1 9.2 0l-1.4 1.4a4.5 4.5 0 0 0-6.4 0L3.4 6.7ZM.6 3.9a10.5 10.5 0 0 1 14.8 0l-1.4 1.4a8.5 8.5 0 0 0-12 0L.6 3.9Z"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5"/><rect x="2" y="2" width="18" height="8" rx="2" fill="currentColor" stroke="none"/></svg>
+      </div>
+    </div>
+
+    <!-- Фон приложения за модалкой (Surface-1 карточки) -->
+    <div class="absolute inset-0 pt-[70px] px-3 opacity-45 pointer-events-none" aria-hidden="true">
+      <div class="flex items-center gap-3 bg-[var(--surface-1)] rounded-control border border-[var(--border-hairline)] p-3 mb-2">
+        <div class="w-10 h-10 rounded-full bg-[#FFDD2D] flex items-center justify-center text-[15px] font-black text-black">Т</div>
+        <div class="flex-1"><div class="h-2.5 w-24 bg-[var(--fill-hover)] rounded-full"></div><div class="h-2 w-14 bg-[var(--fill)] rounded-full mt-2"></div></div>
+      </div>
+      <div class="flex items-center gap-3 bg-[var(--surface-1)] rounded-control border border-[var(--border-hairline)] p-3">
+        <div class="w-10 h-10 rounded-full bg-[#20A195] flex items-center justify-center text-white font-black">С</div>
+        <div class="flex-1"><div class="h-2.5 w-20 bg-[var(--fill-hover)] rounded-full"></div><div class="h-2 w-16 bg-[var(--fill)] rounded-full mt-2"></div></div>
+      </div>
+    </div>
+
+    <!-- Плотный матовый скрим (Zero Backdrop-Blur Policy) -->
+    <div class="absolute inset-0 bg-[#02040A]/90 z-[65]"></div>
+
+    <!-- ===== МОДАЛКА (Surface-2, без backdrop-blur) ===== -->
+    <div class="absolute inset-x-0 bottom-0 z-[70] flex flex-col rounded-t-[24px] bg-[var(--surface-2)] border-t border-[var(--border-hairline)] shadow-[var(--elevation-highlight),0_-10px_40px_rgba(0,0,0,0.5)]" style="height: 788px;">
+
+      <!-- Граббер + Компактная шапка -->
+      <div class="shrink-0">
+        <div class="flex justify-center pt-2.5"><div class="w-9 h-1 rounded-full bg-[var(--border-strong)]"></div></div>
+        <div class="flex items-center justify-between px-4 pt-1.5 pb-3 border-b border-[var(--border-hairline)]">
+          <h3 class="text-[17px] font-bold text-[var(--text-primary)] tracking-tight">Добавить банк</h3>
+          <button class="w-8 h-8 rounded-full bg-[var(--fill)] hover:bg-[var(--fill-hover)] flex items-center justify-center text-[var(--text-secondary)] active:scale-90 transition-[background-color,transform]">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ЕДИНЫЙ СКРОЛЛ-ПОТОК (вложенных скроллов нет) -->
+      <div class="flex-1 overflow-y-auto no-scrollbar overscroll-contain px-4 pt-3.5 pb-4 flex flex-col gap-3.5">
+
+        <!-- 1. БЛОК БАНКА: Компактная плашка + CSS Grid аккордеон смены банка -->
+        <div class="flex flex-col">
+          <div onclick="toggleBankPicker()" class="cursor-pointer flex items-center justify-between gap-2.5 p-2.5 rounded-control border border-[var(--border-hairline)] bg-[var(--fill)] hover:bg-[var(--fill-hover)] transition-colors">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div id="bankLogo" class="w-9 h-9 rounded-full bg-[#FFDD2D] flex items-center justify-center text-[15px] font-black text-black shrink-0">Т</div>
+              <div class="min-w-0">
+                <span id="bankName" class="block text-[14px] font-bold text-[var(--text-primary)] truncate leading-tight">Т-Банк</span>
+                <span class="text-[11px] text-[var(--text-tertiary)]">Нажмите, чтобы сменить банк</span>
+              </div>
+            </div>
+            <button type="button" id="bankToggleBtn" class="h-7 px-2.5 rounded-control bg-[var(--fill)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] text-[11.5px] font-semibold text-[var(--text-secondary)] active:scale-95 transition-[background-color,transform] shrink-0">
+              Сменить
+            </button>
+          </div>
+
+          <!-- Аппаратный CSS Grid аккордеон списка банков (по стандарту AGENTS.md) -->
+          <div id="bankAccordion" class="grid grid-rows-[0fr] opacity-0 pointer-events-none transition-[grid-template-rows,opacity] duration-300 ease-out">
+            <div class="overflow-hidden min-h-0">
+              <div class="pt-2 grid grid-cols-2 gap-1.5">
+                <button onclick="selectBank('Т-Банк', 'Т', '#FFDD2D', '#000')" class="p-2 rounded-control bg-[var(--fill)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] flex items-center gap-2 text-left active:scale-95 transition-[background-color,transform]">
+                  <span class="w-7 h-7 rounded-full bg-[#FFDD2D] text-black font-black text-xs flex items-center justify-center shrink-0">Т</span>
+                  <span class="text-[12.5px] font-semibold text-[var(--text-primary)] truncate">Т-Банк</span>
+                </button>
+                <button onclick="selectBank('Альфа-Банк', 'А', '#EF3124', '#FFF')" class="p-2 rounded-control bg-[var(--fill)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] flex items-center gap-2 text-left active:scale-95 transition-[background-color,transform]">
+                  <span class="w-7 h-7 rounded-full bg-[#EF3124] text-white font-black text-xs flex items-center justify-center shrink-0">А</span>
+                  <span class="text-[12.5px] font-semibold text-[var(--text-primary)] truncate">Альфа-Банк</span>
+                </button>
+                <button onclick="selectBank('Сбербанк', 'С', '#21A038', '#FFF')" class="p-2 rounded-control bg-[var(--fill)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] flex items-center gap-2 text-left active:scale-95 transition-[background-color,transform]">
+                  <span class="w-7 h-7 rounded-full bg-[#21A038] text-white font-black text-xs flex items-center justify-center shrink-0">С</span>
+                  <span class="text-[12.5px] font-semibold text-[var(--text-primary)] truncate">Сбербанк</span>
+                </button>
+                <button onclick="selectBank('Яндекс Пэй', 'Я', '#FC3F1D', '#FFF')" class="p-2 rounded-control bg-[var(--fill)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] flex items-center gap-2 text-left active:scale-95 transition-[background-color,transform]">
+                  <span class="w-7 h-7 rounded-full bg-[#FC3F1D] text-white font-black text-xs flex items-center justify-center shrink-0">Я</span>
+                  <span class="text-[12.5px] font-semibold text-[var(--text-primary)] truncate">Яндекс Пэй</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. ЛОТОК ВЫБРАННЫХ КАТЕГОРИЙ + БЫСТРЫЙ ПРОЦЕНТ -->
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-baseline gap-1.5">
+              <span class="text-[11px] font-bold uppercase tracking-widest text-[var(--text-secondary)]">Выбранные</span>
+              <span class="text-[11px] text-[var(--text-tertiary)]">· % необязателен</span>
+            </div>
+            <span id="selectedBadge" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[var(--percent-bg)] text-[var(--percent-text)]">3 категории</span>
+          </div>
+
+          <!-- Контейнер строк (строго на --fill, без темного surface-1!) -->
+          <div id="selectedTray" class="flex flex-col gap-1.5"></div>
+
+          <!-- Панель «Быстрый %» из Концепта C: бьет точно в активную категорию -->
+          <div id="quickPercentBar" class="flex items-center justify-between gap-1 pt-0.5">
+            <span class="text-[11px] font-medium text-[var(--text-tertiary)] shrink-0 mr-1">Быстрый %:</span>
+            <div class="flex items-center gap-1 flex-1 justify-end">
+              <button type="button" onclick="applyQuickPercent('1')" class="quick-chip h-7 px-2.5 rounded-full bg-[var(--fill)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] text-[12px] font-bold text-[var(--text-secondary)] active:scale-95 transition-[background-color,border-color,color,transform]">1%</button>
+              <button type="button" onclick="applyQuickPercent('3')" class="quick-chip h-7 px-2.5 rounded-full bg-[var(--fill)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] text-[12px] font-bold text-[var(--text-secondary)] active:scale-95 transition-[background-color,border-color,color,transform]">3%</button>
+              <button type="button" onclick="applyQuickPercent('5')" class="quick-chip h-7 px-2.5 rounded-full bg-[var(--fill)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] text-[12px] font-bold text-[var(--text-secondary)] active:scale-95 transition-[background-color,border-color,color,transform]">5%</button>
+              <button type="button" onclick="applyQuickPercent('7')" class="quick-chip h-7 px-2.5 rounded-full bg-[var(--fill)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] text-[12px] font-bold text-[var(--text-secondary)] active:scale-95 transition-[background-color,border-color,color,transform]">7%</button>
+              <button type="button" onclick="applyQuickPercent('10')" class="quick-chip h-7 px-2.5 rounded-full bg-[var(--fill)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] text-[12px] font-bold text-[var(--text-secondary)] active:scale-95 transition-[background-color,border-color,color,transform]">10%</button>
+              <button type="button" onclick="applyQuickPercent('15')" class="quick-chip h-7 px-2.5 rounded-full bg-[var(--fill)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] text-[12px] font-bold text-[var(--text-secondary)] active:scale-95 transition-[background-color,border-color,color,transform]">15%</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. УМНЫЙ ПОИСК + СОЗДАНИЕ СВОЕЙ КАТЕГОРИИ -->
+        <div class="relative">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] pointer-events-none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="catSearch" oninput="renderCatalog()" placeholder="Поиск или новая категория…" class="w-full h-10 pl-9 pr-[94px] text-[13.5px] font-medium rounded-control bg-[var(--fill)] border border-[var(--border-hairline)] focus:border-[var(--accent-color)] outline-none placeholder-[var(--text-tertiary)] text-[var(--text-primary)] transition-colors" />
+          <button type="button" onclick="createCustomCategory()" class="absolute right-1.5 top-1/2 -translate-y-1/2 h-7 px-2.5 rounded-control bg-[var(--accent-color)] text-white text-[11px] font-bold flex items-center gap-1 active:scale-95 transition-transform shadow-sm">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            Создать
+          </button>
+        </div>
+
+        <!-- 4. 2-КОЛОНОЧНАЯ СЕТКА КАТЕГОРИЙ (Из Концепта А) -->
+        <div>
+          <div class="text-[11px] font-bold uppercase tracking-widest text-[var(--text-secondary)] mb-2">Все категории</div>
+          <div id="catalogGrid" class="grid grid-cols-2 gap-1.5"></div>
+        </div>
+
+      </div>
+
+      <!-- 5. STICKY-ФУТЕР: Одна мощная CTA со сводкой (Из Концепта C) -->
+      <div class="shrink-0 border-t border-[var(--border-hairline)] bg-[var(--surface-2)] px-4 pt-3 pb-[max(14px,env(safe-area-inset-bottom))]">
+        <button type="button" class="w-full h-12 rounded-control font-bold text-[15px] text-white bg-[var(--accent-color)] shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2">
+          <span>Сохранить банк</span>
+          <span id="ctaSummary" class="text-[12px] font-bold px-2 py-0.5 rounded-md bg-white/20">3 категории · до 7%</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Состояние тестового стенда
+    let selected = [
+      { name: 'Супермаркеты', percent: '5' },
+      { name: 'АЗС', percent: '1' },
+      { name: 'Кино и развлечения', percent: '7' }
+    ];
+    let activeCategory = 'Кино и развлечения'; // Фокус для «Быстрого %»
+    let allCategories = [
+      { name: 'Супермаркеты', custom: false },
+      { name: 'АЗС', custom: false },
+      { name: 'Кино и развлечения', custom: false },
+      { name: 'Рестораны и кафе', custom: false },
+      { name: 'Аптеки', custom: false },
+      { name: 'Такси', custom: false },
+      { name: 'Маркетплейсы', custom: true },
+      { name: 'Одежда и обувь', custom: false },
+      { name: 'Путешествия', custom: false },
+      { name: 'Дом и ремонт', custom: false }
+    ];
+
+    function pluralize(count) {
+      const mod10 = count % 10, mod100 = count % 100;
+      if (mod10 === 1 && mod100 !== 11) return `${count} категория`;
+      if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return `${count} категории`;
+      return `${count} категорий`;
+    }
+
+    function toggleBankPicker() {
+      const acc = document.getElementById('bankAccordion');
+      const isClosed = acc.classList.contains('grid-rows-[0fr]');
+      acc.classList.toggle('grid-rows-[0fr]', !isClosed);
+      acc.classList.toggle('opacity-0', !isClosed);
+      acc.classList.toggle('pointer-events-none', !isClosed);
+      acc.classList.toggle('grid-rows-[1fr]', isClosed);
+      acc.classList.toggle('opacity-100', isClosed);
+    }
+
+    function selectBank(name, letter, bg, color) {
+      document.getElementById('bankName').textContent = name;
+      const logo = document.getElementById('bankLogo');
+      logo.textContent = letter;
+      logo.style.backgroundColor = bg;
+      logo.style.color = color;
+      toggleBankPicker();
+    }
+
+    function setActiveCategory(name) {
+      activeCategory = name;
+      renderAll();
+    }
+
+    function applyQuickPercent(val) {
+      if (!activeCategory && selected.length > 0) {
+        activeCategory = selected[selected.length - 1].name;
+      }
+      const item = selected.find(s => s.name === activeCategory);
+      if (item) {
+        item.percent = val;
+        renderAll();
+      }
+    }
+
+    function updatePercentInput(name, val) {
+      const item = selected.find(s => s.name === name);
+      if (item) {
+        item.percent = val;
+        updateSummariesOnly();
+      }
+    }
+
+    function toggleCategory(name) {
+      const idx = selected.findIndex(s => s.name === name);
+      if (idx >= 0) {
+        selected.splice(idx, 1);
+        if (activeCategory === name) {
+          activeCategory = selected.length ? selected[selected.length - 1].name : null;
+        }
+      } else {
+        selected.push({ name, percent: '5' });
+        activeCategory = name; // Сразу делаем активной для «Быстрого %»
+      }
+      renderAll();
+    }
+
+    function createCustomCategory() {
+      const input = document.getElementById('catSearch');
+      const val = input.value.trim();
+      if (!val) return;
+      if (!allCategories.some(c => c.name.toLowerCase() === val.toLowerCase())) {
+        allCategories.unshift({ name: val, custom: true });
+      }
+      if (!selected.some(s => s.name.toLowerCase() === val.toLowerCase())) {
+        selected.push({ name: val, percent: '5' });
+        activeCategory = val;
+      }
+      input.value = '';
+      renderAll();
+    }
+
+    function deleteCustomCat(e, name) {
+      e.stopPropagation();
+      allCategories = allCategories.filter(c => c.name !== name);
+      selected = selected.filter(s => s.name !== name);
+      if (activeCategory === name) activeCategory = selected[0]?.name || null;
+      renderAll();
+    }
+
+    function updateSummariesOnly() {
+      const countText = pluralize(selected.length);
+      document.getElementById('selectedBadge').textContent = countText;
+      const nums = selected.map(s => parseFloat(String(s.percent).replace(',', '.'))).filter(n => !isNaN(n));
+      const maxP = nums.length ? Math.max(...nums) : null;
+      document.getElementById('ctaSummary').textContent = maxP ? `${countText} · до ${maxP}%` : countText;
+      renderCatalog();
+    }
+
+    function renderAll() {
+      const tray = document.getElementById('selectedTray');
+      if (selected.length === 0) {
+        tray.innerHTML = `<div class="py-3 px-3 rounded-control bg-[var(--fill)] border border-dashed border-[var(--border-hairline)] text-center text-[12px] text-[var(--text-tertiary)]">Выберите категории из списка ниже</div>`;
+      } else {
+        tray.innerHTML = selected.map(item => {
+          const isFocused = item.name === activeCategory;
+          return `
+            <div onclick="setActiveCategory('${item.name}')" class="cursor-pointer flex items-center justify-between gap-2 pl-3 pr-1.5 py-1.5 rounded-control bg-[var(--fill)] hover:bg-[var(--fill-hover)] border ${isFocused ? 'border-[var(--accent-color)]/60 ring-1 ring-[var(--accent-color)]/25' : 'border-[var(--border-hairline)]'} transition-[background-color,border-color,box-shadow]">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="w-1.5 h-1.5 rounded-full ${isFocused ? 'bg-[var(--accent-color)]' : 'bg-transparent'} shrink-0"></span>
+                <span class="text-[13px] font-semibold text-[var(--text-primary)] truncate">${item.name}</span>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <div class="relative flex items-center">
+                  <input
+                    value="${item.percent}"
+                    onfocus="activeCategory='${item.name}'"
+                    oninput="updatePercentInput('${item.name}', this.value)"
+                    onclick="event.stopPropagation()"
+                    inputmode="decimal"
+                    placeholder="—"
+                    class="no-spinner w-[52px] h-[28px] pl-1.5 pr-4 text-center text-[13px] font-bold rounded-control bg-[var(--percent-bg)] text-[var(--percent-text)] border border-[var(--accent-color)]/30 outline-none focus:border-[var(--accent-color)]"
+                  />
+                  <span class="absolute right-1.5 text-[10px] font-semibold text-[var(--text-tertiary)] pointer-events-none">%</span>
+                </div>
+                <button type="button" onclick="event.stopPropagation(); toggleCategory('${item.name}')" class="w-7 h-7 rounded-full flex items-center justify-center text-[var(--text-tertiary)] hover:text-red-400 active:scale-90 transition-[color,transform]">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Подсветка активного чипа «Быстрый %»
+      const activeObj = selected.find(s => s.name === activeCategory);
+      document.querySelectorAll('.quick-chip').forEach(btn => {
+        const val = btn.textContent.replace('%', '');
+        const isMatch = activeObj && String(activeObj.percent) === val;
+        btn.className = `quick-chip h-7 px-2.5 rounded-full text-[12px] font-bold active:scale-95 transition-[background-color,border-color,color,transform] ${
+          isMatch
+            ? 'bg-[var(--percent-bg)] border border-[var(--accent-color)]/50 text-[var(--percent-text)]'
+            : 'bg-[var(--fill)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] text-[var(--text-secondary)]'
+        }`;
+      });
+
+      updateSummariesOnly();
+    }
+
+    function renderCatalog() {
+      const q = document.getElementById('catSearch').value.trim().toLowerCase();
+      const grid = document.getElementById('catalogGrid');
+      const filtered = allCategories.filter(c => c.name.toLowerCase().includes(q));
+
+      grid.innerHTML = filtered.map(cat => {
+        const sel = selected.find(s => s.name === cat.name);
+        if (sel) {
+          return `
+            <button type="button" onclick="toggleCategory('${cat.name}')" class="min-h-[40px] px-2.5 py-1.5 rounded-control bg-[var(--accent-color)] text-white flex items-center justify-between gap-1.5 shadow-sm active:scale-95 transition-[background-color,transform] text-left">
+              <span class="text-[12.5px] font-semibold leading-tight truncate">${cat.name}</span>
+              <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-white/20 shrink-0">${sel.percent ? sel.percent + '%' : '✓'}</span>
+            </button>
+          `;
+        }
+        return `
+          <div class="min-h-[40px] rounded-control bg-[var(--fill)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] flex items-center overflow-hidden transition-colors">
+            <button type="button" onclick="toggleCategory('${cat.name}')" class="flex-1 min-w-0 px-2.5 py-1.5 flex items-center justify-between gap-1 text-left active:scale-95 transition-transform">
+              <span class="text-[12.5px] font-medium text-[var(--text-secondary)] leading-tight truncate">${cat.name}</span>
+              <svg class="text-[var(--text-tertiary)] shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+            ${cat.custom ? `
+              <button type="button" onclick="deleteCustomCat(event, '${cat.name}')" class="w-6 h-6 mr-1 rounded-full flex items-center justify-center text-[var(--text-tertiary)] hover:text-red-400 shrink-0" title="Удалить свою категорию">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    renderAll();
+  </script>
+</body>
+</html>

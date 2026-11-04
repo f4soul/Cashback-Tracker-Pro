@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Концепт C — «Экспресс-ввод» (Cashback Tracker Pro)</title>
+<script type="text/javascript" nonce="d50c2990734148f581f8f09f84a" src="//local.adguard.org?ts=1793783036481&amp;type=content-script&amp;dmn=chat.z.ai&amp;url=https%3A%2F%2Fchat.z.ai%2Fapi%2Fv1%2Fstorage%2Fversions%2Ff20c521f-cb93-4700-9d2f-04358f84fca9%2Ffile%3Fpath%3Ddownload%252Fcashback-ux%252Fconcept-C-express.html&amp;app=chrome.exe&amp;css=3&amp;js=1&amp;rel=1&amp;rji=1&amp;sbe=1&amp;stealth=1&amp;st-dnt"></script><script type="text/javascript" nonce="d50c2990734148f581f8f09f84a" src="//local.adguard.org?ts=1793783036481&amp;name=AdGuard%20Extra&amp;name=AdGuard%20Popup%20Blocker&amp;type=user-script"></script><script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .cb {
+    --surface-0: #05080F;
+    --surface-1: #0B1220;
+    --surface-2: #111A2E;
+    --hairline: rgba(130, 165, 235, 0.10);
+    --strong: rgba(130, 165, 235, 0.16);
+    --t1: #E9EEF7;
+    --t2: #8B96AD;
+    --t3: #57627A;
+    --fill: rgba(130, 165, 235, 0.06);
+    --fill-hover: rgba(130, 165, 235, 0.10);
+    --accent: #4A9DFF;
+    --percent-bg: rgba(74, 157, 255, 0.12);
+    --percent-text: #BAD8FF;
+    color-scheme: dark;
+    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
+</style>
+</head>
+<body class="bg-[#020409] min-h-screen flex items-center justify-center py-10">
+
+<!-- ===== Телефон 390×844 ===== -->
+<div class="cb relative w-[390px] h-[844px] rounded-[54px] border-[10px] border-[#1c2333] overflow-hidden shadow-2xl" style="background: radial-gradient(640px 420px at 50% -12%, rgba(56,120,255,0.10), transparent 70%), var(--surface-0);">
+
+  <!-- Статус-бар -->
+  <div class="absolute top-0 inset-x-0 h-[54px] flex items-end justify-between px-8 pb-2 z-[60]">
+    <span class="text-[15px] font-semibold text-white tracking-tight">11:23</span>
+    <div class="absolute left-1/2 -translate-x-1/2 top-2.5 w-[122px] h-[35px] bg-black rounded-full"></div>
+    <div class="flex items-center gap-1.5 text-white">
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="4.5" width="3" height="7.5" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 9.6a2 2 0 0 1 2 1.9L8 12l-2-.5a2 2 0 0 1 2-1.9Zm-4.6-2.9a6.5 6.5 0 0 1 9.2 0l-1.4 1.4a4.5 4.5 0 0 0-6.4 0L3.4 6.7ZM.6 3.9a10.5 10.5 0 0 1 14.8 0l-1.4 1.4a8.5 8.5 0 0 0-12 0L.6 3.9Z"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5"/><rect x="2" y="2" width="18" height="8" rx="2" fill="currentColor" stroke="none"/><path d="M23 4v4a2.2 2.2 0 0 0 0-4Z" fill="currentColor" stroke="none"/></svg>
+    </div>
+  </div>
+
+  <!-- Контент за модалкой (затемнён) -->
+  <div class="absolute inset-0 pt-[70px] px-3 opacity-40" aria-hidden="true">
+    <div class="flex items-center gap-3 bg-[var(--surface-1)] rounded-[12px] border border-[var(--hairline)] p-3 mb-2">
+      <div class="w-10 h-10 rounded-full bg-[#FFDD2D] flex items-center justify-center text-[15px] font-black text-black">Т</div>
+      <div class="flex-1"><div class="h-2.5 w-24 bg-[var(--fill-hover)] rounded-full"></div><div class="h-2 w-14 bg-[var(--fill)] rounded-full mt-2"></div></div>
+    </div>
+    <div class="flex items-center gap-3 bg-[var(--surface-1)] rounded-[12px] border border-[var(--hairline)] p-3">
+      <div class="w-10 h-10 rounded-full bg-[#20A195] flex items-center justify-center text-white font-black">С</div>
+      <div class="flex-1"><div class="h-2.5 w-20 bg-[var(--fill-hover)] rounded-full"></div><div class="h-2 w-16 bg-[var(--fill)] rounded-full mt-2"></div></div>
+    </div>
+  </div>
+  <div class="absolute inset-0 bg-[#02040A]/70 z-[65]"></div>
+
+  <!-- ===== МОДАЛКА: компактный экспресс-лист ===== -->
+  <div class="absolute inset-x-0 bottom-0 z-[70] flex flex-col rounded-t-[24px] bg-[var(--surface-2)] border-t border-[var(--hairline)] shadow-[0_-10px_40px_rgba(0,0,0,0.45)]" style="height: 790px;">
+
+    <!-- Граббер + шапка в одну линию (компакт) -->
+    <div class="relative shrink-0">
+      <div class="flex justify-center pt-2.5"><div class="w-9 h-1 rounded-full bg-[var(--strong)]"></div></div>
+      <div class="flex items-center justify-between px-4 pt-1.5 pb-3 border-b border-[var(--hairline)]">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-9 h-9 rounded-full bg-[#FFDD2D] flex items-center justify-center text-[15px] font-black text-black shrink-0">Т</div>
+          <div class="min-w-0">
+            <h3 class="text-[16px] font-bold text-[var(--t1)] tracking-tight leading-tight">Т-Банк</h3>
+            <p class="text-[11px] text-[var(--t3)] leading-none mt-0.5">Категории и кэшбек</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="text-[11px] font-semibold px-2 py-1 rounded-full bg-[var(--percent-bg)] text-[var(--percent-text)]">3 · до 13%</span>
+          <button class="w-8 h-8 rounded-full bg-[var(--fill)] flex items-center justify-center text-[var(--t2)] active:scale-95 transition-transform">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Скролл-тело -->
+    <div class="flex-1 overflow-y-auto no-scrollbar overscroll-contain px-4 pt-3 pb-2 flex flex-col gap-3">
+
+      <!-- 1. Стек выбранных: как «список заказа» — ручка drag, имя, %, крестик -->
+      <div class="rounded-[14px] border border-[var(--hairline)] bg-[var(--surface-1)] overflow-hidden divide-y divide-[var(--hairline)]">
+        <div class="flex items-center gap-1.5 pl-1 pr-2.5 py-2">
+          <button class="w-6 h-8 flex items-center justify-center text-[var(--t3)] cursor-grab touch-none" title="Перетащить">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+          </button>
+          <span class="flex-1 min-w-0 text-[13.5px] font-semibold text-[var(--t1)] truncate">Супермаркеты</span>
+          <div class="relative flex items-center shrink-0">
+            <input value="5" inputmode="decimal" class="w-[44px] h-[28px] pl-1.5 pr-4 text-center text-[13px] font-bold rounded-[9px] bg-[var(--percent-bg)] text-[var(--percent-text)] border border-[var(--accent)]/30 outline-none focus:ring-2 focus:ring-[var(--accent)]/25" />
+            <span class="absolute right-1.5 text-[10px] font-semibold text-[var(--t3)]">%</span>
+          </div>
+          <button class="w-7 h-7 rounded-full flex items-center justify-center text-[var(--t3)] hover:text-red-400 active:scale-90 transition-transform shrink-0">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="flex items-center gap-1.5 pl-1 pr-2.5 py-2">
+          <button class="w-6 h-8 flex items-center justify-center text-[var(--t3)] cursor-grab touch-none" title="Перетащить">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+          </button>
+          <span class="flex-1 min-w-0 text-[13.5px] font-semibold text-[var(--t1)] truncate">АЗС</span>
+          <div class="relative flex items-center shrink-0">
+            <input value="1" inputmode="decimal" class="w-[44px] h-[28px] pl-1.5 pr-4 text-center text-[13px] font-bold rounded-[9px] bg-[var(--percent-bg)] text-[var(--percent-text)] border border-[var(--accent)]/30 outline-none focus:ring-2 focus:ring-[var(--accent)]/25" />
+            <span class="absolute right-1.5 text-[10px] font-semibold text-[var(--t3)]">%</span>
+          </div>
+          <button class="w-7 h-7 rounded-full flex items-center justify-center text-[var(--t3)] hover:text-red-400 active:scale-90 transition-transform shrink-0">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="flex items-center gap-1.5 pl-1 pr-2.5 py-2">
+          <button class="w-6 h-8 flex items-center justify-center text-[var(--t3)] cursor-grab touch-none" title="Перетащить">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+          </button>
+          <span class="flex-1 min-w-0 text-[13.5px] font-semibold text-[var(--t1)] truncate">Кино и развлечения</span>
+          <div class="relative flex items-center shrink-0">
+            <input value="7" inputmode="decimal" class="w-[44px] h-[28px] pl-1.5 pr-4 text-center text-[13px] font-bold rounded-[9px] bg-[var(--percent-bg)] text-[var(--percent-text)] border border-[var(--accent)]/30 outline-none focus:ring-2 focus:ring-[var(--accent)]/25" />
+            <span class="absolute right-1.5 text-[10px] font-semibold text-[var(--t3)]">%</span>
+          </div>
+          <button class="w-7 h-7 rounded-full flex items-center justify-center text-[var(--t3)] hover:text-red-400 active:scale-90 transition-transform shrink-0">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Быстрые проценты: применяются к последней выбранной категории -->
+      <div class="flex items-center gap-1.5">
+        <span class="text-[11px] text-[var(--t3)] shrink-0 mr-0.5">Быстрый %:</span>
+        <button class="h-7 px-2.5 rounded-full bg-[var(--fill)] border border-[var(--hairline)] text-[12px] font-bold text-[var(--t2)] active:scale-95 transition-transform">1</button>
+        <button class="h-7 px-2.5 rounded-full bg-[var(--percent-bg)] border border-[var(--accent)]/40 text-[12px] font-bold text-[var(--percent-text)] active:scale-95 transition-transform">2</button>
+        <button class="h-7 px-2.5 rounded-full bg-[var(--fill)] border border-[var(--hairline)] text-[12px] font-bold text-[var(--t2)] active:scale-95 transition-transform">3</button>
+        <button class="h-7 px-2.5 rounded-full bg-[var(--percent-bg)] border border-[var(--accent)]/40 text-[12px] font-bold text-[var(--percent-text)] active:scale-95 transition-transform">5</button>
+        <button class="h-7 px-2.5 rounded-full bg-[var(--fill)] border border-[var(--hairline)] text-[12px] font-bold text-[var(--t2)] active:scale-95 transition-transform">7</button>
+        <button class="h-7 px-2.5 rounded-full bg-[var(--fill)] border border-[var(--hairline)] text-[12px] font-bold text-[var(--t2)] active:scale-95 transition-transform">10</button>
+      </div>
+
+      <!-- 3. Поиск-первый: большое поле + создать -->
+      <div class="relative">
+        <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--t3)]" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input placeholder="Найти или создать категорию…" class="w-full h-11 pl-10 pr-[96px] text-[14px] font-medium rounded-[13px] bg-[var(--fill)] border border-[var(--hairline)] focus:border-[var(--accent)] outline-none focus:ring-2 focus:ring-[var(--accent)]/20 placeholder-[var(--t3)] text-[var(--t1)]" />
+        <button class="absolute right-1.5 top-1/2 -translate-y-1/2 h-8 px-3 rounded-[10px] bg-[var(--accent)] text-white text-[11px] font-bold flex items-center gap-1 active:scale-95 transition-transform shadow-sm">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Создать
+        </button>
+      </div>
+
+      <!-- 4. Плотное облако чипов: выбранные — акцент, свои — с × -->
+      <div>
+        <div class="text-[12px] font-semibold text-[var(--t2)] mb-2">Шаблоны</div>
+        <div class="flex flex-wrap gap-1.5">
+          <button class="h-8 px-3 rounded-full bg-[var(--accent)] text-white text-[12.5px] font-semibold flex items-center gap-1.5 shadow-sm active:scale-95 transition-transform">
+            Продукты
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </button>
+          <button class="h-8 px-3 rounded-full bg-[var(--fill)] border border-[var(--hairline)] text-[var(--t2)] text-[12.5px] font-medium flex items-center gap-1.5 active:scale-95 transition-transform">
+            Путешествия
+            <svg class="text-[var(--t3)]" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <button class="h-8 px-3 rounded-full bg-[var(--fill)] border border-[var(--hairline)] text-[var(--t2)] text-[12.5px] font-medium flex items-center gap-1.5 active:scale-95 transition-transform">
+            Аптеки
+            <svg class="text-[var(--t3)]" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <!-- своя категория с × -->
+          <span class="h-8 pl-3 pr-1 rounded-full bg-[var(--fill)] border border-dashed border-[var(--strong)] flex items-center gap-1">
+            <span class="text-[12.5px] font-medium text-[var(--t2)]">Спортпит</span>
+            <button class="w-5 h-5 rounded-full flex items-center justify-center text-[var(--t3)] hover:text-red-400">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+            <button class="w-6 h-6 rounded-full bg-[var(--fill-hover)] text-[var(--t2)] flex items-center justify-center mr-0.5">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+          </span>
+          <button class="h-8 px-3 rounded-full bg-[var(--fill)] border border-[var(--hairline)] text-[var(--t2)] text-[12.5px] font-medium flex items-center gap-1.5 active:scale-95 transition-transform">
+            Электроника
+            <svg class="text-[var(--t3)]" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <button class="h-8 px-3 rounded-full bg-[var(--fill)] border border-[var(--hairline)] text-[var(--t2)] text-[12.5px] font-medium flex items-center gap-1.5 active:scale-95 transition-transform">
+            Красота
+            <svg class="text-[var(--t3)]" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <button class="h-8 px-3 rounded-full bg-[var(--fill)] border border-[var(--hairline)] text-[var(--t2)] text-[12.5px] font-medium flex items-center gap-1.5 active:scale-95 transition-transform">
+            Такси
+            <svg class="text-[var(--t3)]" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <button class="h-8 px-3 rounded-full bg-[var(--fill)] border border-[var(--hairline)] text-[var(--t2)] text-[12.5px] font-medium flex items-center gap-1.5 active:scale-95 transition-transform">
+            Животные
+            <svg class="text-[var(--t3)]" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <button class="h-8 px-3 rounded-full bg-[var(--fill)] border border-[var(--hairline)] text-[var(--t2)] text-[12.5px] font-medium flex items-center gap-1.5 active:scale-95 transition-transform">
+            Дом и ремонт
+            <svg class="text-[var(--t3)]" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Футер: одна большая CTA (отмена = свайп/крестик) -->
+    <div class="shrink-0 border-t border-[var(--hairline)] bg-[var(--surface-2)] px-4 pt-3 pb-[max(14px,env(safe-area-inset-bottom))]">
+      <button class="w-full h-12 rounded-[13px] font-bold text-[15px] text-white bg-[var(--accent)] shadow-md active:scale-[0.98] transition-transform flex items-center justify-center gap-2">
+        Сохранить банк
+        <span class="text-[12px] font-bold px-1.5 py-0.5 rounded-md bg-white/20">3 категории · до 13%</span>
+      </button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

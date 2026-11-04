@@ -7,7 +7,7 @@ const MccItem: React.FC<{ item: MccItemType }> = ({ item }) => {
   return (
     <div className="w-full bg-[var(--fill)] p-3.5 rounded-control border border-[var(--border-hairline)] flex items-center gap-3 shadow-[var(--elevation-highlight),0_2px_4px_rgb(0,0,0,0.02)] text-left hover:border-[var(--accent-color)]/30 transition-[border-color,background-color,box-shadow] hover:bg-[var(--fill-hover)] hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)]">
       <div className="w-14 h-12 rounded-control bg-[var(--fill-hover)] flex items-center justify-center shrink-0">
-        <span className="text-sm font-black text-[var(--text-primary)]">
+        <span className="text-sm font-black tabular-nums leading-none text-[var(--text-primary)]">
           {item.code}
         </span>
       </div>
@@ -99,7 +99,7 @@ export const MccDirectory: React.FC<MccDirectoryProps> = ({
           value={searchQuery}
           onChange={handleSearchChange}
           placeholder="Поиск по коду или названию..."
-          className="w-full pl-10 pr-10 py-3 bg-[var(--fill)] border-none rounded-full text-sm font-bold text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 transition-shadow"
+          className="w-full pl-10 pr-10 py-3 bg-[var(--fill)] border border-[var(--border-hairline)] rounded-control text-sm font-bold text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)]/20 focus:border-[var(--accent-color)] transition-[border-color,box-shadow]"
         />
         {searchQuery && (
           <button

@@ -373,7 +373,7 @@ export default function App() {
               )}
             >
               <WalletIcon className="w-5 h-5 shrink-0" />
-              <span className="leading-none mt-[1px]">Кэшбек</span>
+              <span className="leading-none">Кэшбек</span>
             </button>
             <button
               onClick={() => handleTabClick("archive")}
@@ -385,7 +385,7 @@ export default function App() {
               )}
             >
               <History className="w-5 h-5 shrink-0" />
-              <span className="leading-none mt-[1px]">Архив</span>
+              <span className="leading-none">Архив</span>
             </button>
             <button
               onClick={() => handleTabClick("settings")}
@@ -397,7 +397,7 @@ export default function App() {
               )}
             >
               <SettingsIcon className="w-5 h-5 shrink-0" />
-              <span className="leading-none mt-[1px]">Настройки</span>
+              <span className="leading-none">Настройки</span>
             </button>
           </nav>
 
@@ -577,11 +577,10 @@ export default function App() {
           initial={false}
           animate={{
             maxWidth: navExpanded ? 320 : 180,
-            borderRadius: 20,
             height: navExpanded ? 68 : 56,
           }}
           transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-          className="w-full bg-white dark:bg-[var(--surface-1)] border border-[var(--border-hairline)] shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.4)] flex items-center px-1 overflow-hidden"
+          className="w-full rounded-card bg-white dark:bg-[var(--surface-1)] border border-[var(--border-hairline)] shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.4)] flex items-center px-1 overflow-hidden"
           onClick={() => !navExpanded && setNavExpanded(true)}
         >
           <button
