@@ -351,12 +351,46 @@ button,
 /* Sonner Toast Customization: compact width, topmost z-index, centered on mobile */
 [data-sonner-toaster] {
   z-index: 999999 !important;
+  font-family: var(--font-sans) !important;
 }
 
 [data-sonner-toaster] [data-sonner-toast] {
   width: max-content !important;
   min-width: 0 !important;
-  max-width: min(380px, calc(100vw - 32px)) !important;
+  max-width: calc(100vw - 24px) !important;
+}
+
+/* Prevent collapsed-state scale/height distortion on first frame so Sonner calculates exact equal gaps */
+[data-sonner-toaster] [data-sonner-toast][data-expanded="false"][data-front="false"] {
+  --scale: 1 !important;
+  transform: var(--y) !important;
+  height: auto !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-styled="false"] {
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: block !important;
+  line-height: normal !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-styled="false"] [data-content],
+[data-sonner-toaster] [data-sonner-toast][data-styled="false"] [data-title] {
+  display: block !important;
+  line-height: normal !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast] [data-icon] {
+  margin: 0 !important;
+  width: 16px !important;
+  height: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 [data-sonner-toaster][data-x-position="center"] [data-sonner-toast] {
@@ -382,7 +416,7 @@ button,
   }
 
   [data-sonner-toaster][data-y-position="top"] {
-    top: max(1rem, calc(env(safe-area-inset-top, 0px) + 0.5rem)) !important;
+    top: max(0.75rem, calc(env(safe-area-inset-top, 0px) + 0.5rem)) !important;
   }
 
   [data-sonner-toaster] [data-sonner-toast] {

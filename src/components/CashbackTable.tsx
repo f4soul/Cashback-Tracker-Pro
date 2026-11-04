@@ -14,6 +14,7 @@ import {
   Landmark,
   Table as TableIcon,
   LayoutList,
+  Plus,
 } from "lucide-react";
 import { clsx } from "clsx";
 import { sortCategoriesAsc, sortCategoriesDesc } from "../utils/sorting";
@@ -34,6 +35,7 @@ interface CashbackTableProps {
   isAfter25?: boolean;
   activeSubTab?: "table" | "list";
   onSubTabChange?: (tab: "table" | "list") => void;
+  onAddBank?: () => void;
   listViewContent?: React.ReactNode;
 }
 
@@ -64,6 +66,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
     isAfter25 = false,
     activeSubTab,
     onSubTabChange,
+    onAddBank,
     listViewContent,
   }) => {
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">(() => {
@@ -104,7 +107,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                       type="button"
                       onClick={() => onMonthChange?.(mId)}
                       className={clsx(
-                        "px-2.5 py-1 rounded-[max(6px,calc(var(--radius-sm)-2px))] text-[10px] font-semibold leading-none inline-flex items-center justify-center transition-[background-color,color,box-shadow] cursor-pointer whitespace-nowrap",
+                        "px-2.5 py-1 lg:px-3 lg:py-1.5 rounded-[max(6px,calc(var(--radius-sm)-2px))] text-[10px] lg:text-xs font-semibold leading-none inline-flex items-center justify-center transition-[background-color,color,box-shadow] cursor-pointer whitespace-nowrap",
                         (selectedMonthId || monthId) === mId
                           ? "bg-[var(--accent-color)] text-white shadow-sm"
                           : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]",
@@ -116,7 +119,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                 </div>
               ) : (
                 <div className="flex bg-[var(--fill)] rounded-control p-0.5 shrink-0 [.pdf-export-mode_&]:hidden border border-[var(--border-hairline)] shadow-sm translate-z-0 [backface-visibility:hidden]">
-                  <span className="px-2.5 py-1 rounded-[max(6px,calc(var(--radius-sm)-2px))] bg-[var(--accent-color)] text-white text-[10px] font-semibold shadow-sm leading-none inline-flex items-center justify-center whitespace-nowrap">
+                  <span className="px-2.5 py-1 lg:px-3 lg:py-1.5 rounded-[max(6px,calc(var(--radius-sm)-2px))] bg-[var(--accent-color)] text-white text-[10px] lg:text-xs font-semibold shadow-sm leading-none inline-flex items-center justify-center whitespace-nowrap">
                     {capitalize(formatMonthId(monthId).split(" ")[0])}
                   </span>
                 </div>
@@ -139,7 +142,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                   setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
                 }
                 className={clsx(
-                  "p-1.5 rounded-control hover:bg-[var(--fill-hover)] transition-[background-color,color,opacity,transform] duration-200 shrink-0 [.pdf-export-mode_&]:hidden cursor-pointer inline-flex items-center justify-center active:scale-95",
+                  "p-1.5 lg:w-7 lg:h-7 lg:p-0 rounded-control hover:bg-[var(--fill-hover)] transition-[background-color,color,opacity,transform] duration-200 shrink-0 [.pdf-export-mode_&]:hidden cursor-pointer inline-flex items-center justify-center active:scale-95",
                   isListMode
                     ? "opacity-0 pointer-events-none"
                     : "opacity-100",
@@ -148,7 +151,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
               >
                 <ArrowUpDown
                   className={clsx(
-                    "w-3.5 h-3.5 shrink-0",
+                    "w-3.5 h-3.5 lg:w-4 lg:h-4 shrink-0",
                     sortOrder === "desc"
                       ? "text-[var(--accent-color)]"
                       : "text-[var(--text-tertiary)]",
@@ -161,7 +164,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
               <div
                 aria-hidden={isListMode}
                 className={clsx(
-                  "flex items-center gap-0.5 transition-opacity duration-200",
+                  "flex items-center gap-0.5 lg:gap-1 transition-opacity duration-200",
                   isListMode
                     ? "opacity-0 pointer-events-none"
                     : "opacity-100",
@@ -173,7 +176,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                     tabIndex={isListMode ? -1 : 0}
                     onClick={onExportImage}
                     onPointerDown={() => preloadExportModule("image")}
-                    className="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--fill-hover)] rounded-control transition-colors cursor-pointer inline-flex items-center justify-center shrink-0 active:scale-95"
+                    className="p-1.5 lg:w-7 lg:h-7 lg:p-0 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--fill-hover)] rounded-control transition-colors cursor-pointer inline-flex items-center justify-center shrink-0 active:scale-95"
                     title="Изображение (PNG)"
                   >
                     <ImageIcon className="w-4 h-4 shrink-0" />
@@ -185,7 +188,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                     tabIndex={isListMode ? -1 : 0}
                     onClick={onExportExcel}
                     onPointerDown={() => preloadExportModule("excel")}
-                    className="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--fill-hover)] rounded-control transition-colors cursor-pointer inline-flex items-center justify-center shrink-0 active:scale-95"
+                    className="p-1.5 lg:w-7 lg:h-7 lg:p-0 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--fill-hover)] rounded-control transition-colors cursor-pointer inline-flex items-center justify-center shrink-0 active:scale-95"
                     title="Excel"
                   >
                     <FileSpreadsheet className="w-4 h-4 shrink-0" />
@@ -197,7 +200,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                     tabIndex={isListMode ? -1 : 0}
                     onClick={onExportPDF}
                     onPointerDown={() => preloadExportModule("pdf")}
-                    className="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--fill-hover)] rounded-control transition-colors cursor-pointer inline-flex items-center justify-center shrink-0 active:scale-95"
+                    className="p-1.5 lg:w-7 lg:h-7 lg:p-0 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--fill-hover)] rounded-control transition-colors cursor-pointer inline-flex items-center justify-center shrink-0 active:scale-95"
                     title="PDF"
                   >
                     <FileText className="w-4 h-4 shrink-0" />
@@ -211,31 +214,42 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                     type="button"
                     onClick={() => onSubTabChange("table")}
                     className={clsx(
-                      "px-2.5 py-1 rounded-[max(6px,calc(var(--radius-sm)-2px))] text-[10px] font-semibold leading-none inline-flex items-center justify-center gap-1.5 transition-[background-color,color,box-shadow] duration-200 cursor-pointer whitespace-nowrap",
+                      "px-2.5 py-1 lg:px-3 lg:py-1.5 rounded-[max(6px,calc(var(--radius-sm)-2px))] text-[10px] lg:text-xs font-semibold leading-none inline-flex items-center justify-center gap-1.5 transition-[background-color,color,box-shadow] duration-200 cursor-pointer whitespace-nowrap",
                       activeSubTab === "table"
                         ? "bg-[var(--accent-color)] text-white shadow-sm"
                         : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]",
                     )}
                     title="Таблица"
                   >
-                    <TableIcon className="w-3 h-3 shrink-0" />
+                    <TableIcon className="w-3 h-3 lg:w-3.5 lg:h-3.5 shrink-0" />
                     <span className="leading-none">Таблица</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => onSubTabChange("list")}
                     className={clsx(
-                      "px-2.5 py-1 rounded-[max(6px,calc(var(--radius-sm)-2px))] text-[10px] font-semibold leading-none inline-flex items-center justify-center gap-1.5 transition-[background-color,color,box-shadow] duration-200 cursor-pointer whitespace-nowrap",
+                      "px-2.5 py-1 lg:px-3 lg:py-1.5 rounded-[max(6px,calc(var(--radius-sm)-2px))] text-[10px] lg:text-xs font-semibold leading-none inline-flex items-center justify-center gap-1.5 transition-[background-color,color,box-shadow] duration-200 cursor-pointer whitespace-nowrap",
                       activeSubTab === "list"
                         ? "bg-[var(--accent-color)] text-white shadow-sm"
                         : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]",
                     )}
                     title="Список банков"
                   >
-                    <LayoutList className="w-3 h-3 shrink-0" />
+                    <LayoutList className="w-3 h-3 lg:w-3.5 lg:h-3.5 shrink-0" />
                     <span className="leading-none">Список банков</span>
                   </button>
                 </div>
+              )}
+
+              {onAddBank && (
+                <button
+                  type="button"
+                  onClick={onAddBank}
+                  className="hidden xl:inline-flex w-7 h-7 rounded-control bg-[var(--accent-color)] text-white shadow-sm shadow-[var(--accent-color)]/25 hover:brightness-110 active:scale-95 transition-[filter,transform] cursor-pointer items-center justify-center shrink-0"
+                  title="Добавить банк"
+                >
+                  <Plus className="w-4 h-4 stroke-[2.5]" />
+                </button>
               )}
             </div>
           </div>
@@ -243,21 +257,21 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
           <AnimatePresence mode="wait" initial={false}>
             {isListMode && listViewContent ? (
               <motion.div
-                key="list-view"
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.16, ease: "easeOut" }}
+                key={`list-${monthId}`}
+                initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.18, ease: "easeOut" }}
               >
                 {listViewContent}
               </motion.div>
             ) : entries.length === 0 ? (
               <motion.div
-                key="empty-table-view"
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.16, ease: "easeOut" }}
+                key={`empty-${monthId}`}
+                initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.18, ease: "easeOut" }}
                 className="flex flex-col items-center justify-center p-8 text-center bg-[var(--surface-1)] rounded-card border border-dashed border-[var(--border-strong)]"
               >
                 <div className="w-16 h-16 bg-[var(--surface-2)] rounded-control border border-[var(--border-strong)] flex items-center justify-center mb-4">
@@ -272,11 +286,11 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
               </motion.div>
             ) : (
               <motion.div
-                key="table-view"
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.16, ease: "easeOut" }}
+                key={`table-${monthId}`}
+                initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.18, ease: "easeOut" }}
                 className="flex flex-col gap-1"
               >
                 {sortedEntries.map((entry) => {
@@ -321,7 +335,13 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                     </div>
 
                     <div className="flex flex-col justify-center flex-1 py-0.5 min-w-0">
-                      <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-8 w-full">
+                      <div
+                        className={clsx(
+                          "grid grid-cols-1 lg:grid-cols-2 lg:gap-x-6 w-full relative",
+                          totalCategories > 1 &&
+                            "lg:before:content-[''] lg:before:absolute lg:before:inset-y-1 lg:before:left-1/2 lg:before:-translate-x-1/2 lg:before:w-px lg:before:bg-[var(--border-hairline)]",
+                        )}
+                      >
                         {entry.sortedCategories.map((cat, idx) => {
                           const name = typeof cat === "string" ? cat : cat.name;
                           const percent =
@@ -330,20 +350,18 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                               : formatPercentValue(cat.percent);
 
                           const isLastMobile = idx === totalCategories - 1;
-                          const isLastRowDesktop =
-                            totalCategories === 1 ||
-                            idx === totalCategories - 1 ||
-                            (totalCategories % 2 === 0 &&
-                              idx === totalCategories - 2);
+                          // В 2-колоночной сетке (lg:) элемент находится в последнем ряду своей колонки, если под ним нет элемента (idx + 2 >= totalCategories)
+                          const isLastInDesktopColumn =
+                            idx + 2 >= totalCategories;
 
                           return (
                             <div
                               key={idx}
                               className={clsx(
-                                "flex items-center justify-between text-[11px] font-semibold text-[var(--text-primary)] px-2.5 py-1.5 translate-z-0",
+                                "flex items-center justify-between text-[11px] lg:text-xs font-semibold text-[var(--text-primary)] px-2.5 py-1.5 translate-z-0",
                                 !isLastMobile &&
                                   "border-b border-[var(--border-hairline)]",
-                                isLastRowDesktop && "lg:border-b-0",
+                                isLastInDesktopColumn && "lg:border-b-0",
                               )}
                             >
                               <span className="leading-tight truncate pr-4 flex-1">

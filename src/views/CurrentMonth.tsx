@@ -32,7 +32,7 @@ import {
 } from "lucide-react";
 import { getBankDetails } from "../constants";
 import { clsx } from "clsx";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import {
   DndContext,
   closestCorners,
@@ -219,36 +219,24 @@ const SortableBankCard: React.FC<SortableBankCardProps> = memo(
     const wrapperStyle: React.CSSProperties = {
       transform: CSS.Transform.toString(transform),
       transition,
-    };
-
-    const motionStyle: React.CSSProperties = {
       position: "relative",
       zIndex: isDragging ? 50 : 1,
-      transition: isDragging ? "none" : "z-index 0s 250ms",
     };
 
     return (
-      <motion.div
-        style={motionStyle}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
-      >
-        <div ref={setNodeRef} style={wrapperStyle}>
-          <BankCard
-            entry={entry}
-            bank={bank}
-            logoShape={logoShape}
-            index={index}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            isDragging={isDragging}
-            attributes={attributes}
-            listeners={listeners}
-          />
-        </div>
-      </motion.div>
+      <div ref={setNodeRef} style={wrapperStyle}>
+        <BankCard
+          entry={entry}
+          bank={bank}
+          logoShape={logoShape}
+          index={index}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          isDragging={isDragging}
+          attributes={attributes}
+          listeners={listeners}
+        />
+      </div>
     );
   },
 );
@@ -636,7 +624,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   setYOffset(snappedY);
                 }}
                 aria-hidden={isFabHidden}
-                className="fixed pwa-fab-bottom z-50 touch-none select-none"
+                className="fixed xl:hidden pwa-fab-bottom z-50 touch-none select-none"
                 style={{
                   right: rightPos,
                   willChange: "transform, opacity",
@@ -730,7 +718,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   setYOffset(snappedY);
                 }}
                 aria-hidden={!isFabHidden}
-                className="fixed pwa-fab-bottom w-7 pr-3 h-12 bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-control rounded-r-none touch-none select-none"
+                className="fixed xl:hidden pwa-fab-bottom w-7 pr-3 h-12 bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-control rounded-r-none touch-none select-none"
                 style={{
                   right: -12,
                   transformOrigin: "right center",
@@ -804,6 +792,10 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
             isAfter25={showSwitcher}
             activeSubTab={activeSubTab}
             onSubTabChange={setActiveSubTab}
+            onAddBank={() => {
+              setEditingEntry(undefined);
+              setIsModalOpen(true);
+            }}
             listViewContent={
               data.entries.length === 0 ? (
                 <button
@@ -835,39 +827,37 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                     }
                   >
                     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
-                      <AnimatePresence initial={false}>
-                        {data.entries.map((entry, index) => {
-                          const bank =
-                            getBankDetails(
-                              entry.bankId,
-                              entry.customBankName,
-                            ) ||
-                            (entry.bankId.startsWith("custom_")
-                              ? allCustomBanks.find(
-                                  (b) => b.id === entry.bankId,
-                                )
-                              : null);
+                      {data.entries.map((entry, index) => {
+                        const bank =
+                          getBankDetails(
+                            entry.bankId,
+                            entry.customBankName,
+                          ) ||
+                          (entry.bankId.startsWith("custom_")
+                            ? allCustomBanks.find(
+                                (b) => b.id === entry.bankId,
+                              )
+                            : null);
 
-                          if (!bank) return null;
+                        if (!bank) return null;
 
-                          const logoShape = globalLogoShape || "circle";
+                        const logoShape = globalLogoShape || "circle";
 
-                          return (
-                            <SortableBankCard
-                              key={entry.id}
-                              entry={entry}
-                              bank={bank}
-                              logoShape={logoShape}
-                              index={index}
-                              onEdit={() => {
-                                setEditingEntry(entry);
-                                setIsModalOpen(true);
-                              }}
-                              onDelete={() => handleDeleteEntry(entry.id)}
-                            />
-                          );
-                        })}
-                      </AnimatePresence>
+                        return (
+                          <SortableBankCard
+                            key={entry.id}
+                            entry={entry}
+                            bank={bank}
+                            logoShape={logoShape}
+                            index={index}
+                            onEdit={() => {
+                              setEditingEntry(entry);
+                              setIsModalOpen(true);
+                            }}
+                            onDelete={() => handleDeleteEntry(entry.id)}
+                          />
+                        );
+                      })}
                     </div>
                   </SortableContext>
 

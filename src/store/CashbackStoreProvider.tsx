@@ -22,6 +22,7 @@ import { toast } from "sonner";
 
 import { MonthData, Bank, AppSettings, BackupData } from "../types";
 import { getCurrentMonthId } from "../utils/date";
+import { pluralize } from "../utils/format";
 import { db, handleFirestoreError, OperationType } from "../firebase";
 import { useAuth } from "../hooks/useAuth";
 import { useThemeSync, applyThemeToDom } from "../hooks/useThemeSync";
@@ -857,6 +858,7 @@ export function CashbackStoreProvider({ children }: { children: ReactNode }) {
     link.download = `cashback_backup_${new Date().toISOString().split("T")[0]}.json`;
     link.click();
     URL.revokeObjectURL(url);
+    toast.success("Резервная копия сохранена");
   }, []);
 
   const handleImportAllData = useCallback(
@@ -965,17 +967,31 @@ export function CashbackStoreProvider({ children }: { children: ReactNode }) {
 
           if (errorCount > 0) {
             toast.error(
-              `Импорт в облако: сохранено ${savedCount} из ${totalMonths} (ошибок: ${errorCount})`,
+              `Синхронизировано ${savedCount} из ${totalMonths} (ошибок: ${errorCount})`,
               { id: "import-report" },
             );
             return false;
           } else if (totalMonths > 0) {
-            toast.success(`В облако успешно сохранено ${savedCount} месяцев`, {
-              id: "import-report",
-            });
+            toast.success(
+              `Импортировано ${savedCount} ${pluralize(savedCount, ["месяц", "месяца", "месяцев"])}`,
+              {
+                id: "import-report",
+              },
+            );
           }
 
           return true;
+        }
+
+        if (totalMonths > 0) {
+          toast.success(
+            `Импортировано ${totalMonths} ${pluralize(totalMonths, ["месяц", "месяца", "месяцев"])}`,
+            { id: "import-report" },
+          );
+        } else {
+          toast.success("Резервная копия восстановлена", {
+            id: "import-report",
+          });
         }
 
         return true;

@@ -96,10 +96,9 @@ export const Settings: React.FC<SettingsProps> = memo(
             const json = JSON.parse(event.target?.result as string);
             if (onImportJSON) {
               await onImportJSON(json);
-              toast.success("ДАННЫЕ УСПЕШНО ИМПОРТИРОВАНЫ");
             }
           } catch {
-            toast.error("ОШИБКА ПРИ ИМПОРТЕ ДАННЫХ");
+            toast.error("Не удалось импортировать резервную копию");
           }
         };
         reader.readAsText(file);

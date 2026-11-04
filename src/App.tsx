@@ -11,6 +11,11 @@ import {
   LogIn,
   LogOut,
   User,
+  CheckCircle2,
+  AlertCircle,
+  Info,
+  AlertTriangle,
+  Loader2,
 } from "lucide-react";
 import { clsx } from "clsx";
 import { motion, AnimatePresence } from "motion/react";
@@ -280,7 +285,18 @@ export default function App() {
       <Toaster
         theme={theme}
         position={isDesktop ? "bottom-right" : "top-center"}
-        expand={false}
+        expand={true}
+        visibleToasts={4}
+        gap={10}
+        icons={{
+          success: <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />,
+          error: <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />,
+          info: <Info className="w-4 h-4 text-[var(--accent-color)] shrink-0" />,
+          warning: <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />,
+          loading: (
+            <Loader2 className="w-4 h-4 text-[var(--accent-color)] animate-spin shrink-0" />
+          ),
+        }}
         toastOptions={{
           style: {
             borderRadius: "var(--radius-sm)",
@@ -290,8 +306,9 @@ export default function App() {
             maxWidth: "360px",
           },
           className:
-            "!bg-white dark:!bg-[var(--surface-2)] !border !border-[var(--border-hairline)] !text-[var(--text-primary)] shadow-[var(--elevation-highlight),0_12px_32px_rgba(0,0,0,0.12)] dark:shadow-[0_12px_32px_rgba(0,0,0,0.35)] text-[13px] font-medium tracking-normal !w-fit !min-w-0 inline-flex items-center gap-2",
-          descriptionClassName: "!text-[var(--text-secondary)] !text-[12px]",
+            "!bg-white dark:!bg-[var(--surface-2)] !border !border-[var(--border-strong)] !text-[var(--text-primary)] shadow-[var(--elevation-highlight),0_12px_32px_rgba(0,0,0,0.12)] dark:shadow-[var(--elevation-highlight),0_16px_40px_rgba(0,0,0,0.55)] text-[12.5px] font-semibold tracking-tight !w-fit !min-w-0 inline-flex items-center gap-2.5 select-none",
+          descriptionClassName:
+            "!text-[var(--text-secondary)] !text-[11px] !font-medium",
         }}
       />
 

@@ -94,13 +94,12 @@ export const exportToExcel = async (
     })();
 
     await toast.promise(exportPromise, {
-      loading: "Генерация Excel...",
-      success: "Excel файл успешно создан",
-      error: "Ошибка при создании Excel",
+      loading: "Подготовка таблицы Excel...",
+      success: "Таблица Excel сохранена",
+      error: "Не удалось сохранить Excel",
     });
   } catch (error) {
     console.error("Error generating Excel:", error);
-    toast.error("Произошла ошибка при создании Excel");
   }
 };
 
@@ -221,9 +220,9 @@ export const exportToPDF = async (
   })();
 
   await toast.promise(exportPromise, {
-    loading: "Генерация PDF...",
-    success: "PDF файл успешно создан",
-    error: "Ошибка при создании PDF",
+    loading: "Подготовка документа PDF...",
+    success: "Документ PDF сохранён",
+    error: "Не удалось сохранить PDF",
   });
 };
 
@@ -258,8 +257,8 @@ export const exportToImage = async (
   })();
 
   await toast.promise(exportPromise, {
-    loading: "Генерация изображения...",
-    success: "Изображение успешно создано",
-    error: "Ошибка при создании изображения",
+    loading: "Создание изображения PNG...",
+    success: "Изображение PNG сохранено",
+    error: "Не удалось сохранить изображение",
   });
 };
