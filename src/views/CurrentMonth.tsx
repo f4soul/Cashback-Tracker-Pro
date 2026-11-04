@@ -120,7 +120,7 @@ const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
         ref={ref}
         style={style}
         className={clsx(
-          "flex items-center justify-between p-3 bg-white dark:bg-[var(--surface-1)] rounded-control border border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] group/card select-none hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-[var(--accent-color)]/30 transition-[background-color,border-color,box-shadow,opacity] duration-200 translate-z-0 [backface-visibility:hidden]",
+          "flex items-center justify-between p-3 bg-[var(--surface-0)] dark:bg-[var(--surface-2)] rounded-control border border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] group/card select-none hover:bg-[var(--fill-hover)] hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] hover:border-[var(--accent-color)]/30 transition-[background-color,border-color,box-shadow,opacity] duration-200 translate-z-0 [backface-visibility:hidden]",
           isDragging && !isOverlay && "opacity-0",
         )}
       >
@@ -313,13 +313,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [entryIdToDelete, setEntryIdToDelete] = useState<string | null>(null);
     const [activeSubTab, setActiveSubTab] = useState<"table" | "list">("table");
-    const [isFabHidden, setIsFabHidden] = useState(() => {
-      if (typeof window !== "undefined" && window.innerWidth >= 1150) {
-        return false;
-      }
-      const saved = localStorage.getItem("fab_hidden");
-      return saved === "true";
-    });
+    const [isFabHidden, setIsFabHidden] = useState(false);
     const [dragConstraints, setDragConstraints] = useState({
       top: 0,
       left: 0,
@@ -332,7 +326,9 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     });
     const [yOffset, setYOffset] = useState(() => {
       const saved = localStorage.getItem("fab_y_offset");
-      return saved ? parseInt(saved) : 0;
+      if (!saved) return 0;
+      const parsed = parseInt(saved, 10);
+      return Number.isFinite(parsed) ? parsed : 0;
     });
     const [rightPos, setRightPos] = useState(16);
     const isDraggingFab = useRef(false);
@@ -346,9 +342,14 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     const fabHideLockedUntil = useRef(0);
 
     useEffect(() => {
-      localStorage.setItem("fab_y_offset", yOffset.toString());
-      localStorage.setItem("fab_hidden", isFabHidden.toString());
-    }, [yOffset, isFabHidden]);
+      localStorage.removeItem("fab_hidden");
+    }, []);
+
+    useEffect(() => {
+      if (Number.isFinite(yOffset)) {
+        localStorage.setItem("fab_y_offset", yOffset.toString());
+      }
+    }, [yOffset]);
 
     useEffect(() => {
       const currentY = Math.max(0, window.scrollY);
@@ -381,7 +382,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
 
         // Прячем ТОЛЬКО при уверенном непрерывном прокруте ВНИЗ.
         // Микросдвиги при касании, скролл вверх и программные scrollTo порог не проходят.
-        if (downDelta >= 24 && y > 24) {
+        if (downDelta >= 28 && y > 36) {
           setIsFabHidden(true);
         }
       };
@@ -476,6 +477,16 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
         const saved = localStorage.getItem("fab_y_offset");
         if (!saved) {
           setYOffset(snapToPosition(0));
+        } else {
+          const parsed = parseInt(saved, 10);
+          if (!Number.isFinite(parsed)) {
+            setYOffset(snapToPosition(0));
+          } else if (
+            dragConstraints.top < dragConstraints.bottom &&
+            (parsed < dragConstraints.top || parsed > dragConstraints.bottom)
+          ) {
+            setYOffset(snapToPosition(parsed));
+          }
         }
       }
     }, [dragConstraints, snapToPosition]);
@@ -569,369 +580,354 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
         {mounted &&
           !isExiting &&
           createPortal(
-            <AnimatePresence initial={false}>
-              {!isFabHidden ? (
-                <motion.div
-                  key="fab-container"
-                  id="fab-container"
-                  drag="y"
-                  dragConstraints={dragConstraints}
-                  dragElastic={0.1}
-                  dragMomentum={false}
-                  initial={{
-                    opacity: 0,
-                    scale: 0.65,
-                    x: rightPos + 36,
-                    y: yOffset,
-                  }}
-                  animate={{
-                    opacity: 1,
-                    scale: 1,
-                    x: 0,
-                    y: yOffset,
-                  }}
-                  exit={{
-                    opacity: 0,
-                    scale: 0.65,
-                    x: rightPos + 36,
-                    y: yOffset,
-                    transition: {
-                      type: "spring",
-                      stiffness: 450,
-                      damping: 38,
-                      mass: 0.7,
-                    },
-                  }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 38,
-                    mass: 0.8,
-                  }}
-                  onDragStart={() => {
-                    isDraggingFab.current = true;
-                  }}
-                  onDragEnd={(_e, info) => {
-                    setTimeout(() => {
-                      isDraggingFab.current = false;
-                    }, 100);
-
-                    const finalY = yOffset + info.offset.y;
-                    // Snap to 3 positions: top, center, bottom
-                    const top = dragConstraints.top;
-                    const bottom = dragConstraints.bottom;
-                    const center = (top + bottom) / 2;
-                    const points = [top, center, bottom];
-
-                    const snappedY = points.reduce((prev, curr) =>
-                      Math.abs(curr - finalY) < Math.abs(prev - finalY)
-                        ? curr
-                        : prev,
-                    );
-                    setYOffset(snappedY);
-                  }}
-                  className="fixed pwa-fab-bottom z-50 touch-none select-none transform-gpu"
-                  style={{
-                    right: rightPos,
-                    willChange: "transform, opacity",
-                    touchAction: "none",
-                  }}
-                >
-                  <button
-                    type="button"
-                    onPointerDown={() => {
-                      fabHideLockedUntil.current = Date.now() + 500;
-                    }}
-                    onClick={(e) => {
-                      if (isDraggingFab.current) {
-                        e.preventDefault();
-                        return;
+            <>
+              <motion.div
+                id="fab-container"
+                drag={!isFabHidden ? "y" : false}
+                dragConstraints={dragConstraints}
+                dragElastic={0.1}
+                dragMomentum={false}
+                initial={false}
+                animate={
+                  isFabHidden
+                    ? {
+                        opacity: 0,
+                        scale: 0.65,
+                        x: rightPos + 36,
+                        y: yOffset,
                       }
-                      setEditingEntry(undefined);
-                      setIsModalOpen(true);
-                    }}
-                    title="Добавить банк"
-                    className="w-14 h-14 bg-[var(--accent-color)] text-white rounded-full flex items-center justify-center shadow-lg shadow-[var(--accent-color)]/30 hover:shadow-[var(--accent-color)]/40 hover:brightness-110 transition-[filter,box-shadow,transform] cursor-pointer active:scale-95 border border-white/20"
-                  >
-                    <Plus className="w-7 h-7" />
-                  </button>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="fab-restore"
-                  id="fab-restore"
-                  drag="y"
-                  dragConstraints={restoreConstraints}
-                  dragElastic={0.1}
-                  dragMomentum={false}
-                  initial={{ opacity: 0, x: 24, y: yOffset }}
-                  animate={{
-                    opacity: 0.75,
-                    x: 0,
-                    y: yOffset,
-                  }}
-                  whileHover={{ opacity: 1, x: -3 }}
-                  whileTap={{ scale: 0.95 }}
-                  exit={{
-                    opacity: 0,
-                    x: 24,
-                    y: yOffset,
-                    transition: {
-                      type: "spring",
-                      stiffness: 450,
-                      damping: 38,
-                      mass: 0.7,
-                    },
-                  }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 38,
-                    mass: 0.8,
-                  }}
+                    : {
+                        opacity: 1,
+                        scale: 1,
+                        x: 0,
+                        y: yOffset,
+                      }
+                }
+                transition={{
+                  type: "spring",
+                  stiffness: 420,
+                  damping: 32,
+                  mass: 0.8,
+                }}
+                onDragStart={() => {
+                  isDraggingFab.current = true;
+                }}
+                onDragEnd={(_e, info) => {
+                  if (Math.abs(info.offset.y) < 8) {
+                    isDraggingFab.current = false;
+                    return;
+                  }
+
+                  setTimeout(() => {
+                    isDraggingFab.current = false;
+                  }, 80);
+
+                  const finalY = yOffset + info.offset.y;
+                  const top = dragConstraints.top;
+                  const bottom = dragConstraints.bottom;
+                  const center = (top + bottom) / 2;
+                  const points = [top, center, bottom];
+
+                  const snappedY = points.reduce((prev, curr) =>
+                    Math.abs(curr - finalY) < Math.abs(prev - finalY)
+                      ? curr
+                      : prev,
+                  );
+                  setYOffset(snappedY);
+                }}
+                aria-hidden={isFabHidden}
+                className="fixed pwa-fab-bottom z-50 touch-none select-none"
+                style={{
+                  right: rightPos,
+                  willChange: "transform, opacity",
+                  touchAction: "none",
+                  pointerEvents: isFabHidden ? "none" : "auto",
+                }}
+              >
+                <button
+                  type="button"
+                  tabIndex={isFabHidden ? -1 : 0}
                   onPointerDown={() => {
                     fabHideLockedUntil.current = Date.now() + 900;
                   }}
-                  onClick={() => {
-                    if (isDraggingRestore.current) return;
-                    fabHideLockedUntil.current = Date.now() + 900;
-                    setIsFabHidden(false);
+                  onClick={(e) => {
+                    if (isDraggingFab.current || isFabHidden) {
+                      e.preventDefault();
+                      return;
+                    }
+                    setEditingEntry(undefined);
+                    setIsModalOpen(true);
                   }}
-                  onDragStart={() => {
-                    isDraggingRestore.current = true;
-                  }}
-                  onDragEnd={(_e, info) => {
-                    setTimeout(() => {
-                      isDraggingRestore.current = false;
-                    }, 100);
-
-                    const finalY = yOffset + info.offset.y;
-                    // Snap to 3 positions: top, center, bottom
-                    const top = restoreConstraints.top;
-                    const bottom = restoreConstraints.bottom;
-                    const center = (top + bottom) / 2;
-                    const points = [top, center, bottom];
-
-                    const snappedY = points.reduce((prev, curr) =>
-                      Math.abs(curr - finalY) < Math.abs(prev - finalY)
-                        ? curr
-                        : prev,
-                    );
-                    setYOffset(snappedY);
-                  }}
-                  className="fixed pwa-fab-bottom w-7 pr-3 h-12 bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-control rounded-r-none touch-none select-none transform-gpu"
-                  style={{
-                    right: -12,
-                    transformOrigin: "right center",
-                    willChange: "transform, opacity",
-                    touchAction: "none",
-                  }}
-                  title="Показать кнопку (перетащите вертикально)"
+                  title="Добавить банк"
+                  className="w-14 h-14 bg-[var(--accent-color)] text-white rounded-full flex items-center justify-center shadow-lg shadow-[var(--accent-color)]/30 hover:shadow-[var(--accent-color)]/40 hover:brightness-110 transition-[filter,box-shadow,transform] cursor-pointer active:scale-95 border border-white/20"
                 >
-                  <div className="flex flex-col items-center gap-0.5 opacity-85 group-hover:opacity-100 transition-opacity">
-                    <ChevronUp className="w-3 h-3" />
-                    <Plus className="w-3 h-3" />
-                    <ChevronDown className="w-3 h-3" />
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>,
+                  <Plus className="w-7 h-7" />
+                </button>
+              </motion.div>
+
+              <motion.div
+                id="fab-restore"
+                drag={isFabHidden ? "y" : false}
+                dragConstraints={restoreConstraints}
+                dragElastic={0.1}
+                dragMomentum={false}
+                initial={false}
+                animate={
+                  isFabHidden
+                    ? {
+                        opacity: 0.75,
+                        x: 0,
+                        y: yOffset,
+                      }
+                    : {
+                        opacity: 0,
+                        x: 24,
+                        y: yOffset,
+                      }
+                }
+                whileHover={isFabHidden ? { opacity: 1, x: -3 } : undefined}
+                whileTap={isFabHidden ? { scale: 0.95 } : undefined}
+                transition={{
+                  type: "spring",
+                  stiffness: 420,
+                  damping: 32,
+                  mass: 0.8,
+                }}
+                onPointerDown={() => {
+                  fabHideLockedUntil.current = Date.now() + 1200;
+                }}
+                onClick={() => {
+                  if (isDraggingRestore.current || !isFabHidden) return;
+                  fabHideLockedUntil.current = Date.now() + 1200;
+                  setIsFabHidden(false);
+                }}
+                onDragStart={() => {
+                  isDraggingRestore.current = true;
+                }}
+                onDragEnd={(_e, info) => {
+                  if (Math.abs(info.offset.y) < 8) {
+                    isDraggingRestore.current = false;
+                    fabHideLockedUntil.current = Date.now() + 1200;
+                    setIsFabHidden(false);
+                    return;
+                  }
+
+                  setTimeout(() => {
+                    isDraggingRestore.current = false;
+                  }, 80);
+
+                  const finalY = yOffset + info.offset.y;
+                  const top = restoreConstraints.top;
+                  const bottom = restoreConstraints.bottom;
+                  const center = (top + bottom) / 2;
+                  const points = [top, center, bottom];
+
+                  const snappedY = points.reduce((prev, curr) =>
+                    Math.abs(curr - finalY) < Math.abs(prev - finalY)
+                      ? curr
+                      : prev,
+                  );
+                  setYOffset(snappedY);
+                }}
+                aria-hidden={!isFabHidden}
+                className="fixed pwa-fab-bottom w-7 pr-3 h-12 bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-control rounded-r-none touch-none select-none"
+                style={{
+                  right: -12,
+                  transformOrigin: "right center",
+                  willChange: "transform, opacity",
+                  touchAction: "none",
+                  pointerEvents: isFabHidden ? "auto" : "none",
+                }}
+                title="Показать кнопку (перетащите вертикально)"
+              >
+                <div className="flex flex-col items-center gap-0.5 opacity-85 group-hover:opacity-100 transition-opacity">
+                  <ChevronUp className="w-3 h-3" />
+                  <Plus className="w-3 h-3" />
+                  <ChevronDown className="w-3 h-3" />
+                </div>
+              </motion.div>
+            </>,
             document.body,
           )}
 
-        {/* Table/Bank List Switcher - Simplified and Compact */}
-        <div className="flex p-0.5 gap-0.5 relative bg-white dark:bg-[var(--surface-1)] rounded-control border border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] w-full mb-2 translate-z-0 [backface-visibility:hidden] z-10">
+        {/* Mobile & Portrait Tablet Switcher (< 1024px) — Slim Low-Profile */}
+        <div className="flex lg:hidden p-0.5 gap-0.5 relative bg-white dark:bg-[var(--surface-1)] rounded-control border border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] w-full mb-1.5 translate-z-0 [backface-visibility:hidden] z-10">
           <div
-            className="absolute inset-y-0.5 rounded-control bg-[var(--fill-hover)] shadow-sm z-0 transition-[left,right] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]"
+            className="absolute inset-y-0.5 rounded-[max(6px,calc(var(--radius-sm)-2px))] bg-[var(--fill-hover)] shadow-sm z-0 transition-[left,right] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]"
             style={{
               left: activeSubTab === "table" ? "0.125rem" : "50%",
               right: activeSubTab === "table" ? "50%" : "0.125rem",
             }}
           />
           <button
+            type="button"
             onClick={() => setActiveSubTab("table")}
             className={clsx(
-              "flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-control text-[10px] font-semibold transition-colors cursor-pointer relative z-10",
+              "flex-1 flex items-center justify-center gap-1.5 py-1 rounded-[max(6px,calc(var(--radius-sm)-2px))] text-[10px] font-semibold transition-colors cursor-pointer relative z-10 whitespace-nowrap",
               activeSubTab === "table"
                 ? "text-[var(--accent-color)]"
                 : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]",
             )}
           >
-            <TableIcon className="w-3.5 h-3.5 shrink-0" />
+            <TableIcon className="w-3 h-3 shrink-0" />
             <span className="leading-none uppercase">Таблица</span>
           </button>
           <button
+            type="button"
             onClick={() => setActiveSubTab("list")}
             className={clsx(
-              "flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-control text-[10px] font-semibold transition-colors cursor-pointer relative z-10",
+              "flex-1 flex items-center justify-center gap-1.5 py-1 rounded-[max(6px,calc(var(--radius-sm)-2px))] text-[10px] font-semibold transition-colors cursor-pointer relative z-10 whitespace-nowrap",
               activeSubTab === "list"
                 ? "text-[var(--accent-color)]"
                 : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]",
             )}
           >
-            <LayoutList className="w-3.5 h-3.5 shrink-0" />
+            <LayoutList className="w-3 h-3 shrink-0" />
             <span className="leading-none uppercase">Список банков</span>
           </button>
         </div>
 
         {/* Content Area */}
-        <div className="relative mt-1">
-          <AnimatePresence mode="wait">
-            {activeSubTab === "table" ? (
-              <motion.div
-                key="table-view"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-              >
-                <CashbackTable
-                  id="current-cashback-table"
-                  monthId={data.monthId}
-                  entries={data.entries}
-                  customBanks={allCustomBanks}
-                  globalLogoShape={globalLogoShape}
-                  onExportPDF={handleExport}
-                  onExportExcel={handleExportExcel}
-                  onExportImage={handleExportImage}
-                  selectedMonthId={selectedMonthId}
-                  onMonthChange={onMonthChange}
-                  allMonthIds={switcherMonthIds}
-                  isAfter25={showSwitcher}
-                />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="list-view"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-              >
-                {data.entries.length === 0 ? (
-                  <button
-                    onClick={() => {
-                      setEditingEntry(undefined);
-                      setIsModalOpen(true);
-                    }}
-                    className="flex flex-col items-center justify-center p-8 text-center bg-[var(--surface-1)] rounded-card border border-dashed border-[var(--border-strong)] hover:bg-[var(--surface-2)] transition-colors group w-full cursor-pointer"
+        <div className="relative">
+          <CashbackTable
+            id="current-cashback-table"
+            monthId={data.monthId}
+            entries={data.entries}
+            customBanks={allCustomBanks}
+            globalLogoShape={globalLogoShape}
+            onExportPDF={handleExport}
+            onExportExcel={handleExportExcel}
+            onExportImage={handleExportImage}
+            selectedMonthId={selectedMonthId}
+            onMonthChange={onMonthChange}
+            allMonthIds={switcherMonthIds}
+            isAfter25={showSwitcher}
+            activeSubTab={activeSubTab}
+            onSubTabChange={setActiveSubTab}
+            listViewContent={
+              data.entries.length === 0 ? (
+                <button
+                  onClick={() => {
+                    setEditingEntry(undefined);
+                    setIsModalOpen(true);
+                  }}
+                  className="flex flex-col items-center justify-center p-8 text-center bg-[var(--surface-1)] rounded-card border border-dashed border-[var(--border-strong)] hover:bg-[var(--surface-2)] transition-colors group w-full cursor-pointer"
+                >
+                  <Plus className="w-8 h-8 text-[var(--text-tertiary)] mb-2 group-hover:text-[var(--accent-color)] transition-colors" />
+                  <p className="text-xs text-[var(--text-secondary)]">
+                    Добавьте первый банк
+                  </p>
+                </button>
+              ) : (
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCorners}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  modifiers={isGridLayout ? [] : [restrictToVerticalAxis]}
+                >
+                  <SortableContext
+                    items={data.entries.map((e) => e.id)}
+                    strategy={
+                      isGridLayout
+                        ? rectSortingStrategy
+                        : verticalListSortingStrategy
+                    }
                   >
-                    <Plus className="w-8 h-8 text-[var(--text-tertiary)] mb-2 group-hover:text-[var(--accent-color)] transition-colors" />
-                    <p className="text-xs text-[var(--text-secondary)]">
-                      Добавьте первый банк
-                    </p>
-                  </button>
-                ) : (
-                  <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCorners}
-                    onDragStart={handleDragStart}
-                    onDragEnd={handleDragEnd}
-                    modifiers={isGridLayout ? [] : [restrictToVerticalAxis]}
-                  >
-                    <SortableContext
-                      items={data.entries.map((e) => e.id)}
-                      strategy={
-                        isGridLayout
-                          ? rectSortingStrategy
-                          : verticalListSortingStrategy
-                      }
-                    >
-                      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
-                        <AnimatePresence initial={false}>
-                          {data.entries.map((entry, index) => {
-                            const bank =
-                              getBankDetails(
-                                entry.bankId,
-                                entry.customBankName,
-                              ) ||
-                              (entry.bankId.startsWith("custom_")
-                                ? allCustomBanks.find(
-                                    (b) => b.id === entry.bankId,
-                                  )
-                                : null);
+                    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
+                      <AnimatePresence initial={false}>
+                        {data.entries.map((entry, index) => {
+                          const bank =
+                            getBankDetails(
+                              entry.bankId,
+                              entry.customBankName,
+                            ) ||
+                            (entry.bankId.startsWith("custom_")
+                              ? allCustomBanks.find(
+                                  (b) => b.id === entry.bankId,
+                                )
+                              : null);
 
-                            if (!bank) return null;
+                          if (!bank) return null;
 
-                            const logoShape = globalLogoShape || "circle";
+                          const logoShape = globalLogoShape || "circle";
 
-                            return (
-                              <SortableBankCard
-                                key={entry.id}
-                                entry={entry}
-                                bank={bank}
-                                logoShape={logoShape}
-                                index={index}
-                                onEdit={() => {
-                                  setEditingEntry(entry);
-                                  setIsModalOpen(true);
-                                }}
-                                onDelete={() => handleDeleteEntry(entry.id)}
-                              />
-                            );
-                          })}
-                        </AnimatePresence>
-                      </div>
-                    </SortableContext>
-
-                    {createPortal(
-                      <DragOverlay
-                        dropAnimation={{
-                          duration: 200,
-                          easing: "cubic-bezier(0.32, 0.72, 0, 1)",
-                        }}
-                      >
-                        {activeDragId ? (
-                          <div style={{ width: activeDragWidth }}>
-                            <BankCard
-                              isOverlay
-                              index={data.entries.findIndex(
-                                (e) => e.id === activeDragId,
-                              )}
-                              entry={data.entries.find(
-                                (e) => e.id === activeDragId,
-                              )!}
-                              bank={
-                                getBankDetails(
-                                  data.entries.find(
-                                    (e) => e.id === activeDragId,
-                                  )?.bankId || "",
-                                  data.entries.find(
-                                    (e) => e.id === activeDragId,
-                                  )?.customBankName,
-                                ) ||
-                                (data.entries
-                                  .find((e) => e.id === activeDragId)
-                                  ?.bankId.startsWith("custom_")
-                                  ? allCustomBanks.find(
-                                      (b) =>
-                                        b.id ===
-                                        data.entries.find(
-                                          (e) => e.id === activeDragId,
-                                        )?.bankId,
-                                    )
-                                  : null)!
-                              }
-                              logoShape={globalLogoShape || "circle"}
-                              onEdit={() => {}}
-                              onDelete={() => {}}
-                              style={{
-                                scale: 1.02,
-                                rotate: "1.5deg",
-                                opacity: 0.95,
-                                boxShadow: "0 12px 28px rgba(0,0,0,0.25)",
+                          return (
+                            <SortableBankCard
+                              key={entry.id}
+                              entry={entry}
+                              bank={bank}
+                              logoShape={logoShape}
+                              index={index}
+                              onEdit={() => {
+                                setEditingEntry(entry);
+                                setIsModalOpen(true);
                               }}
+                              onDelete={() => handleDeleteEntry(entry.id)}
                             />
-                          </div>
-                        ) : null}
-                      </DragOverlay>,
-                      document.body,
-                    )}
-                  </DndContext>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
+                          );
+                        })}
+                      </AnimatePresence>
+                    </div>
+                  </SortableContext>
+
+                  {createPortal(
+                    <DragOverlay
+                      dropAnimation={{
+                        duration: 200,
+                        easing: "cubic-bezier(0.32, 0.72, 0, 1)",
+                      }}
+                    >
+                      {activeDragId ? (
+                        <div style={{ width: activeDragWidth }}>
+                          <BankCard
+                            isOverlay
+                            index={data.entries.findIndex(
+                              (e) => e.id === activeDragId,
+                            )}
+                            entry={data.entries.find(
+                              (e) => e.id === activeDragId,
+                            )!}
+                            bank={
+                              getBankDetails(
+                                data.entries.find(
+                                  (e) => e.id === activeDragId,
+                                )?.bankId || "",
+                                data.entries.find(
+                                  (e) => e.id === activeDragId,
+                                )?.customBankName,
+                              ) ||
+                              (data.entries
+                                .find((e) => e.id === activeDragId)
+                                ?.bankId.startsWith("custom_")
+                                ? allCustomBanks.find(
+                                    (b) =>
+                                      b.id ===
+                                      data.entries.find(
+                                        (e) => e.id === activeDragId,
+                                      )?.bankId,
+                                  )
+                                : null)!
+                            }
+                            logoShape={globalLogoShape || "circle"}
+                            onEdit={() => {}}
+                            onDelete={() => {}}
+                            style={{
+                              scale: 1.02,
+                              rotate: "1.5deg",
+                              opacity: 0.95,
+                              boxShadow: "0 12px 28px rgba(0,0,0,0.25)",
+                            }}
+                          />
+                        </div>
+                      ) : null}
+                    </DragOverlay>,
+                    document.body,
+                  )}
+                </DndContext>
+              )
+            }
+          />
         </div>
 
         <Modal
@@ -944,7 +940,6 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
             customBanks={customBanks}
             customCategories={customCategories}
             onSave={handleSaveEntry}
-            onCancel={() => setIsModalOpen(false)}
             onAddCustomBank={onAddCustomBank}
             onDeleteCustomBank={onDeleteCustomBank}
             onAddCustomCategory={onAddCustomCategory}

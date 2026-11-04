@@ -37,7 +37,6 @@ export interface BankFormProps {
   customBanks: Bank[];
   customCategories: string[];
   onSave: (entry: Omit<CashbackEntry, "id">) => void;
-  onCancel: () => void;
   onAddCustomBank: (bank: Bank) => void;
   onDeleteCustomBank: (id: string) => void;
   onAddCustomCategory: (category: string) => void;
@@ -99,7 +98,6 @@ export const BankForm: React.FC<BankFormProps> = memo(
     );
     const fileInputRef = useRef<HTMLInputElement>(null);
     const bankDropdownRef = useRef<HTMLDivElement>(null);
-    const bankSearchInputRef = useRef<HTMLInputElement>(null);
     const categorySearchInputRef = useRef<HTMLInputElement>(null);
 
     // Confirm Modal state
@@ -378,26 +376,6 @@ export const BankForm: React.FC<BankFormProps> = memo(
       allBanks,
     ]);
 
-    const ctaSummaryText = useMemo(() => {
-      const count = selectedCategories.length;
-      if (count === 0) return "";
-      const countLabel = `${count} ${pluralize(count, [
-        "категория",
-        "категории",
-        "категорий",
-      ])}`;
-      const nums = selectedCategories
-        .map((c) => {
-          const cleaned = String(c.percent)
-            .replace(",", ".")
-            .replace(/[^0-9.]/g, "");
-          return parseFloat(cleaned);
-        })
-        .filter((n) => !Number.isNaN(n) && n > 0);
-      const maxP = nums.length > 0 ? Math.max(...nums) : null;
-      return maxP ? `${countLabel} · до ${maxP}%` : countLabel;
-    }, [selectedCategories]);
-
     const shapeClassesMedium = {
       circle: "w-9 h-9 rounded-full",
       square: "w-9 h-9 rounded-[22%]",
@@ -487,18 +465,30 @@ export const BankForm: React.FC<BankFormProps> = memo(
         <div ref={bankDropdownRef} className="relative z-30">
           {selectedBankId && currentBank ? (
             <div
+              onClick={() => setIsBankPickerOpen((prev) => !prev)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setIsBankPickerOpen((prev) => !prev);
+                }
+              }}
               className={clsx(
-                "flex items-center justify-between gap-2.5 p-2.5 rounded-control border transition-[border-color,background-color] bg-[var(--fill)]",
+                "flex items-center justify-between gap-3 p-3 rounded-control border transition-[border-color,background-color,box-shadow,transform] active:scale-[0.99] cursor-pointer group/trigger",
                 isBankPickerOpen
-                  ? "border-[var(--accent-color)]/50"
-                  : "border-[var(--border-hairline)]",
+                  ? "bg-[var(--fill-hover)] border-[var(--accent-color)] ring-2 ring-[var(--accent-color)]/20"
+                  : "bg-[var(--fill)] hover:bg-[var(--fill-hover)] border-[var(--border-hairline)] hover:border-[var(--accent-color)]/40",
               )}
             >
-              <div className="flex items-center gap-2.5 min-w-0">
+              <div className="flex items-center gap-3 min-w-0">
                 <button
                   type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="relative group cursor-pointer shrink-0"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    fileInputRef.current?.click();
+                  }}
+                  className="relative group/logo cursor-pointer shrink-0"
                   title="Изменить логотип"
                 >
                   <BankLogo
@@ -509,7 +499,7 @@ export const BankForm: React.FC<BankFormProps> = memo(
                   />
                   <div
                     className={clsx(
-                      "absolute inset-0 bg-black/45 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity",
+                      "absolute inset-0 bg-black/45 flex items-center justify-center opacity-0 group-hover/logo:opacity-100 transition-opacity",
                       shapeClassesMedium[globalLogoShape],
                     )}
                   >
@@ -522,7 +512,10 @@ export const BankForm: React.FC<BankFormProps> = memo(
                   </span>
                   <button
                     type="button"
-                    onClick={() => fileInputRef.current?.click()}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      fileInputRef.current?.click();
+                    }}
                     className="text-[11px] font-semibold text-[var(--accent-color)] hover:underline cursor-pointer mt-0.5 inline-flex items-center gap-1"
                   >
                     <Upload className="w-3 h-3" />
@@ -538,56 +531,91 @@ export const BankForm: React.FC<BankFormProps> = memo(
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setIsBankPickerOpen((prev) => !prev)}
-                className={clsx(
-                  "h-8 px-2.5 rounded-control border text-[12px] font-semibold transition-[background-color,border-color,color,transform] active:scale-95 cursor-pointer inline-flex items-center gap-1.5 shrink-0",
-                  isBankPickerOpen
-                    ? "bg-[var(--percent-bg)] border-[var(--accent-color)]/40 text-[var(--percent-text)]"
-                    : "bg-[var(--fill)] hover:bg-[var(--fill-hover)] border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]",
-                )}
-                title="Выбрать другой банк"
+              <div
+                className="flex items-center gap-2 shrink-0"
+                title="Сменить банк"
               >
-                <span>Сменить</span>
+                <div className="flex -space-x-2">
+                  {BANKS.filter((b) => b.id !== selectedBankId)
+                    .slice(0, 3)
+                    .map((b) => (
+                      <div
+                        key={b.id}
+                        className="w-6 h-6 rounded-full bg-white dark:bg-[var(--surface-2)] ring-2 ring-white dark:ring-[var(--surface-2)] border border-[var(--border-hairline)] flex items-center justify-center overflow-hidden shadow-xs"
+                      >
+                        {b.logoUrl ? (
+                          <img
+                            src={b.logoUrl}
+                            alt=""
+                            aria-hidden="true"
+                            className="w-3.5 h-3.5 object-contain select-none"
+                          />
+                        ) : (
+                          <span className="text-[9px] font-black text-[var(--text-secondary)]">
+                            {b.logoText}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                </div>
                 <ChevronDown
                   className={clsx(
-                    "w-3.5 h-3.5 transition-transform duration-200",
-                    isBankPickerOpen && "rotate-180",
+                    "w-4 h-4 text-[var(--text-secondary)] group-hover/trigger:text-[var(--text-primary)] transition-[color,transform] duration-200",
+                    isBankPickerOpen && "rotate-180 text-[var(--accent-color)]",
                   )}
                 />
-              </button>
+              </div>
             </div>
           ) : (
             <button
               type="button"
               onClick={() => setIsBankPickerOpen((prev) => !prev)}
               className={clsx(
-                "w-full flex items-center justify-between gap-2.5 p-2.5 rounded-control border text-left transition-[background-color,border-color,box-shadow,transform] active:scale-[0.99] cursor-pointer",
+                "w-full flex items-center justify-between gap-3 p-3 rounded-control border text-left transition-[background-color,border-color,box-shadow,transform] active:scale-[0.99] cursor-pointer group",
                 isBankPickerOpen
                   ? "bg-[var(--fill-hover)] border-[var(--accent-color)] ring-2 ring-[var(--accent-color)]/20"
-                  : "bg-[var(--fill)] hover:bg-[var(--fill-hover)] border-[var(--border-hairline)]",
+                  : "bg-[var(--fill)] hover:bg-[var(--fill-hover)] border-[var(--border-hairline)] hover:border-[var(--accent-color)]/40",
               )}
             >
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-9 h-9 rounded-control bg-[var(--accent-color)]/10 text-[var(--accent-color)] flex items-center justify-center shrink-0">
-                  <Landmark className="w-4 h-4" />
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-full bg-[var(--accent-color)]/15 text-[var(--accent-color)] flex items-center justify-center shrink-0">
+                  <Landmark className="w-5 h-5" />
                 </div>
                 <div className="min-w-0">
                   <span className="font-bold text-[14px] text-[var(--text-primary)] block truncate leading-tight">
                     Выберите банк
                   </span>
-                  <span className="text-[11px] font-medium text-[var(--text-tertiary)] block truncate mt-0.5">
+                  <span className="text-[11px] font-medium text-[var(--text-secondary)] block truncate mt-0.5">
                     Из списка или создайте свой
                   </span>
                 </div>
               </div>
-              <div className="h-8 px-2.5 rounded-control bg-[var(--fill)] border border-[var(--border-hairline)] text-[var(--text-secondary)] inline-flex items-center gap-1 text-[12px] font-semibold shrink-0">
-                <span>Список</span>
+              <div className="flex items-center gap-2 shrink-0">
+                <div className="flex -space-x-2">
+                  {BANKS.slice(0, 3).map((b) => (
+                    <div
+                      key={b.id}
+                      className="w-6 h-6 rounded-full bg-white dark:bg-[var(--surface-2)] ring-2 ring-white dark:ring-[var(--surface-2)] border border-[var(--border-hairline)] flex items-center justify-center overflow-hidden shadow-xs"
+                    >
+                      {b.logoUrl ? (
+                        <img
+                          src={b.logoUrl}
+                          alt=""
+                          aria-hidden="true"
+                          className="w-3.5 h-3.5 object-contain select-none"
+                        />
+                      ) : (
+                        <span className="text-[9px] font-black text-[var(--text-secondary)]">
+                          {b.logoText}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
                 <ChevronDown
                   className={clsx(
-                    "w-3.5 h-3.5 transition-transform duration-200",
-                    isBankPickerOpen && "rotate-180",
+                    "w-4 h-4 text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-[color,transform] duration-200",
+                    isBankPickerOpen && "rotate-180 text-[var(--accent-color)]",
                   )}
                 />
               </div>
@@ -607,7 +635,6 @@ export const BankForm: React.FC<BankFormProps> = memo(
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-tertiary)] pointer-events-none" />
                   <input
-                    ref={bankSearchInputRef}
                     type="text"
                     placeholder="Поиск или название нового банка..."
                     value={searchQuery}
@@ -1033,7 +1060,7 @@ export const BankForm: React.FC<BankFormProps> = memo(
           </div>
         </div>
 
-        {/* Блок 4: Sticky-футер с одной полноширинной CTA и живой сводкой */}
+        {/* Блок 4: Sticky-футер с лаконичной полноширинной кнопкой действия */}
         <div className="pt-3 pb-[max(0.75rem,calc(env(safe-area-inset-bottom)+0.5rem))] border-t border-[var(--border-hairline)] mt-auto sticky -bottom-[max(0.75rem,calc(env(safe-area-inset-bottom)+0.5rem))] sm:-bottom-[max(1rem,calc(env(safe-area-inset-bottom)+0.5rem))] -mb-[max(0.75rem,calc(env(safe-area-inset-bottom)+0.5rem))] sm:-mb-[max(1rem,calc(env(safe-area-inset-bottom)+0.5rem))] -mx-3 sm:-mx-4 px-3 sm:px-4 bg-white dark:bg-[var(--surface-2)] z-20">
           <button
             type="button"
@@ -1043,16 +1070,11 @@ export const BankForm: React.FC<BankFormProps> = memo(
               selectedCategories.length === 0 ||
               (isCustomBank && !customBankName.trim())
             }
-            className="w-full h-11 px-4 rounded-control font-bold text-[15px] text-white bg-[var(--accent-color)] hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-[filter,opacity,transform] shadow-md shadow-[var(--accent-color)]/25 active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full h-11 px-4 rounded-control font-bold text-[15px] text-white bg-[var(--accent-color)] hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-[filter,opacity,transform] shadow-md shadow-[var(--accent-color)]/25 active:scale-95 flex items-center justify-center cursor-pointer"
           >
             <span className="leading-none">
               {initialEntry ? "Сохранить изменения" : "Сохранить банк"}
             </span>
-            {ctaSummaryText && (
-              <span className="text-[12px] font-bold tabular-nums leading-none px-2 py-1 rounded-[min(6px,var(--radius-sm))] bg-white/20 inline-flex items-center justify-center">
-                {ctaSummaryText}
-              </span>
-            )}
           </button>
         </div>
 

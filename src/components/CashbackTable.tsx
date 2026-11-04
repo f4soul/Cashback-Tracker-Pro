@@ -1,5 +1,5 @@
 import { DEFAULT_BANK_LOGO } from "../assets/bankLogos";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import React, { memo, useState, useEffect, useMemo } from "react";
 import { CashbackEntry, Bank, LogoShape } from "../types";
 import { getBankDetails } from "../constants";
@@ -12,6 +12,8 @@ import {
   Image as ImageIcon,
   ArrowUpDown,
   Landmark,
+  Table as TableIcon,
+  LayoutList,
 } from "lucide-react";
 import { clsx } from "clsx";
 import { sortCategoriesAsc, sortCategoriesDesc } from "../utils/sorting";
@@ -30,6 +32,9 @@ interface CashbackTableProps {
   onMonthChange?: (monthId: string) => void;
   allMonthIds?: string[];
   isAfter25?: boolean;
+  activeSubTab?: "table" | "list";
+  onSubTabChange?: (tab: "table" | "list") => void;
+  listViewContent?: React.ReactNode;
 }
 
 const formatCategoryName = (name: string) => {
@@ -57,6 +62,9 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
     onMonthChange,
     allMonthIds = [],
     isAfter25 = false,
+    activeSubTab,
+    onSubTabChange,
+    listViewContent,
   }) => {
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">(() => {
       return (
@@ -78,60 +86,69 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
       });
     }, [entries, sortOrder]);
 
+    const isListMode = activeSubTab === "list";
+
     return (
       <div
         id={id}
         className="bg-white dark:bg-[var(--surface-1)] rounded-card shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] border border-[var(--border-hairline)] p-2 sm:p-4 w-full mx-auto overflow-hidden relative isolate"
       >
         <div className="relative z-10">
-          <div className="flex items-center justify-between px-0.5 mb-4 gap-2 flex-wrap">
-            <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
+          <div className="flex items-center justify-between px-0.5 mb-3 sm:mb-4 gap-2 flex-nowrap">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 min-w-0">
               {isAfter25 && allMonthIds.length > 1 ? (
-                <>
-                  <div className="flex bg-[var(--fill)] rounded-control p-0.5 shrink-0 [.pdf-export-mode_&]:hidden border border-[var(--border-hairline)] shadow-sm translate-z-0 [backface-visibility:hidden]">
-                    {allMonthIds.map((mId) => (
-                      <button
-                        key={mId}
-                        onClick={() => onMonthChange?.(mId)}
-                        className={clsx(
-                          "px-3 py-1 rounded-control text-[10px] font-semibold transition-[background-color,color,box-shadow] cursor-pointer",
-                          (selectedMonthId || monthId) === mId
-                            ? "bg-[var(--accent-color)] text-white shadow-sm"
-                            : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]",
-                        )}
-                      >
-                        {capitalize(formatMonthId(mId).split(" ")[0])}
-                      </button>
-                    ))}
-                  </div>
-                  <h2 className="hidden [.pdf-export-mode_&]:block text-lg font-black text-[var(--text-primary)] tracking-tight whitespace-nowrap">
-                    <span className="text-[var(--accent-color)]">
-                      {capitalize(
-                        formatMonthId(selectedMonthId || monthId).split(" ")[0],
+                <div className="flex bg-[var(--fill)] rounded-control p-0.5 shrink-0 [.pdf-export-mode_&]:hidden border border-[var(--border-hairline)] shadow-sm translate-z-0 [backface-visibility:hidden]">
+                  {allMonthIds.map((mId) => (
+                    <button
+                      key={mId}
+                      type="button"
+                      onClick={() => onMonthChange?.(mId)}
+                      className={clsx(
+                        "px-2.5 py-1 rounded-[max(6px,calc(var(--radius-sm)-2px))] text-[10px] font-semibold leading-none inline-flex items-center justify-center transition-[background-color,color,box-shadow] cursor-pointer whitespace-nowrap",
+                        (selectedMonthId || monthId) === mId
+                          ? "bg-[var(--accent-color)] text-white shadow-sm"
+                          : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]",
                       )}
-                    </span>
-                  </h2>
-                </>
+                    >
+                      {capitalize(formatMonthId(mId).split(" ")[0])}
+                    </button>
+                  ))}
+                </div>
               ) : (
-                <h2 className="text-lg font-black text-[var(--text-primary)] tracking-tight whitespace-nowrap flex items-center justify-start gap-1">
-                  <span className="text-[var(--accent-color)]">
+                <div className="flex bg-[var(--fill)] rounded-control p-0.5 shrink-0 [.pdf-export-mode_&]:hidden border border-[var(--border-hairline)] shadow-sm translate-z-0 [backface-visibility:hidden]">
+                  <span className="px-2.5 py-1 rounded-[max(6px,calc(var(--radius-sm)-2px))] bg-[var(--accent-color)] text-white text-[10px] font-semibold shadow-sm leading-none inline-flex items-center justify-center whitespace-nowrap">
                     {capitalize(formatMonthId(monthId).split(" ")[0])}
                   </span>
-                </h2>
+                </div>
               )}
+              <h2 className="hidden [.pdf-export-mode_&]:inline-flex text-lg font-black text-[var(--text-primary)] tracking-tight whitespace-nowrap items-center">
+                <span className="text-[var(--accent-color)]">
+                  {capitalize(
+                    formatMonthId(selectedMonthId || monthId).split(" ")[0],
+                  )}
+                </span>
+              </h2>
               <span className="text-[8px] font-black uppercase tracking-widest tabular-nums text-[var(--text-secondary)] bg-white/85 dark:bg-white/5 shadow-sm border border-[var(--border-strong)] px-2.5 py-1 rounded-control shrink-0 leading-none text-center inline-flex items-center justify-center">
                 {formatMonthId(monthId).split(" ")[1]}
               </span>
               <button
+                type="button"
+                tabIndex={isListMode ? -1 : 0}
+                aria-hidden={isListMode}
                 onClick={() =>
                   setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
                 }
-                className="p-1.5 rounded-control hover:bg-[var(--fill-hover)] transition-colors shrink-0 [.pdf-export-mode_&]:hidden cursor-pointer"
+                className={clsx(
+                  "p-1.5 rounded-control hover:bg-[var(--fill-hover)] transition-[background-color,color,opacity,transform] duration-200 shrink-0 [.pdf-export-mode_&]:hidden cursor-pointer inline-flex items-center justify-center active:scale-95",
+                  isListMode
+                    ? "opacity-0 pointer-events-none"
+                    : "opacity-100",
+                )}
                 title={`Сортировка: ${sortOrder === "asc" ? "по возрастанию" : "по убыванию"}`}
               >
                 <ArrowUpDown
                   className={clsx(
-                    "w-3.5 h-3.5",
+                    "w-3.5 h-3.5 shrink-0",
                     sortOrder === "desc"
                       ? "text-[var(--accent-color)]"
                       : "text-[var(--text-tertiary)]",
@@ -140,85 +157,157 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
               </button>
             </div>
 
-            <div className="flex items-center gap-0.5 shrink-0 [.pdf-export-mode_&]:hidden">
-              {onExportImage && (
-                <button
-                  onClick={onExportImage}
-                  onPointerDown={() => preloadExportModule("image")}
-                  className="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--fill-hover)] rounded-control transition-colors cursor-pointer"
-                  title="Изображение (PNG)"
-                >
-                  <ImageIcon className="w-4 h-4" />
-                </button>
-              )}
-              {onExportExcel && (
-                <button
-                  onClick={onExportExcel}
-                  onPointerDown={() => preloadExportModule("excel")}
-                  className="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--fill-hover)] rounded-control transition-colors cursor-pointer"
-                  title="Excel"
-                >
-                  <FileSpreadsheet className="w-4 h-4" />
-                </button>
-              )}
-              {onExportPDF && (
-                <button
-                  onClick={onExportPDF}
-                  onPointerDown={() => preloadExportModule("pdf")}
-                  className="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--fill-hover)] rounded-control transition-colors cursor-pointer"
-                  title="PDF"
-                >
-                  <FileText className="w-4 h-4" />
-                </button>
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 [.pdf-export-mode_&]:hidden ml-auto">
+              <div
+                aria-hidden={isListMode}
+                className={clsx(
+                  "flex items-center gap-0.5 transition-opacity duration-200",
+                  isListMode
+                    ? "opacity-0 pointer-events-none"
+                    : "opacity-100",
+                )}
+              >
+                {onExportImage && (
+                  <button
+                    type="button"
+                    tabIndex={isListMode ? -1 : 0}
+                    onClick={onExportImage}
+                    onPointerDown={() => preloadExportModule("image")}
+                    className="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--fill-hover)] rounded-control transition-colors cursor-pointer inline-flex items-center justify-center shrink-0 active:scale-95"
+                    title="Изображение (PNG)"
+                  >
+                    <ImageIcon className="w-4 h-4 shrink-0" />
+                  </button>
+                )}
+                {onExportExcel && (
+                  <button
+                    type="button"
+                    tabIndex={isListMode ? -1 : 0}
+                    onClick={onExportExcel}
+                    onPointerDown={() => preloadExportModule("excel")}
+                    className="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--fill-hover)] rounded-control transition-colors cursor-pointer inline-flex items-center justify-center shrink-0 active:scale-95"
+                    title="Excel"
+                  >
+                    <FileSpreadsheet className="w-4 h-4 shrink-0" />
+                  </button>
+                )}
+                {onExportPDF && (
+                  <button
+                    type="button"
+                    tabIndex={isListMode ? -1 : 0}
+                    onClick={onExportPDF}
+                    onPointerDown={() => preloadExportModule("pdf")}
+                    className="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--fill-hover)] rounded-control transition-colors cursor-pointer inline-flex items-center justify-center shrink-0 active:scale-95"
+                    title="PDF"
+                  >
+                    <FileText className="w-4 h-4 shrink-0" />
+                  </button>
+                )}
+              </div>
+
+              {activeSubTab && onSubTabChange && (
+                <div className="hidden lg:flex bg-[var(--fill)] rounded-control p-0.5 shrink-0 border border-[var(--border-hairline)] shadow-sm translate-z-0 [backface-visibility:hidden]">
+                  <button
+                    type="button"
+                    onClick={() => onSubTabChange("table")}
+                    className={clsx(
+                      "px-2.5 py-1 rounded-[max(6px,calc(var(--radius-sm)-2px))] text-[10px] font-semibold leading-none inline-flex items-center justify-center gap-1.5 transition-[background-color,color,box-shadow] duration-200 cursor-pointer whitespace-nowrap",
+                      activeSubTab === "table"
+                        ? "bg-[var(--accent-color)] text-white shadow-sm"
+                        : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]",
+                    )}
+                    title="Таблица"
+                  >
+                    <TableIcon className="w-3 h-3 shrink-0" />
+                    <span className="leading-none">Таблица</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onSubTabChange("list")}
+                    className={clsx(
+                      "px-2.5 py-1 rounded-[max(6px,calc(var(--radius-sm)-2px))] text-[10px] font-semibold leading-none inline-flex items-center justify-center gap-1.5 transition-[background-color,color,box-shadow] duration-200 cursor-pointer whitespace-nowrap",
+                      activeSubTab === "list"
+                        ? "bg-[var(--accent-color)] text-white shadow-sm"
+                        : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]",
+                    )}
+                    title="Список банков"
+                  >
+                    <LayoutList className="w-3 h-3 shrink-0" />
+                    <span className="leading-none">Список банков</span>
+                  </button>
+                </div>
               )}
             </div>
           </div>
 
-          {entries.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-8 text-center bg-[var(--surface-1)] rounded-card border border-dashed border-[var(--border-strong)]">
-              <div className="w-16 h-16 bg-[var(--surface-2)] rounded-control border border-[var(--border-strong)] flex items-center justify-center mb-4">
-                <Landmark className="w-8 h-8 text-[var(--text-tertiary)]" />
-              </div>
-              <h3 className="text-base font-semibold text-[var(--text-primary)] mb-1">
-                Нет данных
-              </h3>
-              <p className="text-xs font-semibold text-[var(--text-secondary)]">
-                Добавьте банки и категории кэшбека, чтобы увидеть таблицу
-              </p>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-1">
-              {sortedEntries.map((entry) => {
-                const bank = getBankDetails(
-                  entry.bankId,
-                  entry.customBankName,
-                ) ||
-                  (entry.bankId.startsWith("custom_")
-                    ? customBanks.find((b) => b.id === entry.bankId)
-                    : null) || {
-                    id: entry.bankId,
-                    name: entry.customBankName || "Удаленный банк",
-                    color: entry.customBankColor || "#64748b",
-                    logoText:
-                      entry.customBankLogoText ||
-                      (entry.customBankName || "Б")
-                        .substring(0, 2)
-                        .toUpperCase(),
-                    logoUrl: entry.customLogo || DEFAULT_BANK_LOGO,
-                  };
+          <AnimatePresence mode="wait" initial={false}>
+            {isListMode && listViewContent ? (
+              <motion.div
+                key="list-view"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.16, ease: "easeOut" }}
+              >
+                {listViewContent}
+              </motion.div>
+            ) : entries.length === 0 ? (
+              <motion.div
+                key="empty-table-view"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.16, ease: "easeOut" }}
+                className="flex flex-col items-center justify-center p-8 text-center bg-[var(--surface-1)] rounded-card border border-dashed border-[var(--border-strong)]"
+              >
+                <div className="w-16 h-16 bg-[var(--surface-2)] rounded-control border border-[var(--border-strong)] flex items-center justify-center mb-4">
+                  <Landmark className="w-8 h-8 text-[var(--text-tertiary)]" />
+                </div>
+                <h3 className="text-base font-semibold text-[var(--text-primary)] mb-1">
+                  Нет данных
+                </h3>
+                <p className="text-xs font-semibold text-[var(--text-secondary)]">
+                  Добавьте банки и категории кэшбека, чтобы увидеть таблицу
+                </p>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="table-view"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.16, ease: "easeOut" }}
+                className="flex flex-col gap-1"
+              >
+                {sortedEntries.map((entry) => {
+                  const bank = getBankDetails(
+                    entry.bankId,
+                    entry.customBankName,
+                  ) ||
+                    (entry.bankId.startsWith("custom_")
+                      ? customBanks.find((b) => b.id === entry.bankId)
+                      : null) || {
+                      id: entry.bankId,
+                      name: entry.customBankName || "Удаленный банк",
+                      color: entry.customBankColor || "#64748b",
+                      logoText:
+                        entry.customBankLogoText ||
+                        (entry.customBankName || "Б")
+                          .substring(0, 2)
+                          .toUpperCase(),
+                      logoUrl: entry.customLogo || DEFAULT_BANK_LOGO,
+                    };
 
-                const logoShape = globalLogoShape || "circle";
+                  const logoShape = globalLogoShape || "circle";
+                  const totalCategories = entry.sortedCategories.length;
 
-                return (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.98, y: 6 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    transition={{ type: "spring", stiffness: 350, damping: 25 }}
-                    key={entry.id}
-                    className="flex flex-row items-stretch gap-2 p-1.5 rounded-control bg-[var(--surface-0)] dark:bg-[var(--surface-2)] border border-[var(--border-hairline)] hover:bg-[var(--fill-hover)] hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] transition-[background-color,border-color,box-shadow] duration-200 group isolate"
-                    role="row"
-                    aria-label={`Банк ${bank.name}`}
-                  >
+                  return (
+                    <div
+                      key={entry.id}
+                      className="flex flex-row items-stretch gap-2 p-1.5 rounded-control bg-[var(--surface-0)] dark:bg-[var(--surface-2)] border border-[var(--border-hairline)] hover:bg-[var(--fill-hover)] hover:shadow-[0_4px_12px_rgb(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgb(0,0,0,0.2)] transition-[background-color,border-color,box-shadow] duration-200 group isolate"
+                      role="row"
+                      aria-label={`Банк ${bank.name}`}
+                    >
                     <div className="flex flex-col items-center justify-center gap-1 w-[76px] sm:w-[84px] shrink-0 border-r border-[var(--border-hairline)] pr-2">
                       <BankLogo
                         bank={bank}
@@ -232,7 +321,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                     </div>
 
                     <div className="flex flex-col justify-center flex-1 py-0.5 min-w-0">
-                      <div className="flex flex-col divide-y divide-[var(--border-hairline)] w-full">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-8 w-full">
                         {entry.sortedCategories.map((cat, idx) => {
                           const name = typeof cat === "string" ? cat : cat.name;
                           const percent =
@@ -240,10 +329,22 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                               ? ""
                               : formatPercentValue(cat.percent);
 
+                          const isLastMobile = idx === totalCategories - 1;
+                          const isLastRowDesktop =
+                            totalCategories === 1 ||
+                            idx === totalCategories - 1 ||
+                            (totalCategories % 2 === 0 &&
+                              idx === totalCategories - 2);
+
                           return (
                             <div
                               key={idx}
-                              className="flex items-center justify-between text-[11px] font-semibold text-[var(--text-primary)] px-2.5 py-1.5 translate-z-0"
+                              className={clsx(
+                                "flex items-center justify-between text-[11px] font-semibold text-[var(--text-primary)] px-2.5 py-1.5 translate-z-0",
+                                !isLastMobile &&
+                                  "border-b border-[var(--border-hairline)]",
+                                isLastRowDesktop && "lg:border-b-0",
+                              )}
                             >
                               <span className="leading-tight truncate pr-4 flex-1">
                                 {formatCategoryName(name)}
@@ -258,11 +359,12 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                         })}
                       </div>
                     </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          )}
+                    </div>
+                  );
+                })}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div className="hidden [.pdf-export-mode_&]:flex mt-4 pt-3 border-t border-[var(--border-hairline)] justify-between items-center text-[9px] text-[var(--text-tertiary)]">
             <span>Сгенерировано в приложении Cashback Tracker</span>
@@ -273,3 +375,4 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
     );
   },
 );
+
