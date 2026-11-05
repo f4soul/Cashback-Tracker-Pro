@@ -100,14 +100,14 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
           <div className="flex items-center justify-between px-0.5 mb-3 sm:mb-4 gap-2 flex-nowrap">
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 min-w-0">
               {isAfter25 && allMonthIds.length > 1 ? (
-                <div className="flex bg-[var(--fill)] rounded-control p-0.5 shrink-0 [.pdf-export-mode_&]:hidden border border-[var(--border-hairline)] shadow-sm translate-z-0 [backface-visibility:hidden]">
+                <div className="flex items-center lg:h-8 bg-[var(--fill)] rounded-control p-0.5 shrink-0 [.pdf-export-mode_&]:hidden border border-[var(--border-hairline)] shadow-sm translate-z-0 [backface-visibility:hidden]">
                   {allMonthIds.map((mId) => (
                     <button
                       key={mId}
                       type="button"
                       onClick={() => onMonthChange?.(mId)}
                       className={clsx(
-                        "px-2.5 py-1 lg:px-3 lg:py-1.5 rounded-[max(6px,calc(var(--radius-sm)-2px))] text-[10px] lg:text-xs font-semibold leading-none inline-flex items-center justify-center transition-[background-color,color,box-shadow] cursor-pointer whitespace-nowrap",
+                        "px-2.5 py-1 lg:h-full lg:px-3 lg:py-0 rounded-[max(6px,calc(var(--radius-sm)-2px))] text-[10px] lg:text-xs font-semibold leading-none inline-flex items-center justify-center transition-[background-color,color,box-shadow] cursor-pointer whitespace-nowrap",
                         (selectedMonthId || monthId) === mId
                           ? "bg-[var(--accent-color)] text-white shadow-sm"
                           : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]",
@@ -118,8 +118,8 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                   ))}
                 </div>
               ) : (
-                <div className="flex bg-[var(--fill)] rounded-control p-0.5 shrink-0 [.pdf-export-mode_&]:hidden border border-[var(--border-hairline)] shadow-sm translate-z-0 [backface-visibility:hidden]">
-                  <span className="px-2.5 py-1 lg:px-3 lg:py-1.5 rounded-[max(6px,calc(var(--radius-sm)-2px))] bg-[var(--accent-color)] text-white text-[10px] lg:text-xs font-semibold shadow-sm leading-none inline-flex items-center justify-center whitespace-nowrap">
+                <div className="flex items-center lg:h-8 bg-[var(--fill)] rounded-control p-0.5 shrink-0 [.pdf-export-mode_&]:hidden border border-[var(--border-hairline)] shadow-sm translate-z-0 [backface-visibility:hidden]">
+                  <span className="px-2.5 py-1 lg:h-full lg:px-3 lg:py-0 rounded-[max(6px,calc(var(--radius-sm)-2px))] bg-[var(--accent-color)] text-white text-[10px] lg:text-xs font-semibold shadow-sm leading-none inline-flex items-center justify-center whitespace-nowrap">
                     {capitalize(formatMonthId(monthId).split(" ")[0])}
                   </span>
                 </div>
@@ -131,7 +131,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                   )}
                 </span>
               </h2>
-              <span className="text-[8px] font-black uppercase tracking-widest tabular-nums text-[var(--text-secondary)] bg-white/85 dark:bg-white/5 shadow-sm border border-[var(--border-strong)] px-2.5 py-1 rounded-control shrink-0 leading-none text-center inline-flex items-center justify-center">
+              <span className="text-[8px] font-black uppercase tracking-widest tabular-nums text-[var(--text-secondary)] bg-white/85 dark:bg-white/5 shadow-sm border border-[var(--border-strong)] px-1 py-0.5 rounded-control shrink-0 leading-none text-center inline-flex items-center justify-center">
                 {formatMonthId(monthId).split(" ")[1]}
               </span>
               <button
@@ -142,7 +142,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                   setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
                 }
                 className={clsx(
-                  "p-1.5 lg:w-7 lg:h-7 lg:p-0 rounded-control hover:bg-[var(--fill-hover)] transition-[background-color,color,opacity,transform] duration-200 shrink-0 [.pdf-export-mode_&]:hidden cursor-pointer inline-flex items-center justify-center active:scale-95",
+                  "p-1.5 lg:w-8 lg:h-8 lg:p-0 rounded-control hover:bg-[var(--fill-hover)] transition-[background-color,color,opacity,transform] duration-200 shrink-0 [.pdf-export-mode_&]:hidden cursor-pointer inline-flex items-center justify-center active:scale-95",
                   isListMode
                     ? "opacity-0 pointer-events-none"
                     : "opacity-100",
@@ -176,7 +176,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                     tabIndex={isListMode ? -1 : 0}
                     onClick={onExportImage}
                     onPointerDown={() => preloadExportModule("image")}
-                    className="p-1.5 lg:w-7 lg:h-7 lg:p-0 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--fill-hover)] rounded-control transition-colors cursor-pointer inline-flex items-center justify-center shrink-0 active:scale-95"
+                    className="p-1.5 lg:w-8 lg:h-8 lg:p-0 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--fill-hover)] rounded-control transition-colors cursor-pointer inline-flex items-center justify-center shrink-0 active:scale-95"
                     title="Изображение (PNG)"
                   >
                     <ImageIcon className="w-4 h-4 shrink-0" />
@@ -188,7 +188,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                     tabIndex={isListMode ? -1 : 0}
                     onClick={onExportExcel}
                     onPointerDown={() => preloadExportModule("excel")}
-                    className="p-1.5 lg:w-7 lg:h-7 lg:p-0 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--fill-hover)] rounded-control transition-colors cursor-pointer inline-flex items-center justify-center shrink-0 active:scale-95"
+                    className="p-1.5 lg:w-8 lg:h-8 lg:p-0 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--fill-hover)] rounded-control transition-colors cursor-pointer inline-flex items-center justify-center shrink-0 active:scale-95"
                     title="Excel"
                   >
                     <FileSpreadsheet className="w-4 h-4 shrink-0" />
@@ -200,7 +200,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                     tabIndex={isListMode ? -1 : 0}
                     onClick={onExportPDF}
                     onPointerDown={() => preloadExportModule("pdf")}
-                    className="p-1.5 lg:w-7 lg:h-7 lg:p-0 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--fill-hover)] rounded-control transition-colors cursor-pointer inline-flex items-center justify-center shrink-0 active:scale-95"
+                    className="p-1.5 lg:w-8 lg:h-8 lg:p-0 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--fill-hover)] rounded-control transition-colors cursor-pointer inline-flex items-center justify-center shrink-0 active:scale-95"
                     title="PDF"
                   >
                     <FileText className="w-4 h-4 shrink-0" />
@@ -209,12 +209,12 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
               </div>
 
               {activeSubTab && onSubTabChange && (
-                <div className="hidden lg:flex bg-[var(--fill)] rounded-control p-0.5 shrink-0 border border-[var(--border-hairline)] shadow-sm translate-z-0 [backface-visibility:hidden]">
+                <div className="hidden lg:flex items-center lg:h-8 bg-[var(--fill)] rounded-control p-0.5 shrink-0 border border-[var(--border-hairline)] shadow-sm translate-z-0 [backface-visibility:hidden]">
                   <button
                     type="button"
                     onClick={() => onSubTabChange("table")}
                     className={clsx(
-                      "px-2.5 py-1 lg:px-3 lg:py-1.5 rounded-[max(6px,calc(var(--radius-sm)-2px))] text-[10px] lg:text-xs font-semibold leading-none inline-flex items-center justify-center gap-1.5 transition-[background-color,color,box-shadow] duration-200 cursor-pointer whitespace-nowrap",
+                      "px-2.5 py-1 lg:h-full lg:px-3 lg:py-0 rounded-[max(6px,calc(var(--radius-sm)-2px))] text-[10px] lg:text-xs font-semibold leading-none inline-flex items-center justify-center gap-1.5 transition-[background-color,color,box-shadow] duration-200 cursor-pointer whitespace-nowrap",
                       activeSubTab === "table"
                         ? "bg-[var(--accent-color)] text-white shadow-sm"
                         : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]",
@@ -228,7 +228,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                     type="button"
                     onClick={() => onSubTabChange("list")}
                     className={clsx(
-                      "px-2.5 py-1 lg:px-3 lg:py-1.5 rounded-[max(6px,calc(var(--radius-sm)-2px))] text-[10px] lg:text-xs font-semibold leading-none inline-flex items-center justify-center gap-1.5 transition-[background-color,color,box-shadow] duration-200 cursor-pointer whitespace-nowrap",
+                      "px-2.5 py-1 lg:h-full lg:px-3 lg:py-0 rounded-[max(6px,calc(var(--radius-sm)-2px))] text-[10px] lg:text-xs font-semibold leading-none inline-flex items-center justify-center gap-1.5 transition-[background-color,color,box-shadow] duration-200 cursor-pointer whitespace-nowrap",
                       activeSubTab === "list"
                         ? "bg-[var(--accent-color)] text-white shadow-sm"
                         : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]",
@@ -245,7 +245,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                 <button
                   type="button"
                   onClick={onAddBank}
-                  className="hidden xl:inline-flex w-7 h-7 rounded-control bg-[var(--accent-color)] text-white shadow-sm shadow-[var(--accent-color)]/25 hover:brightness-110 active:scale-95 transition-[filter,transform] cursor-pointer items-center justify-center shrink-0"
+                  className="hidden xl:inline-flex w-8 h-8 rounded-control bg-[var(--accent-color)] text-white shadow-sm shadow-[var(--accent-color)]/25 hover:brightness-110 active:scale-95 transition-[filter,transform] cursor-pointer items-center justify-center shrink-0"
                   title="Добавить банк"
                 >
                   <Plus className="w-4 h-4 stroke-[2.5]" />
@@ -254,24 +254,22 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
             </div>
           </div>
 
-          <AnimatePresence mode="wait" initial={false}>
+          <AnimatePresence initial={false}>
             {isListMode && listViewContent ? (
               <motion.div
                 key={`list-${monthId}`}
-                initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                initial={{ opacity: 0, y: 6, scale: 0.99 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                transition={{ duration: 0.18, ease: "easeOut" }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
               >
                 {listViewContent}
               </motion.div>
             ) : entries.length === 0 ? (
               <motion.div
                 key={`empty-${monthId}`}
-                initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                initial={{ opacity: 0, y: 6, scale: 0.99 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                transition={{ duration: 0.18, ease: "easeOut" }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
                 className="flex flex-col items-center justify-center p-8 text-center bg-[var(--surface-1)] rounded-card border border-dashed border-[var(--border-strong)]"
               >
                 <div className="w-16 h-16 bg-[var(--surface-2)] rounded-control border border-[var(--border-strong)] flex items-center justify-center mb-4">
@@ -287,10 +285,9 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
             ) : (
               <motion.div
                 key={`table-${monthId}`}
-                initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                initial={{ opacity: 0, y: 6, scale: 0.99 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                transition={{ duration: 0.18, ease: "easeOut" }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
                 className="flex flex-col gap-1"
               >
                 {sortedEntries.map((entry) => {

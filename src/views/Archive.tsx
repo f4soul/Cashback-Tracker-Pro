@@ -9,9 +9,6 @@ import { DropdownPortal } from "../components/ui/DropdownPortal";
 import { Modal } from "../components/ui/Modal";
 import { exportToPDF, exportToExcel, exportToImage } from "../utils/export";
 import {
-  FileSpreadsheet,
-  FileText,
-  Image as ImageIcon,
   Search,
   Filter,
   ChevronDown,
@@ -29,34 +26,73 @@ import { motion } from "motion/react";
 
 interface MonthCardProps {
   month: MonthData;
+  customBanks: Bank[];
+  globalLogoShape: LogoShape;
   onClick: () => void;
   onDeleteClick: (e: React.MouseEvent) => void;
 }
 
 const MonthCard: React.FC<MonthCardProps> = memo(
-  ({ month, onClick, onDeleteClick }) => {
+  ({ month, customBanks, globalLogoShape, onClick, onDeleteClick }) => {
+    const totalCategories = useMemo(
+      () =>
+        month.entries.reduce((sum, entry) => sum + entry.categories.length, 0),
+      [month.entries],
+    );
+
+    const bankList = useMemo(() => {
+      return month.entries
+        .map((entry) => {
+          let b = getBankDetails(entry.bankId, entry.customBankName);
+          if (!b && entry.bankId.startsWith("custom_")) {
+            b = customBanks.find((cb) => cb.id === entry.bankId);
+          }
+          if (!b) {
+            b = {
+              id: entry.bankId,
+              name: entry.customBankName || "Удаленный банк",
+              color: entry.customBankColor || "#64748b",
+              logoText:
+                entry.customBankLogoText ||
+                (entry.customBankName || "Б").substring(0, 2).toUpperCase(),
+              logoUrl: entry.customLogo,
+            };
+          }
+          return { bank: b, customLogo: entry.customLogo };
+        })
+        .filter((item) => Boolean(item.bank));
+    }, [month.entries, customBanks]);
+
+    const visibleBanks = bankList.slice(0, 10);
+    const overflowCount = bankList.length - visibleBanks.length;
+
     return (
       <motion.div
         initial={{ opacity: 0, scale: 0.98, y: 6 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 350, damping: 25 }}
         onClick={onClick}
-        className="bg-white dark:bg-[var(--surface-1)] rounded-card border border-[var(--border-hairline)] shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:border-[var(--accent-color)]/30 transition-[box-shadow,border-color] duration-300 cursor-pointer p-4 sm:p-5 flex flex-col group relative overflow-hidden isolate"
+        className="bg-white dark:bg-[var(--surface-1)] rounded-card border border-[var(--border-hairline)] shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:border-[var(--accent-color)]/30 transition-[box-shadow,border-color] duration-300 cursor-pointer p-4 flex flex-col gap-3 group relative overflow-hidden isolate"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent-color)]/0 to-[var(--accent-color)]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
         <div className="flex items-center justify-between relative z-10">
-          <div className="flex items-center gap-3 sm:gap-4">
-            <div className="w-12 h-12 rounded-full bg-[var(--accent-color)]/10 dark:bg-[var(--accent-color)]/20 text-[var(--accent-color)] flex items-center justify-center font-bold text-lg tabular-nums leading-none shrink-0 shadow-sm">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-11 h-11 rounded-full bg-[var(--accent-color)]/10 dark:bg-[var(--accent-color)]/20 text-[var(--accent-color)] flex items-center justify-center font-bold text-base tabular-nums leading-none shrink-0 shadow-sm border border-[var(--accent-color)]/20">
               {month.monthId.split("-")[1]}
             </div>
             <div className="text-left min-w-0">
-              <h3 className="text-lg font-bold text-[var(--text-primary)] leading-tight truncate tracking-tight">
+              <h3 className="text-[15px] font-bold text-[var(--text-primary)] leading-tight truncate tracking-tight">
                 {capitalize(formatMonthId(month.monthId))}
               </h3>
-              <p className="text-sm text-[var(--text-secondary)] mt-0.5 font-medium">
+              <p className="text-[11.5px] text-[var(--text-secondary)] mt-0.5 font-medium truncate">
                 {month.entries.length}{" "}
                 {pluralize(month.entries.length, ["банк", "банка", "банков"])}
+                {" · "}
+                {totalCategories}{" "}
+                {pluralize(totalCategories, [
+                  "категория",
+                  "категории",
+                  "категорий",
+                ])}
               </p>
             </div>
           </div>
@@ -64,11 +100,39 @@ const MonthCard: React.FC<MonthCardProps> = memo(
           <button
             type="button"
             onClick={onDeleteClick}
-            className="p-2 text-[var(--text-tertiary)] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/40 rounded-control transition-[color,background-color,transform] cursor-pointer active:scale-90"
+            className="p-2 text-[var(--text-tertiary)] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/40 rounded-control transition-[color,background-color,transform] cursor-pointer active:scale-90 shrink-0 ml-2"
             title="Удалить месяц"
           >
-            <Trash2 className="w-5 h-5" />
+            <Trash2 className="w-4 h-4" />
           </button>
+        </div>
+
+        {/* Полочка с живым стеком мини-логотипов банков (Вариант 1) */}
+        <div className="flex items-center gap-2 pl-0.5 pt-2.5 border-t border-[var(--border-hairline)] relative z-10 min-w-0">
+          <div className="flex -space-x-1.5 overflow-hidden py-0.5 shrink-0 max-w-[calc(100%-65px)]">
+            {visibleBanks.map((item, idx) => (
+              <div
+                key={`${item.bank.id}-${idx}`}
+                className="w-6 h-6 rounded-full bg-white dark:bg-[var(--surface-2)] ring-2 ring-white dark:ring-[var(--surface-1)] border border-[var(--border-hairline)] flex items-center justify-center overflow-hidden shadow-xs shrink-0"
+              >
+                <BankLogo
+                  bank={item.bank}
+                  customLogo={item.customLogo}
+                  logoShape={globalLogoShape}
+                  size="xs"
+                />
+              </div>
+            ))}
+            {overflowCount > 0 && (
+              <div className="h-6 px-1.5 rounded-full bg-[var(--fill)] ring-2 ring-white dark:ring-[var(--surface-1)] text-[10px] font-bold tabular-nums text-[var(--text-secondary)] flex items-center justify-center shrink-0 border border-[var(--border-hairline)]">
+                +{overflowCount}
+              </div>
+            )}
+          </div>
+          <span className="text-[11px] text-[var(--text-tertiary)] font-semibold ml-auto group-hover:text-[var(--accent-color)] transition-colors inline-flex items-center gap-1 shrink-0">
+            <span>Открыть</span>
+            <span aria-hidden="true">→</span>
+          </span>
         </div>
       </motion.div>
     );
@@ -669,6 +733,8 @@ export const Archive: React.FC<ArchiveProps> = memo(
               <MonthCard
                 key={month.monthId}
                 month={month}
+                customBanks={allCustomBanks}
+                globalLogoShape={globalLogoShape}
                 onClick={() => setSelectedMonthId(month.monthId)}
                 onDeleteClick={(e) => {
                   e.stopPropagation();
@@ -712,12 +778,22 @@ export const Archive: React.FC<ArchiveProps> = memo(
           size="wide"
         >
           {selectedMonth && (
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-3">
-                <h4 className="text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] ml-1">
-                  Банки в этом месяце
-                </h4>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div className="flex flex-col gap-3.5">
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between px-1">
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)]">
+                    Банки в этом месяце
+                  </h4>
+                  <span className="text-[11px] font-medium text-[var(--text-tertiary)]">
+                    {selectedMonth.entries.length}{" "}
+                    {pluralize(selectedMonth.entries.length, [
+                      "банк",
+                      "банка",
+                      "банков",
+                    ])}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-2.5">
                   {selectedMonth.entries.map((entry) => {
                     let bank = getBankDetails(
                       entry.bankId,
@@ -743,74 +819,31 @@ export const Archive: React.FC<ArchiveProps> = memo(
                     return (
                       <div
                         key={entry.id}
-                        className="flex items-center gap-2.5 p-2.5 rounded-control bg-[var(--fill)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] shadow-sm hover:border-[var(--accent-color)]/30 transition-[border-color,background-color] duration-200 group isolate"
+                        className="flex items-center gap-2.5 p-2.5 rounded-control bg-[var(--fill)] hover:bg-[var(--fill-hover)] border border-[var(--border-hairline)] transition-colors select-none min-w-0"
                       >
-                        <div className="shrink-0">
-                          <BankLogo
-                            bank={bank}
-                            customLogo={entry.customLogo}
-                            logoShape={globalLogoShape}
-                            size="sm"
-                          />
-                        </div>
-                        <div className="min-w-0 flex-1 flex flex-col justify-center">
-                          <h4
-                            className="font-bold text-[13px] text-[var(--text-primary)] truncate leading-tight group-hover:text-[var(--accent-color)] transition-colors"
-                            title={bank.name}
-                          >
+                        <BankLogo
+                          bank={bank}
+                          customLogo={entry.customLogo}
+                          logoShape={globalLogoShape}
+                          size="sm"
+                        />
+                        <div className="flex flex-col min-w-0 overflow-hidden text-left">
+                          <span className="text-xs font-bold text-[var(--text-primary)] truncate leading-tight">
                             {bank.name}
-                          </h4>
-                          <p className="text-[9px] font-semibold text-[var(--text-secondary)] mt-0.5 truncate">
+                          </span>
+                          <span className="text-[10px] text-[var(--text-secondary)] font-medium truncate mt-0.5 leading-tight">
                             {entry.categories.length}{" "}
                             {pluralize(entry.categories.length, [
                               "категория",
                               "категории",
                               "категорий",
                             ])}
-                          </p>
+                          </span>
                         </div>
                       </div>
                     );
                   })}
                 </div>
-              </div>
-
-              <div className="flex p-1 gap-1 bg-[var(--fill)] rounded-control border border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] translate-z-0">
-                <button
-                  type="button"
-                  onClick={() => handleExportImage(selectedMonth.monthId)}
-                  className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-control hover:bg-[var(--fill-hover)] hover:shadow-sm border border-transparent transition-[background-color,border-color,box-shadow,transform] group cursor-pointer active:scale-95"
-                  title="Изображение (PNG)"
-                >
-                  <ImageIcon className="w-4 h-4 text-blue-500 group-hover:scale-110 transition-transform mb-0.5" />
-                  <span className="text-[9px] font-semibold text-[var(--text-secondary)] leading-none">
-                    PNG
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleExportExcel(selectedMonth)}
-                  className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-control hover:bg-[var(--fill-hover)] hover:shadow-sm border border-transparent transition-[background-color,border-color,box-shadow,transform] group cursor-pointer active:scale-90"
-                  title="Таблица (Excel)"
-                >
-                  <FileSpreadsheet className="w-4 h-4 text-[var(--accent-color)] group-hover:scale-110 transition-transform mb-0.5" />
-                  <span className="text-[9px] font-semibold text-[var(--text-secondary)] leading-none">
-                    Excel
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleExport(selectedMonth.monthId)}
-                  className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-control hover:bg-[var(--fill-hover)] hover:shadow-sm border border-transparent transition-[background-color,border-color,box-shadow,transform] group cursor-pointer active:scale-95"
-                  title="Документ (PDF)"
-                >
-                  <FileText className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform mb-0.5" />
-                  <span className="text-[9px] font-semibold text-[var(--text-secondary)] leading-none">
-                    PDF
-                  </span>
-                </button>
               </div>
 
               <CashbackTable

@@ -99,6 +99,8 @@ export const BankForm: React.FC<BankFormProps> = memo(
     const fileInputRef = useRef<HTMLInputElement>(null);
     const bankDropdownRef = useRef<HTMLDivElement>(null);
     const categorySearchInputRef = useRef<HTMLInputElement>(null);
+    const selectedRowRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+    const pendingScrollCategoryRef = useRef<string | null>(null);
 
     // Confirm Modal state
     const [bankToDelete, setBankToDelete] = useState<string | null>(null);
@@ -211,11 +213,26 @@ export const BankForm: React.FC<BankFormProps> = memo(
           );
           return next;
         } else {
+          pendingScrollCategoryRef.current = catName;
           setActiveCategoryName(catName);
           return [...prev, { name: catName, percent: "" }];
         }
       });
     }, []);
+
+    // Автоматическая прокрутка списка «Выбранные» к только что добавленной категории
+    useEffect(() => {
+      const targetName = pendingScrollCategoryRef.current;
+      if (!targetName) return;
+
+      const rowEl = selectedRowRefs.current.get(targetName);
+      if (rowEl) {
+        pendingScrollCategoryRef.current = null;
+        requestAnimationFrame(() => {
+          rowEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+      }
+    }, [selectedCategories]);
 
     const updateCategoryPercent = useCallback(
       (catName: string, percent: string) => {
@@ -271,6 +288,7 @@ export const BankForm: React.FC<BankFormProps> = memo(
         );
         const resolvedName = existing || name;
 
+        pendingScrollCategoryRef.current = resolvedName;
         setSelectedCategories((prev) => {
           if (prev.some((c) => c.name === resolvedName)) return prev;
           return [...prev, { name: resolvedName, percent: "" }];
@@ -780,7 +798,7 @@ export const BankForm: React.FC<BankFormProps> = memo(
               Выберите категории из списка ниже
             </div>
           ) : (
-            <div className="flex flex-col gap-1.5">
+            <div className="max-h-[182px] overflow-y-auto overscroll-contain scrollbar-hide flex flex-col gap-1 p-0.5 -m-0.5">
               <AnimatePresence initial={false}>
                 {selectedCategories.map((cat) => {
                   const isFocused = cat.name === resolvedActiveCategoryName;
@@ -793,6 +811,13 @@ export const BankForm: React.FC<BankFormProps> = memo(
                   return (
                     <motion.div
                       key={cat.name}
+                      ref={(node) => {
+                        if (node) {
+                          selectedRowRefs.current.set(cat.name, node);
+                        } else {
+                          selectedRowRefs.current.delete(cat.name);
+                        }
+                      }}
                       initial={{ opacity: 0, scale: 0.97, y: -4 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{
@@ -809,7 +834,7 @@ export const BankForm: React.FC<BankFormProps> = memo(
                       }}
                       onClick={() => setActiveCategoryName(cat.name)}
                       className={clsx(
-                        "cursor-pointer flex items-center justify-between gap-2 pl-3 pr-1.5 py-1.5 rounded-control border transition-[background-color,border-color,box-shadow] transform-gpu",
+                        "cursor-pointer h-9 shrink-0 flex items-center justify-between gap-2 pl-3 pr-1 rounded-control border transition-[background-color,border-color,box-shadow] transform-gpu",
                         isFocused
                           ? "bg-[var(--fill-hover)] border-[var(--accent-color)]/60 ring-1 ring-[var(--accent-color)]/20"
                           : "bg-[var(--fill)] hover:bg-[var(--fill-hover)] border-[var(--border-hairline)]",
@@ -822,11 +847,11 @@ export const BankForm: React.FC<BankFormProps> = memo(
                         {cat.name}
                       </span>
 
-                      <div className="flex items-center gap-1.5 shrink-0">
+                      <div className="flex items-center gap-1 shrink-0">
                         <label
                           onClick={(e) => e.stopPropagation()}
                           className={clsx(
-                            "inline-flex items-center justify-center w-[54px] h-7 px-1.5 rounded-control bg-[var(--percent-bg)] border transition-[border-color,box-shadow] cursor-text",
+                            "inline-flex items-center justify-center w-[52px] h-6 px-1.5 rounded-[min(8px,var(--radius-sm))] bg-[var(--percent-bg)] border transition-[border-color,box-shadow] cursor-text",
                             isFocused
                               ? "border-[var(--accent-color)]/50"
                               : "border-[var(--accent-color)]/30 focus-within:border-[var(--accent-color)]",
@@ -847,7 +872,7 @@ export const BankForm: React.FC<BankFormProps> = memo(
                                 ? `${inputCharWidth}ch`
                                 : "100%",
                             }}
-                            className="min-w-[1ch] max-w-[36px] bg-transparent text-center text-[13px] font-bold tabular-nums leading-none text-[var(--percent-text)] placeholder-[var(--text-tertiary)] focus:outline-none no-spinner"
+                            className="min-w-[1ch] max-w-[34px] bg-transparent text-center text-[12.5px] font-bold tabular-nums leading-none text-[var(--percent-text)] placeholder-[var(--text-tertiary)] focus:outline-none no-spinner"
                           />
                           {cat.percent.trim() !== "" && !hasPercentSign && (
                             <span className="text-[10px] font-bold text-[var(--percent-text)]/80 leading-none ml-[1px] shrink-0 select-none pointer-events-none">
@@ -862,7 +887,7 @@ export const BankForm: React.FC<BankFormProps> = memo(
                             e.stopPropagation();
                             toggleCategory(cat.name);
                           }}
-                          className="w-7 h-7 rounded-full flex items-center justify-center text-[var(--text-tertiary)] hover:text-red-500 hover:bg-red-500/10 transition-[background-color,color,transform] active:scale-90 cursor-pointer shrink-0"
+                          className="w-6 h-6 rounded-full flex items-center justify-center text-[var(--text-tertiary)] hover:text-red-500 hover:bg-red-500/10 transition-[background-color,color,transform] active:scale-90 cursor-pointer shrink-0"
                           title={`Убрать «${cat.name}»`}
                         >
                           <X className="w-3.5 h-3.5" />

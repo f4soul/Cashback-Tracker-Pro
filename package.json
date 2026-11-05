@@ -1,6 +1,6 @@
 {
-	"name": "cashback-tracker-pro",
-	"short_name": "Cashback Pro",
+	"name": "cashback-tracker",
+	"short_name": "Cashback",
 	"private": true,
 	"version": "0.0.0",
 	"type": "module",

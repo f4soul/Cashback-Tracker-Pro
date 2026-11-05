@@ -15,7 +15,6 @@ import {
   AlertCircle,
   Info,
   AlertTriangle,
-  Loader2,
 } from "lucide-react";
 import { clsx } from "clsx";
 import { motion, AnimatePresence } from "motion/react";
@@ -294,7 +293,28 @@ export default function App() {
           info: <Info className="w-4 h-4 text-[var(--accent-color)] shrink-0" />,
           warning: <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />,
           loading: (
-            <Loader2 className="w-4 h-4 text-[var(--accent-color)] animate-spin shrink-0" />
+            <svg
+              viewBox="0 0 24 24"
+              className="w-4 h-4 animate-spin origin-center text-[var(--accent-color)] shrink-0"
+              fill="none"
+              aria-hidden="true"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="9"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                className="opacity-25"
+              />
+              <path
+                d="M12 3a9 9 0 0 1 9 9"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+              />
+            </svg>
           ),
         }}
         toastOptions={{
@@ -327,7 +347,7 @@ export default function App() {
 
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex flex-col w-[280px] h-[100dvh] sticky top-0 self-start bg-white dark:bg-[var(--surface-1)] transition-colors duration-300 border-r border-[var(--border-hairline)] z-30 shrink-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none">
-        <div className="px-6 py-10 flex flex-col h-full">
+        <div className="px-6 py-6 lg:py-10 flex flex-col h-full">
           <div className="flex items-center mb-12 px-1">
             <div className="flex items-center gap-3 flex-1">
               <div className="w-11 h-11 bg-[var(--accent-color)] opacity-90 rounded-[22%] flex items-center justify-center shadow-sm">
@@ -337,8 +357,8 @@ export default function App() {
                 <h1 className="text-xl font-bold text-[var(--text-primary)] tracking-tight leading-none">
                   Cashback
                 </h1>
-                <p className="text-[10px] font-bold text-[var(--accent-color)] uppercase tracking-widest mt-1">
-                  Tracker Pro
+                <p className="text-[11.5px] font-bold text-[var(--accent-color)] uppercase tracking-[0.44em] mt-1.5 leading-none pl-[0.5px]">
+                  Tracker
                 </p>
               </div>
             </div>
@@ -454,8 +474,8 @@ export default function App() {
               <h1 className="text-lg font-bold text-[var(--text-primary)] tracking-tight leading-none">
                 Cashback
               </h1>
-              <p className="text-[10px] font-black text-[var(--accent-color)] uppercase tracking-widest mt-0.5">
-                Tracker Pro
+              <p className="text-[10.5px] font-bold text-[var(--accent-color)] uppercase tracking-[0.38em] mt-1 leading-none pl-[0.5px]">
+                Tracker
               </p>
             </div>
           </div>
@@ -509,9 +529,9 @@ export default function App() {
       {/* Main Content Area */}
       <main
         id="main-scroll-container"
-        className="flex-1 scrollbar-hide app-content-text pt-[calc(5.25rem+env(safe-area-inset-top))] pb-[calc(7rem+env(safe-area-inset-bottom))] md:pt-12 md:pb-12 relative"
+        className="flex-1 scrollbar-hide app-content-text pt-[calc(5.25rem+env(safe-area-inset-top))] pb-[calc(7rem+env(safe-area-inset-bottom))] md:py-6 lg:py-10 relative"
       >
-        <div className="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 pt-2 pb-3 lg:pt-0 lg:pb-8">
+        <div className="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 pt-2 pb-3 md:py-0">
           <AnimatePresence mode="wait" initial={false}>
             {activeTab === "current" ? (
               <motion.div

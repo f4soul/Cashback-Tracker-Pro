@@ -321,6 +321,10 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     const [rightPos, setRightPos] = useState(16);
     const isDraggingFab = useRef(false);
     const isDraggingRestore = useRef(false);
+    const fabPointerStartRef = useRef<{ x: number; y: number } | null>(null);
+    const restorePointerStartRef = useRef<{ x: number; y: number } | null>(
+      null,
+    );
     const lastScrollYRef = useRef(
       typeof window !== "undefined" ? window.scrollY : 0,
     );
@@ -344,18 +348,19 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
       lastScrollYRef.current = currentY;
       scrollDownStartYRef.current = currentY;
 
+      const canAutoHideFab = () =>
+        window.innerWidth < 1280 &&
+        !isFabHidden &&
+        !isModalOpen &&
+        !isDeleteModalOpen &&
+        !isDraggingFab.current &&
+        !isDraggingRestore.current &&
+        Date.now() >= fabHideLockedUntil.current;
+
       const handleScroll = () => {
         const y = Math.max(0, window.scrollY);
 
-        if (
-          window.innerWidth >= 1150 ||
-          isFabHidden ||
-          isModalOpen ||
-          isDeleteModalOpen ||
-          isDraggingFab.current ||
-          isDraggingRestore.current ||
-          Date.now() < fabHideLockedUntil.current
-        ) {
+        if (!canAutoHideFab()) {
           lastScrollYRef.current = y;
           scrollDownStartYRef.current = y;
           return;
@@ -367,10 +372,39 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
         lastScrollYRef.current = y;
 
         const downDelta = y - scrollDownStartYRef.current;
+        const maxScrollY = Math.max(
+          0,
+          document.documentElement.scrollHeight - window.innerHeight,
+        );
 
-        // Прячем ТОЛЬКО при уверенном непрерывном прокруте ВНИЗ.
-        // Микросдвиги при касании, скролл вверх и программные scrollTo порог не проходят.
+        // 1. Стандартный длинный скролл вниз
         if (downDelta >= 28 && y > 36) {
+          setIsFabHidden(true);
+          return;
+        }
+
+        // 2. Короткий ход скролла (например, планшеты, где до низа страницы всего 10–90px)
+        if (
+          maxScrollY > 0 &&
+          maxScrollY <= 90 &&
+          downDelta >= 6 &&
+          (y >= maxScrollY - 4 || downDelta >= 14)
+        ) {
+          setIsFabHidden(true);
+        }
+      };
+
+      const handleWheel = (e: WheelEvent) => {
+        if (!canAutoHideFab() || e.deltaY <= 14) return;
+
+        const y = Math.max(0, window.scrollY);
+        const maxScrollY = Math.max(
+          0,
+          document.documentElement.scrollHeight - window.innerHeight,
+        );
+
+        // Если страница почти не скроллится или уже упёрлась в низ — прокрутка колеса вниз прячет кнопку
+        if (maxScrollY <= 90 && y >= maxScrollY - 4) {
           setIsFabHidden(true);
         }
       };
@@ -378,7 +412,11 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
       // ВАЖНО: passive:true и БЕЗ capture — слушаем только страничный скролл,
       // внутренние контейнеры (модалки, списки) скрытие не триггерят.
       window.addEventListener("scroll", handleScroll, { passive: true });
-      return () => window.removeEventListener("scroll", handleScroll);
+      window.addEventListener("wheel", handleWheel, { passive: true });
+      return () => {
+        window.removeEventListener("scroll", handleScroll);
+        window.removeEventListener("wheel", handleWheel);
+      };
     }, [isFabHidden, isModalOpen, isDeleteModalOpen]);
 
     useEffect(() => {
@@ -386,7 +424,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
         const isDesktop = window.innerWidth >= 768;
         const isWide = window.innerWidth >= 1280;
 
-        if (window.innerWidth >= 1150) {
+        if (window.innerWidth >= 1280) {
           setIsFabHidden(false);
         }
 
@@ -597,10 +635,50 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   damping: 32,
                   mass: 0.8,
                 }}
+                onPointerDown={(e) => {
+                  fabPointerStartRef.current = { x: e.clientX, y: e.clientY };
+                  fabHideLockedUntil.current = Date.now() + 900;
+                }}
+                onPointerMove={(e) => {
+                  const start = fabPointerStartRef.current;
+                  if (!start || isFabHidden) return;
+                  const dx = e.clientX - start.x;
+                  const dy = e.clientY - start.y;
+
+                  // Ручное смахивание кнопки вправо за край экрана
+                  if (dx >= 18 && dx > Math.abs(dy) * 1.1) {
+                    fabPointerStartRef.current = null;
+                    isDraggingFab.current = true;
+                    setIsFabHidden(true);
+                    setTimeout(() => {
+                      isDraggingFab.current = false;
+                    }, 120);
+                  }
+                }}
+                onPointerUp={() => {
+                  fabPointerStartRef.current = null;
+                }}
+                onPointerCancel={() => {
+                  fabPointerStartRef.current = null;
+                }}
                 onDragStart={() => {
                   isDraggingFab.current = true;
                 }}
                 onDragEnd={(_e, info) => {
+                  fabPointerStartRef.current = null;
+
+                  // Если жест завершился заметным смещением вправо — прячем кнопку
+                  if (
+                    info.offset.x >= 20 &&
+                    info.offset.x > Math.abs(info.offset.y)
+                  ) {
+                    setIsFabHidden(true);
+                    setTimeout(() => {
+                      isDraggingFab.current = false;
+                    }, 80);
+                    return;
+                  }
+
                   if (Math.abs(info.offset.y) < 8) {
                     isDraggingFab.current = false;
                     return;
@@ -635,9 +713,6 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                 <button
                   type="button"
                   tabIndex={isFabHidden ? -1 : 0}
-                  onPointerDown={() => {
-                    fabHideLockedUntil.current = Date.now() + 900;
-                  }}
                   onClick={(e) => {
                     if (isDraggingFab.current || isFabHidden) {
                       e.preventDefault();
@@ -646,7 +721,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                     setEditingEntry(undefined);
                     setIsModalOpen(true);
                   }}
-                  title="Добавить банк"
+                  title="Добавить банк (смахните вправо, чтобы скрыть)"
                   className="w-14 h-14 bg-[var(--accent-color)] text-white rounded-full flex items-center justify-center shadow-lg shadow-[var(--accent-color)]/30 hover:shadow-[var(--accent-color)]/40 hover:brightness-110 transition-[filter,box-shadow,transform] cursor-pointer active:scale-95 border border-white/20"
                 >
                   <Plus className="w-7 h-7" />
@@ -681,8 +756,31 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   damping: 32,
                   mass: 0.8,
                 }}
-                onPointerDown={() => {
+                onPointerDown={(e) => {
+                  restorePointerStartRef.current = {
+                    x: e.clientX,
+                    y: e.clientY,
+                  };
                   fabHideLockedUntil.current = Date.now() + 1200;
+                }}
+                onPointerMove={(e) => {
+                  const start = restorePointerStartRef.current;
+                  if (!start || !isFabHidden) return;
+                  const dx = e.clientX - start.x;
+                  const dy = e.clientY - start.y;
+
+                  // Ручное вытягивание ярлычка влево
+                  if (dx <= -14 && Math.abs(dx) > Math.abs(dy)) {
+                    restorePointerStartRef.current = null;
+                    fabHideLockedUntil.current = Date.now() + 1200;
+                    setIsFabHidden(false);
+                  }
+                }}
+                onPointerUp={() => {
+                  restorePointerStartRef.current = null;
+                }}
+                onPointerCancel={() => {
+                  restorePointerStartRef.current = null;
                 }}
                 onClick={() => {
                   if (isDraggingRestore.current || !isFabHidden) return;
@@ -693,6 +791,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   isDraggingRestore.current = true;
                 }}
                 onDragEnd={(_e, info) => {
+                  restorePointerStartRef.current = null;
                   if (Math.abs(info.offset.y) < 8) {
                     isDraggingRestore.current = false;
                     fabHideLockedUntil.current = Date.now() + 1200;
@@ -726,7 +825,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   touchAction: "none",
                   pointerEvents: isFabHidden ? "auto" : "none",
                 }}
-                title="Показать кнопку (перетащите вертикально)"
+                title="Показать кнопку (нажмите или потяните влево)"
               >
                 <div className="flex flex-col items-center gap-0.5 opacity-85 group-hover:opacity-100 transition-opacity">
                   <ChevronUp className="w-3 h-3" />
@@ -739,7 +838,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
           )}
 
         {/* Mobile & Portrait Tablet Switcher (< 1024px) — Slim Low-Profile */}
-        <div className="flex lg:hidden p-0.5 gap-0.5 relative bg-white dark:bg-[var(--surface-1)] rounded-control border border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] w-full mb-1.5 translate-z-0 [backface-visibility:hidden] z-10">
+        <div className="flex lg:hidden p-0.5 gap-0.5 relative bg-white dark:bg-[var(--surface-1)] rounded-control border border-[var(--border-hairline)] shadow-[0_2px_8px_rgb(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgb(0,0,0,0.1)] w-full translate-z-0 [backface-visibility:hidden] z-10">
           <div
             className="absolute inset-y-0.5 rounded-[max(6px,calc(var(--radius-sm)-2px))] bg-[var(--fill-hover)] shadow-sm z-0 transition-[left,right] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]"
             style={{
@@ -751,7 +850,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
             type="button"
             onClick={() => setActiveSubTab("table")}
             className={clsx(
-              "flex-1 flex items-center justify-center gap-1.5 py-1 rounded-[max(6px,calc(var(--radius-sm)-2px))] text-[10px] font-semibold transition-colors cursor-pointer relative z-10 whitespace-nowrap",
+              "flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-[max(6px,calc(var(--radius-sm)-2px))] text-[10px] font-semibold transition-colors cursor-pointer relative z-10 whitespace-nowrap",
               activeSubTab === "table"
                 ? "text-[var(--accent-color)]"
                 : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]",
