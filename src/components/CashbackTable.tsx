@@ -100,39 +100,43 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
           <div className="flex items-center justify-between px-0.5 mb-3 sm:mb-4 gap-2 flex-nowrap">
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 min-w-0">
               {isAfter25 && allMonthIds.length > 1 ? (
-                <div className="flex items-center lg:h-8 bg-[var(--fill)] rounded-control p-0.5 shrink-0 [.pdf-export-mode_&]:hidden border border-[var(--border-hairline)] shadow-sm translate-z-0 [backface-visibility:hidden]">
-                  {allMonthIds.map((mId) => (
-                    <button
-                      key={mId}
-                      type="button"
-                      onClick={() => onMonthChange?.(mId)}
-                      className={clsx(
-                        "px-2.5 py-1 lg:h-full lg:px-3 lg:py-0 rounded-[max(6px,calc(var(--radius-sm)-2px))] text-[10px] lg:text-xs font-semibold leading-none inline-flex items-center justify-center transition-[background-color,color,box-shadow] cursor-pointer whitespace-nowrap",
-                        (selectedMonthId || monthId) === mId
-                          ? "bg-[var(--accent-color)] text-white shadow-sm"
-                          : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]",
+                <>
+                  <div className="flex items-center lg:h-8 bg-[var(--fill)] rounded-control p-0.5 shrink-0 [.pdf-export-mode_&]:hidden border border-[var(--border-hairline)] shadow-sm translate-z-0 [backface-visibility:hidden]">
+                    {allMonthIds.map((mId) => (
+                      <button
+                        key={mId}
+                        type="button"
+                        onClick={() => onMonthChange?.(mId)}
+                        className={clsx(
+                          "px-2.5 py-1 lg:h-full lg:px-3 lg:py-0 rounded-[max(6px,calc(var(--radius-sm)-2px))] text-[10px] lg:text-xs font-semibold leading-none inline-flex items-center justify-center transition-[background-color,color,box-shadow] cursor-pointer whitespace-nowrap",
+                          (selectedMonthId || monthId) === mId
+                            ? "bg-[var(--accent-color)] text-white shadow-sm"
+                            : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]",
+                        )}
+                      >
+                        {capitalize(formatMonthId(mId).split(" ")[0])}
+                      </button>
+                    ))}
+                  </div>
+                  <h2 className="hidden [.pdf-export-mode_&]:inline-flex text-base sm:text-lg lg:text-xl font-bold tracking-tight text-[var(--text-primary)] leading-none whitespace-nowrap items-center lg:h-8">
+                    <span className="text-[var(--accent-color)]">
+                      {capitalize(
+                        formatMonthId(selectedMonthId || monthId).split(" ")[0],
                       )}
-                    >
-                      {capitalize(formatMonthId(mId).split(" ")[0])}
-                    </button>
-                  ))}
-                </div>
+                    </span>
+                  </h2>
+                </>
               ) : (
-                <div className="flex items-center lg:h-8 bg-[var(--fill)] rounded-control p-0.5 shrink-0 [.pdf-export-mode_&]:hidden border border-[var(--border-hairline)] shadow-sm translate-z-0 [backface-visibility:hidden]">
-                  <span className="px-2.5 py-1 lg:h-full lg:px-3 lg:py-0 rounded-[max(6px,calc(var(--radius-sm)-2px))] bg-[var(--accent-color)] text-white text-[10px] lg:text-xs font-semibold shadow-sm leading-none inline-flex items-center justify-center whitespace-nowrap">
-                    {capitalize(formatMonthId(monthId).split(" ")[0])}
+                <h2 className="text-base sm:text-lg lg:text-xl font-bold tracking-tight text-[var(--text-primary)] leading-none inline-flex items-center whitespace-nowrap lg:h-8">
+                  <span className="text-[var(--accent-color)]">
+                    {capitalize(
+                      formatMonthId(selectedMonthId || monthId).split(" ")[0],
+                    )}
                   </span>
-                </div>
+                </h2>
               )}
-              <h2 className="hidden [.pdf-export-mode_&]:inline-flex text-lg font-black text-[var(--text-primary)] tracking-tight whitespace-nowrap items-center">
-                <span className="text-[var(--accent-color)]">
-                  {capitalize(
-                    formatMonthId(selectedMonthId || monthId).split(" ")[0],
-                  )}
-                </span>
-              </h2>
               <span className="text-[8px] font-black uppercase tracking-widest tabular-nums text-[var(--text-secondary)] bg-white/85 dark:bg-white/5 shadow-sm border border-[var(--border-strong)] px-1 py-0.5 rounded-control shrink-0 leading-none text-center inline-flex items-center justify-center">
-                {formatMonthId(monthId).split(" ")[1]}
+                {formatMonthId(selectedMonthId || monthId).split(" ")[1]}
               </span>
               <button
                 type="button"

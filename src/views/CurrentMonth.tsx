@@ -817,7 +817,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   setYOffset(snappedY);
                 }}
                 aria-hidden={!isFabHidden}
-                className="fixed xl:hidden pwa-fab-bottom w-7 pr-3 h-12 bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-control rounded-r-none touch-none select-none"
+                className="fixed xl:hidden pwa-fab-bottom w-9 pr-2 h-12 bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-control rounded-r-none touch-none select-none"
                 style={{
                   right: -12,
                   transformOrigin: "right center",
