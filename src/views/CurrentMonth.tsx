@@ -32,7 +32,12 @@ import {
 } from "lucide-react";
 import { getBankDetails } from "../constants";
 import { clsx } from "clsx";
-import { motion } from "motion/react";
+import {
+  motion,
+  animate,
+  useMotionValue,
+  useIsPresent,
+} from "motion/react";
 import {
   DndContext,
   closestCorners,
@@ -241,6 +246,98 @@ const SortableBankCard: React.FC<SortableBankCardProps> = memo(
   },
 );
 
+type FabSlot = "top" | "center" | "bottom";
+
+const getSavedFabSlot = (): FabSlot => {
+  if (typeof window === "undefined") return "bottom";
+  const saved = localStorage.getItem("fab_slot");
+  if (saved === "top" || saved === "center" || saved === "bottom") {
+    return saved;
+  }
+  return "bottom";
+};
+
+interface FabMetrics {
+  rightPos: number;
+  top: number;
+  center: number;
+  bottom: number;
+  restoreTop: number;
+  restoreBottom: number;
+  targetY: number;
+}
+
+const computeFabMetrics = (slot: FabSlot): FabMetrics => {
+  if (typeof window === "undefined") {
+    return {
+      rightPos: 20,
+      top: 0,
+      center: 0,
+      bottom: 0,
+      restoreTop: 0,
+      restoreBottom: 0,
+      targetY: 0,
+    };
+  }
+
+  const isDesktop = window.innerWidth >= 768;
+  const isWide = window.innerWidth >= 1280;
+  const fabSize = 56;
+  const restoreHeight = 56;
+  const sidebarWidth = isDesktop ? 280 : 0;
+
+  let rightPos = 20;
+  if (isDesktop) {
+    const contentAreaWidth = window.innerWidth - sidebarWidth;
+    const tableMaxWidth = 896; // max-w-4xl
+    const contentMargin = (contentAreaWidth - tableMaxWidth) / 2;
+
+    if (contentMargin > 80) {
+      rightPos = contentMargin - 64;
+    } else if (isWide) {
+      rightPos = 24;
+    } else {
+      rightPos = 16;
+    }
+  }
+
+  const margin = 24;
+  const headerHeight = isDesktop ? 60 : 84;
+  const bottomNavHeight = isDesktop ? 40 : 100;
+
+  const minTop = headerHeight + margin;
+  const maxBottom = window.innerHeight - bottomNavHeight - fabSize - margin;
+
+  const initialBottom = isDesktop ? 32 : 110;
+  const initialY = window.innerHeight - initialBottom - fabSize;
+
+  const top = minTop - initialY;
+  const bottom = maxBottom - initialY;
+  const center = (top + bottom) / 2;
+
+  const restoreInitialY = window.innerHeight - initialBottom - restoreHeight;
+  const restoreTop = minTop - restoreInitialY;
+  const restoreBottom =
+    window.innerHeight -
+    bottomNavHeight -
+    restoreHeight -
+    margin -
+    restoreInitialY;
+
+  const targetY =
+    slot === "top" ? top : slot === "center" ? center : bottom;
+
+  return {
+    rightPos,
+    top,
+    center,
+    bottom,
+    restoreTop,
+    restoreBottom,
+    targetY,
+  };
+};
+
 export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
   ({
     data,
@@ -278,6 +375,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
         ? [prevMonthId, currentMonthId]
         : [currentMonthId];
     const [mounted, setMounted] = useState(false);
+    const isPresent = useIsPresent();
     useEffect(() => {
       setMounted(true);
     }, []);
@@ -302,23 +400,26 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     const [entryIdToDelete, setEntryIdToDelete] = useState<string | null>(null);
     const [activeSubTab, setActiveSubTab] = useState<"table" | "list">("table");
     const [isFabHidden, setIsFabHidden] = useState(false);
+
+    const initialMetrics = useMemo(
+      () => computeFabMetrics(getSavedFabSlot()),
+      [],
+    );
+
     const [dragConstraints, setDragConstraints] = useState({
-      top: 0,
+      top: initialMetrics.top,
       left: 0,
-      right: 0,
-      bottom: 0,
+      right: 80,
+      bottom: initialMetrics.bottom,
     });
     const [restoreConstraints, setRestoreConstraints] = useState({
-      top: 0,
-      bottom: 0,
+      top: initialMetrics.restoreTop,
+      bottom: initialMetrics.restoreBottom,
     });
-    const [yOffset, setYOffset] = useState(() => {
-      const saved = localStorage.getItem("fab_y_offset");
-      if (!saved) return 0;
-      const parsed = parseInt(saved, 10);
-      return Number.isFinite(parsed) ? parsed : 0;
-    });
-    const [rightPos, setRightPos] = useState(16);
+    const [yOffset, setYOffset] = useState(initialMetrics.targetY);
+    const [rightPos, setRightPos] = useState(initialMetrics.rightPos);
+    const fabY = useMotionValue(initialMetrics.targetY);
+
     const isDraggingFab = useRef(false);
     const isDraggingRestore = useRef(false);
     const fabPointerStartRef = useRef<{ x: number; y: number } | null>(null);
@@ -421,101 +522,50 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
 
     useEffect(() => {
       const updateConstraints = () => {
-        const isDesktop = window.innerWidth >= 768;
-        const isWide = window.innerWidth >= 1280;
-
         if (window.innerWidth >= 1280) {
           setIsFabHidden(false);
         }
 
-        const fabSize = 56;
-        const restoreHeight = 56;
-        const sidebarWidth = isDesktop ? 280 : 0;
-
-        if (isDesktop) {
-          const contentAreaWidth = window.innerWidth - sidebarWidth;
-          const tableMaxWidth = 896; // max-w-4xl
-          const contentMargin = (contentAreaWidth - tableMaxWidth) / 2;
-
-          // On desktop, we want to place the FAB outside the table to avoid overlap
-          if (contentMargin > 80) {
-            setRightPos(contentMargin - 64);
-          } else if (isWide) {
-            setRightPos(24);
-          } else {
-            setRightPos(16);
-          }
-        } else {
-          setRightPos(20);
-        }
-
-        const margin = 24;
-        const headerHeight = isDesktop ? 60 : 84;
-        const bottomNavHeight = isDesktop ? 40 : 100;
-
-        const minTop = headerHeight + margin;
-        const maxBottom =
-          window.innerHeight - bottomNavHeight - fabSize - margin;
-
-        const initialBottom = isDesktop ? 32 : 110;
-        const initialY = window.innerHeight - initialBottom - fabSize;
-
+        const metrics = computeFabMetrics(getSavedFabSlot());
+        setRightPos(metrics.rightPos);
         setDragConstraints({
-          top: minTop - initialY,
-          bottom: maxBottom - initialY,
+          top: metrics.top,
+          bottom: metrics.bottom,
           left: 0,
           right: 80,
         });
-
-        const restoreInitialY =
-          window.innerHeight - initialBottom - restoreHeight;
         setRestoreConstraints({
-          top: minTop - restoreInitialY,
-          bottom:
-            window.innerHeight -
-            bottomNavHeight -
-            restoreHeight -
-            margin -
-            restoreInitialY,
+          top: metrics.restoreTop,
+          bottom: metrics.restoreBottom,
         });
+        setYOffset(metrics.targetY);
+        fabY.set(metrics.targetY);
       };
       updateConstraints();
       window.addEventListener("resize", updateConstraints);
       return () => window.removeEventListener("resize", updateConstraints);
-    }, []);
+    }, [fabY]);
 
-    const snapToPosition = useCallback(
+    const snapToSlot = useCallback(
       (currentY: number) => {
         const top = dragConstraints.top;
         const bottom = dragConstraints.bottom;
         const center = (top + bottom) / 2;
 
-        const points = [top, center, bottom];
-        return points.reduce((prev, curr) =>
-          Math.abs(curr - currentY) < Math.abs(prev - currentY) ? curr : prev,
+        const candidates: { slot: FabSlot; y: number }[] = [
+          { slot: "top", y: top },
+          { slot: "center", y: center },
+          { slot: "bottom", y: bottom },
+        ];
+
+        return candidates.reduce((prev, curr) =>
+          Math.abs(curr.y - currentY) < Math.abs(prev.y - currentY)
+            ? curr
+            : prev,
         );
       },
       [dragConstraints],
     );
-
-    useEffect(() => {
-      if (dragConstraints.bottom !== 0) {
-        const saved = localStorage.getItem("fab_y_offset");
-        if (!saved) {
-          setYOffset(snapToPosition(0));
-        } else {
-          const parsed = parseInt(saved, 10);
-          if (!Number.isFinite(parsed)) {
-            setYOffset(snapToPosition(0));
-          } else if (
-            dragConstraints.top < dragConstraints.bottom &&
-            (parsed < dragConstraints.top || parsed > dragConstraints.bottom)
-          ) {
-            setYOffset(snapToPosition(parsed));
-          }
-        }
-      }
-    }, [dragConstraints, snapToPosition]);
 
     const sensors = useSensors(
       useSensor(MouseSensor, {
@@ -604,6 +654,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
     return (
       <div className="flex flex-col relative gap-1">
         {mounted &&
+          isPresent &&
           !isExiting &&
           createPortal(
             <>
@@ -620,13 +671,11 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                         opacity: 0,
                         scale: 0.65,
                         x: rightPos + 36,
-                        y: yOffset,
                       }
                     : {
                         opacity: 1,
                         scale: 1,
                         x: 0,
-                        y: yOffset,
                       }
                 }
                 transition={{
@@ -673,6 +722,12 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                     info.offset.x > Math.abs(info.offset.y)
                   ) {
                     setIsFabHidden(true);
+                    animate(fabY, yOffset, {
+                      type: "spring",
+                      stiffness: 420,
+                      damping: 32,
+                      mass: 0.8,
+                    });
                     setTimeout(() => {
                       isDraggingFab.current = false;
                     }, 80);
@@ -681,6 +736,12 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
 
                   if (Math.abs(info.offset.y) < 8) {
                     isDraggingFab.current = false;
+                    animate(fabY, yOffset, {
+                      type: "spring",
+                      stiffness: 420,
+                      damping: 32,
+                      mass: 0.8,
+                    });
                     return;
                   }
 
@@ -688,23 +749,24 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                     isDraggingFab.current = false;
                   }, 80);
 
-                  const finalY = yOffset + info.offset.y;
-                  const top = dragConstraints.top;
-                  const bottom = dragConstraints.bottom;
-                  const center = (top + bottom) / 2;
-                  const points = [top, center, bottom];
+                  const finalY = fabY.get();
+                  const snapped = snapToSlot(finalY);
+                  setYOffset(snapped.y);
+                  localStorage.setItem("fab_slot", snapped.slot);
+                  localStorage.setItem("fab_y_offset", snapped.y.toString());
 
-                  const snappedY = points.reduce((prev, curr) =>
-                    Math.abs(curr - finalY) < Math.abs(prev - finalY)
-                      ? curr
-                      : prev,
-                  );
-                  setYOffset(snappedY);
+                  animate(fabY, snapped.y, {
+                    type: "spring",
+                    stiffness: 420,
+                    damping: 32,
+                    mass: 0.8,
+                  });
                 }}
                 aria-hidden={isFabHidden}
                 className="fixed xl:hidden pwa-fab-bottom z-50 touch-none select-none"
                 style={{
                   right: rightPos,
+                  y: fabY,
                   willChange: "transform, opacity",
                   touchAction: "none",
                   pointerEvents: isFabHidden ? "none" : "auto",
@@ -740,12 +802,10 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                     ? {
                         opacity: 0.85,
                         x: 0,
-                        y: yOffset,
                       }
                     : {
                         opacity: 0,
                         x: 24,
-                        y: yOffset,
                       }
                 }
                 whileHover={
@@ -807,6 +867,12 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   if (Math.abs(info.offset.y) < 8) {
                     isDraggingRestore.current = false;
                     fabHideLockedUntil.current = Date.now() + 1200;
+                    animate(fabY, yOffset, {
+                      type: "spring",
+                      stiffness: 420,
+                      damping: 32,
+                      mass: 0.8,
+                    });
                     setIsFabHidden(false);
                     return;
                   }
@@ -815,23 +881,24 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                     isDraggingRestore.current = false;
                   }, 80);
 
-                  const finalY = yOffset + info.offset.y;
-                  const top = restoreConstraints.top;
-                  const bottom = restoreConstraints.bottom;
-                  const center = (top + bottom) / 2;
-                  const points = [top, center, bottom];
+                  const finalY = fabY.get();
+                  const snapped = snapToSlot(finalY);
+                  setYOffset(snapped.y);
+                  localStorage.setItem("fab_slot", snapped.slot);
+                  localStorage.setItem("fab_y_offset", snapped.y.toString());
 
-                  const snappedY = points.reduce((prev, curr) =>
-                    Math.abs(curr - finalY) < Math.abs(prev - finalY)
-                      ? curr
-                      : prev,
-                  );
-                  setYOffset(snappedY);
+                  animate(fabY, snapped.y, {
+                    type: "spring",
+                    stiffness: 420,
+                    damping: 32,
+                    mass: 0.8,
+                  });
                 }}
                 aria-hidden={!isFabHidden}
-                className="fixed xl:hidden pwa-fab-bottom w-6 h-14 bg-[var(--accent-color)] text-white flex flex-col items-center justify-center shadow-[-2px_0_8px_rgba(0,0,0,0.18)] dark:shadow-[-2px_0_12px_rgba(0,0,0,0.4)] z-50 group cursor-pointer active:cursor-grabbing rounded-xl rounded-r-none touch-none select-none border-y border-l border-white/20"
+                className="fixed xl:hidden pwa-fab-bottom w-6 h-14 bg-[var(--accent-color)] text-white flex flex-col items-center justify-center shadow-[-2px_0_8px_rgba(0,0,0,0.18)] dark:shadow-[-2px_0_12px_rgba(0,0,0,0.4)] z-50 group cursor-pointer active:cursor-grabbing rounded-l-xl rounded-r-none touch-none select-none border-y border-l border-white/20"
                 style={{
                   right: 0,
+                  y: fabY,
                   transformOrigin: "right center",
                   willChange: "transform, opacity",
                   touchAction: "none",
