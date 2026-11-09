@@ -97,7 +97,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
         className="bg-white dark:bg-[var(--surface-1)] rounded-card shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_40px_rgb(0,0,0,0.2)] border border-[var(--border-hairline)] p-2 sm:p-4 w-full mx-auto overflow-hidden relative isolate"
       >
         <div className="relative z-10">
-          <div className="flex items-center justify-between px-0.5 mb-3 sm:mb-4 gap-2 flex-nowrap">
+          <div className="flex items-center justify-between px-1 mb-2 sm:mb-3 gap-2 flex-nowrap">
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 min-w-0">
               {isAfter25 && allMonthIds.length > 1 ? (
                 <>
@@ -127,7 +127,7 @@ export const CashbackTable: React.FC<CashbackTableProps> = memo(
                   </h2>
                 </>
               ) : (
-                <h2 className="text-base sm:text-lg lg:text-xl font-bold tracking-tight text-[var(--text-primary)] leading-none inline-flex items-center whitespace-nowrap lg:h-8">
+                <h2 className="text-lg lg:text-xl font-bold tracking-tight text-[var(--text-primary)] leading-none inline-flex items-center whitespace-nowrap lg:h-8">
                   <span className="text-[var(--accent-color)]">
                     {capitalize(
                       formatMonthId(selectedMonthId || monthId).split(" ")[0],

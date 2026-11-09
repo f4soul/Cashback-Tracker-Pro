@@ -24,11 +24,11 @@ import {
   Plus,
   Edit2,
   Trash2,
-  ChevronDown,
-  ChevronUp,
   GripVertical,
   Table as TableIcon,
   LayoutList,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import { getBankDetails } from "../constants";
 import { clsx } from "clsx";
@@ -738,7 +738,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                 animate={
                   isFabHidden
                     ? {
-                        opacity: 0.75,
+                        opacity: 0.85,
                         x: 0,
                         y: yOffset,
                       }
@@ -748,8 +748,20 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                         y: yOffset,
                       }
                 }
-                whileHover={isFabHidden ? { opacity: 1, x: -3 } : undefined}
-                whileTap={isFabHidden ? { scale: 0.95 } : undefined}
+                whileHover={
+                  isFabHidden
+                    ? {
+                        opacity: 1,
+                      }
+                    : undefined
+                }
+                whileTap={
+                  isFabHidden
+                    ? {
+                        scale: 0.95,
+                      }
+                    : undefined
+                }
                 transition={{
                   type: "spring",
                   stiffness: 420,
@@ -770,7 +782,7 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   const dy = e.clientY - start.y;
 
                   // Ручное вытягивание ярлычка влево
-                  if (dx <= -14 && Math.abs(dx) > Math.abs(dy)) {
+                  if (dx <= -10 && Math.abs(dx) > Math.abs(dy)) {
                     restorePointerStartRef.current = null;
                     fabHideLockedUntil.current = Date.now() + 1200;
                     setIsFabHidden(false);
@@ -817,9 +829,9 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                   setYOffset(snappedY);
                 }}
                 aria-hidden={!isFabHidden}
-                className="fixed xl:hidden pwa-fab-bottom w-9 pr-2 h-12 bg-[var(--accent-color)] text-white flex items-center justify-center shadow-md z-50 group cursor-grab active:cursor-grabbing rounded-l-control rounded-r-none touch-none select-none"
+                className="fixed xl:hidden pwa-fab-bottom w-6 h-14 bg-[var(--accent-color)] text-white flex flex-col items-center justify-center shadow-[-2px_0_8px_rgba(0,0,0,0.18)] dark:shadow-[-2px_0_12px_rgba(0,0,0,0.4)] z-50 group cursor-pointer active:cursor-grabbing rounded-xl rounded-r-none touch-none select-none border-y border-l border-white/20"
                 style={{
-                  right: -12,
+                  right: 0,
                   transformOrigin: "right center",
                   willChange: "transform, opacity",
                   touchAction: "none",
@@ -827,10 +839,10 @@ export const CurrentMonth: React.FC<CurrentMonthProps> = memo(
                 }}
                 title="Показать кнопку (нажмите или потяните влево)"
               >
-                <div className="flex flex-col items-center gap-0.5 opacity-85 group-hover:opacity-100 transition-opacity">
-                  <ChevronUp className="w-3 h-3" />
-                  <Plus className="w-3 h-3" />
-                  <ChevronDown className="w-3 h-3" />
+                <div className="flex flex-col items-center justify-center -space-y-0.5 opacity-90 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  <ChevronUp className="w-3.5 h-3.5" />
+                  <Plus className="w-4 h-4" />
+                  <ChevronDown className="w-3.5 h-3.5" />
                 </div>
               </motion.div>
             </>,
